@@ -1,31 +1,17 @@
-## Project: Entropy ##
-## PC Work git directory: ~/git/Entropy ##
-## PC Work project directory: ~/projects/Entropy ##
-## CESGA Work git direcotry: /home/ulc/co/dfe/git/Entropy
-## CESGA Work project directory: /mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy)
-
-# Different directories according to the place of work
-# setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data') ## CESGA directory
-# setwd("projects/Entropy/data") ## PC Directory
-
-# Required libraries
+setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data')
+setwd("projects/Entropy/data")
 library(phyloseq)
 library(data.table)
 library(rentrez)
 library(taxonomizr)
+
 prepareDatabase('accessionTaxa.sql')
 
-#In/out paths
-#CESGA
-#in.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data"
-#out.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data"
-path = "mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data"
-
 # Load data (OTU + clinical)
-otu = read.delim2(paste0(path,"otutableRefSeq.txt" ), header = T, sep = '\t')
-clin = read.delim2(paste0(path,"task-nugent-score.txt"), header = T, sep = '\t')
+otu = read.delim2('otutableRefSeq.txt', header = T, sep = '\t')
+clin = read.delim2('morgan/task-healthy-cd.txt', header = T, sep = '\t')
 
-# Retain NCBI ID?s for each OTU.Keeping us with a vector containing only the access numbers.
+# Retain NCBI ID?s for each OTU
 otu$X.OTU.ID = as.vector(otu$X.OTU.ID)
 splitted = strsplit(otu$X.OTU.ID, '_')
 ncbi = list()
@@ -34,7 +20,7 @@ for (i in seq_along(splitted)) {
 }
 ncbi = unlist(ncbi)
 
-# Convert NCBI ID?s to taxid. Each accession number corresponds to a taxonomy id.
+# Convert NCBI ID?s to taxid
 taxid = list()
 for (j in seq_along(ncbi)) {
   res = entrez_search(db = "nucleotide", term = ncbi[j])
@@ -74,9 +60,4 @@ taxTable$Rank5 = replace(taxTable$Rank5, taxTable$Rank5 == 'f__NA', 'f__')
 taxTable$Rank6 = replace(taxTable$Rank6, taxTable$Rank6 == 'g__NA', 'g__')
 taxTable$Rank7 = replace(taxTable$Rank7, taxTable$Rank6 == 's__NA', 's__')
 
-saveRDS(taxTable, file = paste0(path,"TaxonomyTable.rds" ))
-
-
-
-
-
+saveRDS(taxTable, file = 'morgan/refseq/TaxonomyTable.rds')
