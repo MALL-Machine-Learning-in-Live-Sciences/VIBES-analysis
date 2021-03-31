@@ -34,3 +34,8 @@ esums2 <- entrez_summary(db = "taxonomy", id = res2$ids)
 entrez_db_searchable(db = "genome")
 res2 <- entrez_search(db = "genome", term = "(lactobacillus iners[orgn])")
 esums2 <- entrez_summary(db = "genome", id = res2$ids)
+
+
+#Prueba 
+·BLALALAL
+
