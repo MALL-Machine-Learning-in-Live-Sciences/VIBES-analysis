@@ -13,7 +13,7 @@ library(phyloseq)
 library(data.table)
 library(rentrez)
 library(taxonomizr)
-prepareDatabase('accessionTaxa.sql')
+prepareDatabase('accessionTaxa.sql', tmpDir ="/mnt/netapp2/Store_uni/home/ulc/co/dfe/TEMPR")
 
 #In/out paths
 #CESGA
