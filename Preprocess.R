@@ -5,7 +5,7 @@
 ## CESGA Work project directory: /mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy)
 
 # Different directories according to the place of work
-# setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data') ## CESGA directory
+setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data') ## CESGA directory
 # setwd("projects/Entropy/data") ## PC Directory
 
 # Required libraries
@@ -13,7 +13,7 @@ library(phyloseq)
 library(data.table)
 library(rentrez)
 library(taxonomizr)
-prepareDatabase('accessionTaxa.sql', tmpDir ="/mnt/netapp2/Store_uni/home/ulc/co/dfe/TEMPR")
+prepareDatabase('accessionTaxa.sql')
 
 #In/out paths
 #CESGA
