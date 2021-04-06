@@ -19,7 +19,7 @@ prepareDatabase('accessionTaxa.sql')
 #CESGA
 #in.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data"
 #out.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data"
-path = "mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/"
+path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/"
 
 # Load data (OTU + clinical)
 otu = read.delim2(paste0(path,"otutableRefSeq.txt" ), header = T, sep = '\t')
