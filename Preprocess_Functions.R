@@ -15,6 +15,7 @@ relat.abun = function(phyobject){
 
 prune.OTUs = function(phyobject, pctg = 0.05, count = 0, vari = 0){ 
   require(phyloseq)
+  print("Care: u have to change the rank in the fuction if u arent working with genus")
   #Delete unidentified Ranks
   ps <- subset_taxa(phyobject, !Rank6 %in% c("g__"))
   
@@ -32,6 +33,8 @@ get.dataset = function(phyobject){
   clinics = as.data.frame(sample_data(phyobject))
   otus = as.data.frame(t(get_taxa(phyobject)))
   data = cbind(otus, clinics)
+  cols <- sapply(data, is.character)
+  names(data)[cols] <- "target"
   return(data)
 } 
 
@@ -54,7 +57,8 @@ split.data = function(data, seed = 123, pctg = 0.90){ #set a seed to reproducibi
   train <- data[train_ind, ]
   test <- data[-train_ind, ]
   data_pool <- list(train,test)
-  
+  c = c("train", "test")
+  names(data_pool) = c
   # Return a list w train/test
   return(data_pool)
 }
@@ -62,12 +66,35 @@ split.data = function(data, seed = 123, pctg = 0.90){ #set a seed to reproducibi
 save.splits = function(path, list, project, id){
   train = list[[1]]
   test = list[[2]]
-  saveRDS(train, file =paste0(path,project,"_",id,"train.rds"))
-  saveRDS(train2, file =paste0(path,project,"_",id,"test.rds"))
+  saveRDS(train, file =paste0(path,project,"_",id,"_","train.rds"))
+  saveRDS(test, file =paste0(path,project,"_",id,"_","test.rds"))
 }
 
 
 # Feature Selection
+
+kruskal.FS = function(data, fs.type = 'kruskal.test', nfeat){
+  
+  stopifnot('target' %in% names(data))
+  
+  require(mlr)
+  task = makeClassifTask(data = data, target = 'target')
+  
+  tasks = lapply(nfeat, function(x) filterFeatures(task, method = fs.type, abs = x))
+  
+  for (i in 1:length(nfeat)) {
+    tasks[[i]]$task.desc$id =  paste(fs.type, ncol(tasks[[i]]$env$data) - 1 , sep = "_")
+  }
+  
+  t = list()
+  for (i in 1:length(tasks)) {
+    t[[i]] = tasks[[i]]$env$data
+    names(t)[[i]] = paste(fs.type, nfeat[i], sep = '_')
+  }
+  
+  return(t[[1]])
+}
+
 FCBF.FS = function(data, thold){
   require(FCBF)
   #Split target from other variables
@@ -77,7 +104,7 @@ FCBF.FS = function(data, thold){
   
   # Discretize RA from OTUS in High and LOW. The transpose is done since the function wants the OTUS in the rows.
   discretization = discretize_exprs(t(variables))
-  su_plot(discretization, targets)
+  #su_plot(discretization, targets)
   
   #Execute Algm
   fcbf = fcbf(discretization, targets, verbose = T, thresh = thold)
@@ -90,24 +117,22 @@ FCBF.FS = function(data, thold){
 }
 
 LDM.FS = function(data, seed, method="bray", thold= 0.1){
-  require(LDM)
-  #Split target from other variables
   targets = as.factor(data$target)
-  cols <- sapply(data, is.numeric)
+  cols = sapply(data, is.numeric)
   variables = data[cols]
-  
+  require(LDM)
   #ExecuteLDM 
-  fit.ldm = ldm(variables ~ target,
+  fit.ldm = ldm(variables ~ (target),
                 data = data,
-                test.otu=TRUE, 
-                test.global=TRUE,
-                dist.method=method,
+                test.otu = TRUE, 
+                test.global = TRUE,
+                dist.method = method,
                 fdr.nominal = thold,
                 n.perm.max = 10000,
                 seed = seed)
   
   #Filter features 
-  w1 = which(fit.ldm$q.otu.omni[1,] < fdr.nominal)
+  w1 = which(fit.ldm$q.otu.omni[1,] < thold)
   (n.otu.omni.m1 = length(w1))
   features = (otu.omni.m1 = colnames(fit.ldm$q.otu.omni)[w1])
   
@@ -118,22 +143,7 @@ LDM.FS = function(data, seed, method="bray", thold= 0.1){
   return(filtered.data)
 }
 
-cluster.FS = function(){
-  
-}
-
-
-library(phyloseq)
-library(LDM)
-library(GUniFrac)
-library(FCBF)
-library(SummarizedExperiment)
-library(data.table)
-library(dplyr)
-
-
-
-
+#cluster.FS = function(){}
 
 
 

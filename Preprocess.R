@@ -104,7 +104,6 @@ low$Var = "Low"
 clinics = rbind(high,intermediate, low)
 clinics = arrange(clinics, X.SampleID)
 clin = data_frame(clinics)
-names(clin)[2] <- "target"
 
 ## Phyloseq format
 clin <- clin %>%
@@ -122,5 +121,33 @@ TAX = tax_table(tax_mat)
 samples = sample_data(clinics)
 BV_phyloseq <- phyloseq(OTU, TAX, samples)
 saveRDS(BV_phyloseq, file = paste0(path,project,"_phyloseq.rds"))
+
 source("git/Entropy/Preprocess_Functions.R")
 
+# Prueba Preprocessing phyloseq 0 -> FS
+BV_phyloseq <- readRDS("projects/Entropy/data/BV_phyloseq.rds")
+
+BV_Genus =  aglomerate(BV_phyloseq, rank = "Rank6")
+
+BV_Genus_AR = relat.abun(BV_Genus)
+
+Pruned_Genus_AR = prune.OTUs(phyobject = BV_Genus_AR, pctg = 0.05, count = 0, vari = 0)
+
+Data_BV_Gn_AR = get.dataset(Pruned_Genus_AR)
+
+Data_BV_Gn_AR_Norm = norm.dataset(Data_BV_Gn_AR)
+
+train_test = split.data(data = Data_BV_Gn_AR_Norm, seed = 17, pctg = 0.90)
+
+save.splits(path = "git/Entropy/", list = train_test, project = "BV_Genus", id = "AR")
+Genus_train = train_test$train
+Genus_test = train_test$test
+
+
+Genus_train_FCBF = FCBF.FS(data = Genus_train, thold = 0.005)
+Genus_train_LDM = LDM.FS(data = Genus_train, seed = 17, method = "bray", thold = 0.1)
+saveRDS(Genus_train_FCBF, file = "git/Entropy/Genus_train_FCBF")
+aa = readRDS(file = "git/Entropy/Genus_train_FCBF")
+source("git/Entropy/ML_Functions.R")
+bmr = ML.exec(dataset = kk)
+benchmark = machnlearn(path = "git/Entropy/", patron = "FCBF", outputfile ="git/Entropy/" )
