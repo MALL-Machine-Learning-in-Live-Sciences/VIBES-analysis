@@ -1,24 +1,26 @@
 ## Project: Entropy ##
 ## PC Work git directory: ~/git/Entropy ##
 ## PC Work project directory: ~/projects/Entropy ##
-## CESGA Work git direcotry: /home/ulc/co/dfe/git/Entropy
-## CESGA Work project directory: /mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy)
+## CESGA Work git direcotry: /home/ulc/co/dfe/git/Entropy/
+## CESGA Work project directory: /mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data)
 
 # Different directories according to the place of work
 setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data') ## CESGA directory
 # setwd("projects/Entropy/data") ## PC Directory
-
+project ="BV"
 # Required libraries
 library(phyloseq)
 library(data.table)
 library(rentrez)
 library(taxonomizr)
+library(dplyr)
+library(tibble)
 prepareDatabase('accessionTaxa.sql')
 
-#In/out paths
-#CESGA
-#in.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data"
-#out.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data"
+# In/out paths
+# CESGA
+# in.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data"
+# out.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data"
 path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/"
 
 # Load data (OTU + clinical)
@@ -75,8 +77,50 @@ taxTable$Rank6 = replace(taxTable$Rank6, taxTable$Rank6 == 'g__NA', 'g__')
 taxTable$Rank7 = replace(taxTable$Rank7, taxTable$Rank6 == 's__NA', 's__')
 
 saveRDS(taxTable, file = paste0(path,"TaxonomyTable.rds" ))
+taxonomyTable = taxTable
+# Retain the access numbers, rename target, categorize variables and adecuate all for a phy object.
+#path2 = "projects/Entropy/data/" #En el cesga usaria el paht del ppio
+#taxonomyTable = readRDS(file = "projects/Entropy/data/TaxonomyTable.rds")
+#otu = read.delim2(paste0(path2,"otutableRefSeq.txt" ), header = T, sep = '\t') #En el cesga usaria el paht del ppio
+#clin = read.delim2(paste0(path2,"task-nugent-score.txt"), header = T, sep = '\t') #En el cesga usaria el paht del ppio
 
+## Retain only the access numbers
+otu$X.OTU.ID = as.vector(otu$X.OTU.ID)
+splitted = strsplit(otu$X.OTU.ID, '_')
+ncbi = list()
+for (i in seq_along(splitted)) {
+  ncbi[[i]] = paste(splitted[[i]][1], splitted[[i]][2], sep = '_')
+}
+ncbi = unlist(ncbi)
+otu$X.OTU.ID = ncbi
 
+## Categorize in: low, intermediate, high 
+high = clin[which(clin$Var > 6),]
+intermediate = clin[which(clin$Var >= 4 & clin$Var <= 6),]
+low = clin[which(clin$Var < 4),]
+high$Var = "High"
+intermediate$Var = "Intermediate"
+low$Var = "Low"
+clinics = rbind(high,intermediate, low)
+clinics = arrange(clinics, X.SampleID)
+clin = data_frame(clinics)
+names(clin)[2] <- "target"
 
+## Phyloseq format
+clin <- clin %>%
+  tibble::column_to_rownames("X.SampleID") 
 
+otu <- otu %>%
+  tibble::column_to_rownames("X.OTU.ID") 
+
+tax_mat <- as.matrix(taxonomyTable)
+otu_mat <- as.matrix(otu)
+
+# Make the main phyloseq object
+OTU = otu_table(otu_mat, taxa_are_rows = TRUE)
+TAX = tax_table(tax_mat)
+samples = sample_data(clinics)
+BV_phyloseq <- phyloseq(OTU, TAX, samples)
+saveRDS(BV_phyloseq, file = paste0(path,project,"_phyloseq.rds"))
+source("git/Entropy/Preprocess_Functions.R")
 
