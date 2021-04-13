@@ -122,7 +122,7 @@ LDM.FS = function(data, seed, method="bray", thold= 0.1){
   variables = data[cols]
   require(LDM)
   #ExecuteLDM 
-  fit.ldm = ldm(variables ~ (target),
+  fit.ldm = ldm(variables ~target,
                 data = data,
                 test.otu = TRUE, 
                 test.global = TRUE,

@@ -13,7 +13,9 @@ ML.exec = function(dataset){
   
   # Random Forest
   psrf<-makeParamSet(
-    makeDiscreteParam("mtry", values = sqrt(4)),
+    makeDiscreteParam("mtry", values = c(round(sqrt(ncol(task$env$data)))-2,
+                                         round(sqrt(ncol(task$env$data))),
+                                         round(sqrt(ncol(task$env$data)))+2)),
     makeDiscreteParam("ntree", values= 1000L),
     makeDiscreteParam("nodesize", values= c(1:3))
   )
@@ -22,14 +24,21 @@ ML.exec = function(dataset){
   
   # GLMNET
   psglmnet = makeParamSet(
-    makeDiscreteParam("lambda", c(0.0001,0.001,0.01,0.1,1)),
-    makeDiscreteParam("alpha",c(0,0.15,0.25,0.35,0.5,0.65,0.75,0.85,1))
+    makeDiscreteParam("lambda", c(0.001,0.01,0.1)),
+    makeDiscreteParam("alpha",c(0.15,0.25,0.35,0.5))
   )
-  l<-makeLearner("classif.glmnet", predict.type = "prob", )
-  lrn_glmnet<-makeTuneWrapper(l, inner, psglmnet, measures = acc, ctrl, show.info=T)
+  l<-makeLearner("classif.glmnet", predict.type = "prob")
+  lrn_glmnet<-makeTuneWrapper(l, inner, psglmnet, measures = acc, control = ctrl, show.info=T)
   
-  
-  learners = list(lrn_rf)
+  # GBM
+  psGBM = makeParamSet(makeDiscreteParam("distribution", values = "huberized"),
+                       makeIntegerParam("n.trees", lower = 100, upper = 1000), #number of trees
+                       makeIntegerParam("interaction.depth", lower = 2, upper = 10), #depth of tree
+                       makeIntegerParam("n.minobsinnode", lower = 10, upper = 80),
+                       makeNumericParam("shrinkage",lower = 0.01, upper = 1))
+  lrn6 = makeLearner("classif.gbm", predict.type = "response") #ES PROB O RESPONSE??
+  lrnGBM =  makeTuneWrapper(learner = lrn6, resampling = inner, measures = auc, par.set = psGBM, control = ctrl, show.info = T)
+  learners = list( lrnGBM, lrn_rf,lrn_glmnet)
   
   # Outer
   outer = makeResampleDesc('RepCV' , reps = 5, folds = 10 , stratify = T)
