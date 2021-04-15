@@ -140,14 +140,44 @@ Data_BV_Gn_AR_Norm = norm.dataset(Data_BV_Gn_AR)
 train_test = split.data(data = Data_BV_Gn_AR_Norm, seed = 17, pctg = 0.90)
 
 save.splits(path = "git/Entropy/", list = train_test, project = "BV_Genus", id = "AR")
-Genus_train = train_test$train
-Genus_test = train_test$test
 
+train = readRDS(file = "projects/Entropy/data/train/BV_Genus_AR_train.rds")
 
-Genus_train_FCBF = FCBF.FS(data = Genus_train, thold = 0.005)
-Genus_train_LDM = LDM.FS(data = Genus_train, seed = 17, method = "bray", thold = 0.1)
-saveRDS(Genus_train_FCBF, file = "git/Entropy/Genus_train_FCBF")
-aa = readRDS(file = "git/Entropy/Genus_train_FCBF")
-source("git/Entropy/ML_Functions.R")
-bmr = ML.exec(dataset = kk)
-benchmark = machnlearn(path = "git/Entropy/", patron = "FCBF", outputfile ="git/Entropy/" )
+#FS
+# Kruskalwalis
+Genus_train_KW = kruskal.FS(data = train, fs.type ='kruskal.test', nfeat = 15 )
+
+#FCBF
+Genus_train_FCBF = FCBF.FS(data = train, thold = 0.005)
+
+#LDM(I cant implement a function due to incompatibilities with function ldm)
+targets = as.factor(train$target)
+cols = sapply(train, is.numeric)
+variables = train[cols]
+require(LDM)
+#ExecuteLDM 
+fit.ldm = ldm(variables ~target,
+              data = train,
+              test.otu = TRUE, 
+              test.global = TRUE,
+              dist.method = "bray",
+              fdr.nominal = 0.1,
+              n.perm.max = 10000,
+              seed = 19)
+
+#Filter features 
+w1 = which(fit.ldm$q.otu.omni[1,] < 0.1)
+(n.otu.omni.m1 = length(w1))
+features = (otu.omni.m1 = colnames(fit.ldm$q.otu.omni)[w1])
+
+#Select new features
+filtered.data = variables[,features]
+Genus_train_LDM = as.data.frame(cbind(filtered.data, target = targets))
+
+fs = list(Genus_train_FCBF, Genus_train_KW, Genus_train_LDM)
+names(fs)= c("FCBF", "KW", "LDM")
+
+for (i in seq_along(fs)) {
+  saveRDS(fs[[i]], file = paste0("projects/Entropy/data/train/Genus","_",names(fs[i]),"_",ncol(fs[[i]])-1,".rds"))
+}
+

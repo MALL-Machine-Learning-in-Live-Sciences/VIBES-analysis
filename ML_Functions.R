@@ -1,6 +1,7 @@
 # ML  functions
 ML.exec = function(dataset){
   require(mlr)
+  require(methods)
   #require(parallel)
   #require(parallelMap)
   task = makeClassifTask(data = dataset, target = 'target')
@@ -29,19 +30,10 @@ ML.exec = function(dataset){
   )
   l<-makeLearner("classif.glmnet", predict.type = "prob")
   lrn_glmnet<-makeTuneWrapper(l, inner, psglmnet, measures = acc, control = ctrl, show.info=T)
-  
-  # GBM
-  psGBM = makeParamSet(makeDiscreteParam("distribution", values = "huberized"),
-                       makeIntegerParam("n.trees", lower = 100, upper = 1000), #number of trees
-                       makeIntegerParam("interaction.depth", lower = 2, upper = 10), #depth of tree
-                       makeIntegerParam("n.minobsinnode", lower = 10, upper = 80),
-                       makeNumericParam("shrinkage",lower = 0.01, upper = 1))
-  lrn6 = makeLearner("classif.gbm", predict.type = "response") #ES PROB O RESPONSE??
-  lrnGBM =  makeTuneWrapper(learner = lrn6, resampling = inner, measures = auc, par.set = psGBM, control = ctrl, show.info = T)
-  learners = list( lrnGBM, lrn_rf,lrn_glmnet)
+  learners = list(lrn_glmnet)
   
   # Outer
-  outer = makeResampleDesc('RepCV' , reps = 5, folds = 10 , stratify = T)
+  outer = makeResampleDesc('RepCV' , reps = 3, folds = 10 , stratify = T)
 
   # Benchmarking
   #parallelStartSocket(cpus = detectCores()*0.5, level = 'mlr.tuneParams')

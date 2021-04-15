@@ -1,6 +1,6 @@
 # Phyloseq preprocessing functions
 
-# Preprocess Phyloseq Object
+# Filter DATA
 aglomerate = function(phyobject, rank){
   require(phyloseq)
   phy =  tax_glom(phyobject, rank)
@@ -15,7 +15,7 @@ relat.abun = function(phyobject){
 
 prune.OTUs = function(phyobject, pctg = 0.05, count = 0, vari = 0){ 
   require(phyloseq)
-  print("Care: u have to change the rank in the fuction if u arent working with genus")
+  print("Care: u have to change the rank in the fuction if u arent working with genus")#Hacer bucles para cada rango(meter argumento por funcion)
   #Delete unidentified Ranks
   ps <- subset_taxa(phyobject, !Rank6 %in% c("g__"))
   
@@ -28,6 +28,8 @@ prune.OTUs = function(phyobject, pctg = 0.05, count = 0, vari = 0){
   phy = filter_taxa(phy, function(x) var(x) > vari, TRUE)
   return(phy)
 }
+
+#---------------
 
 get.dataset = function(phyobject){
   clinics = as.data.frame(sample_data(phyobject))
