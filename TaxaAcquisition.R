@@ -7,21 +7,19 @@
 # Different directories according to the place of work
 setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data') ## CESGA directory
 # setwd("projects/Entropy/data") ## PC Directory
-project ="BV"
+
 # Required libraries
-library(phyloseq)
-library(data.table)
-library(rentrez)
-library(taxonomizr)
-library(dplyr)
-library(tibble)
+x = c("phyloseq", "data.table", "rentrez", "taxnomizr", "dplyr", "tibble")
+lapply(x, require, character.only = TRUE)
+
+path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/"
+project ="BV"
 prepareDatabase('accessionTaxa.sql')
 
 # In/out paths
 # CESGA
 # in.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data"
 # out.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data"
-path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/"
 
 # Load data (OTU + clinical)
 otu = read.delim2(paste0(path,"otutableRefSeq.txt" ), header = T, sep = '\t')
@@ -83,6 +81,8 @@ taxonomyTable = taxTable
 #taxonomyTable = readRDS(file = "projects/Entropy/data/TaxonomyTable.rds")
 #otu = read.delim2(paste0(path2,"otutableRefSeq.txt" ), header = T, sep = '\t') #En el cesga usaria el paht del ppio
 #clin = read.delim2(paste0(path2,"task-nugent-score.txt"), header = T, sep = '\t') #En el cesga usaria el paht del ppio
+
+readRDS("projects/Entropy/data/TaxonomyTable.rds")
 
 ## Retain only the access numbers
 otu$X.OTU.ID = as.vector(otu$X.OTU.ID)
