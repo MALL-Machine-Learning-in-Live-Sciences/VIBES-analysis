@@ -11,7 +11,7 @@ ML.exec = function(dataset){
   inner<-makeResampleDesc("Holdout")
   
   # Random Forest
-  psrf<-makeParamSet(
+  psRF<-makeParamSet(
     makeDiscreteParam("mtry", values = c(round(sqrt(ncol(task$env$data)))-2,
                                          ound(sqrt(ncol(task$env$data)))-1,
                                          round(sqrt(ncol(task$env$data))),
@@ -21,17 +21,39 @@ ML.exec = function(dataset){
     makeDiscreteParam("nodesize", values= c(1:3))
   )
   l1<-makeLearner("classif.randomForest", predict.type = "prob")
-  lrn_rf<-makeTuneWrapper(l1,  resampling = inner, par.set = psrf, measures = acc, control=ctrl,  show.info = T)
+  lrn_rf<-makeTuneWrapper(l1,  resampling = inner, par.set = psRF, measures = auc, control=ctrl,  show.info = T)
   
   # GLMNET
-  psglmnet = makeParamSet(
+  psGL = makeParamSet(
     makeDiscreteParam("lambda", c(0.0001,0.001,0.01,0.1,1)),
     makeDiscreteParam("alpha",c(0,0.15,0.25,0.35,0.5,0.65,0.75,0.85,1))
   )
   l2<-makeLearner("classif.glmnet", predict.type = "prob")
-  lrn_glmnet<-makeTuneWrapper(l2, inner, psglmnet, measures = auc, ctrl, show.info=T)
+  lrn_glmnet<-makeTuneWrapper(l2, inner, psGL, measures = auc, ctrl, show.info=T)
   
-  learners = list(lrn_rf, lrn_glmnet)
+  # xGboost
+  psGB = makeParamSet(makeNumericParam("eta", lower = 0, upper = 1),
+                      makeNumericParam("lambda", lower = 0, upper = 200),
+                      makeIntegerParam("max_depth", lower = 1, upper = 20))
+  l3 = makeLearner("classif.xgboost", predict.type = "prob", nrounds = 10)
+  lrn_GB = makeTuneWrapper(learner = l3, resampling = inner, measures = auc, par.set = psGB, control = control, show.info = T)
+  
+  # SVM
+  psKSVM = makeParamSet(makeDiscreteParam('C', values = 2^c(-8, -4, -2, 0)),
+                        makeDiscreteParam('sigma', values = 2^c(-8, -4, 0, 4)))
+  l4 = makeLearner("classif.ksvm", predict.type = "prob")
+  lrn_KSVM = makeTuneWrapper(learner = l4, resampling = inner, measures = auc, par.set = psKSVM, control = control, show.info = T)
+  
+  # GBM
+  psGBM = makeParamSet(makeDiscreteParam("distribution", values = "bernoulli"),
+                       makeIntegerParam("n.trees", lower = 100, upper = 1000), 
+                       makeIntegerParam("interaction.depth", lower = 2, upper = 10),
+                       makeIntegerParam("n.minobsinnode", lower = 10, upper = 80),
+                       makeNumericParam("shrinkage",lower = 0.01, upper = 1))
+  l5 = makeLearner("classif.gbm", predict.type = "prob")
+  lrn_GBM =  makeTuneWrapper(learner = l5, resampling = inner, measures = auc, par.set = psGBM, control = control, show.info = T)
+  
+  learners = list(lrn_rf, lrn_glmnet, lrn_GB, lrn_KSVM, lrn_GBM)
   
   # Outer
   outer = makeResampleDesc('RepCV' , reps = 3, folds = 10 , stratify = T)
@@ -39,7 +61,7 @@ ML.exec = function(dataset){
   # Benchmarking
   #parallelStartSocket(cpus = detectCores()*0.5, level = 'mlr.tuneParams')
   #parallelStartMulticore(detectCores()*0.5 , level = 'mlr.tuneParams')
-  bmr = benchmark(learners, task, outer, measures =  list(acc), show.info = T, models = T)
+  bmr = benchmark(learners, task, outer, measures =  list(acc,auc,mmce), show.info = T, models = T)
   #parallelStop()
   return(bmr)
 }
