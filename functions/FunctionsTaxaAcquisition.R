@@ -60,7 +60,9 @@ get.Tax = function(taxid, path){
   return(taxTable)
 }
 
-get.phylo = function(otu, clin, path, taxonomyTable, id){
+get.phylo = function(otu, clin, taxonomyTable,path, id){
+  require(phyloseq)
+  require(dplyr)
   ## Retain only the access numbers
   otu$X.OTU.ID = as.vector(otu$X.OTU.ID)
   splitted = strsplit(otu$X.OTU.ID, '_')

@@ -43,29 +43,26 @@ FCBF.FS = function(data, thold){
   return(filtered.data)
 }
 
-# LDM.FS = function(data, seed, method="bray", thold= 0.1){
-#   targets = as.factor(data$target)
-#   cols = sapply(data, is.numeric)
-#   variables = data[cols]
-#   require(LDM)
-#   #ExecuteLDM 
-#   fit.ldm = ldm(variables ~target,
-#                 data = data,
-#                 test.otu = TRUE, 
-#                 test.global = TRUE,
-#                 dist.method = method,
-#                 fdr.nominal = thold,
-#                 n.perm.max = 10000,
-#                 seed = seed)
-#   
-#   #Filter features 
-#   w1 = which(fit.ldm$q.otu.omni[1,] < thold)
-#   (n.otu.omni.m1 = length(w1))
-#   features = (otu.omni.m1 = colnames(fit.ldm$q.otu.omni)[w1])
-#   
-#   #Select new features
-#   filtered.data = variables[,features]
-#   filtered.data = as.data.frame(cbind(filtered.data, target = targets))
-#   # Return dataframe only w the features select from LDM
-#   return(filtered.data)
-# }
+LDM.FS = function(data, variables, targets, seed, method="bray", thold= 0.1){
+  require(LDM)
+  #ExecuteLDM
+  fit.ldm = ldm(variables ~target,
+                data = data,
+                test.otu = TRUE,
+                test.global = TRUE,
+                dist.method = method,
+                fdr.nominal = thold,
+                n.perm.max = 10000,
+                seed = seed)
+
+  #Filter features
+  w1 = which(fit.ldm$q.otu.omni[1,] < thold)
+  (n.otu.omni.m1 = length(w1))
+  features = (otu.omni.m1 = colnames(fit.ldm$q.otu.omni)[w1])
+
+  #Select new features
+  filtered.data = variables[,features]
+  filtered.data = as.data.frame(cbind(filtered.data, target = targets))
+  # Return dataframe only w the features select from LDM
+  return(filtered.data)
+}

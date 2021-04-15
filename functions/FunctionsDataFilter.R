@@ -12,7 +12,7 @@ relat.abun = function(phyobject){
   return(phy)
 }
 
-prune.OTUs = function(phyobject, Rank, type, pctg = 0.05, count = 0, vari = 0){ 
+prune.OTUs = function(phyobject, Rank, pctg = 0.05, count = 0, vari = 0){ 
   require(phyloseq)
   if (Rank == "Rank1"){
     #Delete unidentified Ranks

@@ -32,8 +32,8 @@ split.data = function(data,seed = 123, pctg = 0.90, path, project, id){ #set a s
   c = c("train", "test")
   names(data_pool) = c
   # Return a list w train/test
-  saveRDS(train, file =paste0(path,project,"_",id,"_","train.rds"))
-  saveRDS(test, file =paste0(path,project,"_",id,"_","test.rds"))
+  saveRDS(train, file =paste0(path,"train/",project,"_",id,"_","train.rds"))
+  saveRDS(test, file =paste0(path,"test/",project,"_",id,"_","test.rds"))
   return(data_pool)
   
 }
