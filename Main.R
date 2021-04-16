@@ -7,12 +7,17 @@ source("git/Entropy/functions/FunctionsTaxaAcquisition.R")
 source("git/Entropy/functions/FunctionsDataFilter.R")
 source("git/Entropy/functions/FunctionsGetSplitData.R")
 source("git/Entropy/functions/FunctionsFeatSel.R")
+source("git/Entropy/functions/FunctionsML.R")
 
 
 phyloseq = get.phylo(otu = otu, clin = clin, path = path, taxonomyTable = taxa, id = "BV")
 genus_phy = phy.aglomerate(phyobject = phyloseq, rank = "Rank6")
+
+#SACAR ABUNDANCIA REALTIVA ANTES DE ELIMINAR OTUS
 pruned_genus_phy = prune.OTUs(phyobject = genus_phy, Rank = "Rank6", pctg = 0.05, count = 0, vari = 0 )
 BV_data_Gen = get.dataset(pruned_genus_phy)
+
+#QUITAR LA NORMALIZACION Y HACERLA DESPUES ANTES DEL ML Y ESCALADO EN EL ML
 BV_Gen_Norm = norm.dataset(BV_data_Gen)
 train_test = split.data(data = BV_Gen_Norm, seed = 123, pctg = 0.90,path = "projects/Entropy/data/",project = "BV", id = "Genus")
 
@@ -28,8 +33,9 @@ train.FCBF = FCBF.FS(train, thold =0.005 )
 targets = as.factor(train$target)
 cols = sapply(train, is.numeric)
 variables = train[cols]
-train.LDM = LDM.FS(data = train,variables = variables,targets = targets, seed = 123, )
+train.LDM = LDM.FS(data = train,variables = variables,targets = targets, seed = 123)
 
+bmr = ML.exec(dataset = train.FCBF)
 
 
 

@@ -13,7 +13,7 @@ ML.exec = function(dataset){
   # Random Forest
   psRF<-makeParamSet(
     makeDiscreteParam("mtry", values = c(round(sqrt(ncol(task$env$data)))-2,
-                                         ound(sqrt(ncol(task$env$data)))-1,
+                                         round(sqrt(ncol(task$env$data)))-1,
                                          round(sqrt(ncol(task$env$data))),
                                          round(sqrt(ncol(task$env$data)))+1,
                                          round(sqrt(ncol(task$env$data)))+2)),
@@ -36,27 +36,28 @@ ML.exec = function(dataset){
                       makeNumericParam("lambda", lower = 0, upper = 200),
                       makeIntegerParam("max_depth", lower = 1, upper = 20))
   l3 = makeLearner("classif.xgboost", predict.type = "prob", nrounds = 10)
-  lrn_GB = makeTuneWrapper(learner = l3, resampling = inner, measures = auc, par.set = psGB, control = control, show.info = T)
+  lrn_GB = makeTuneWrapper(learner = l3, resampling = inner, measures = auc, par.set = psGB, control = ctrl, show.info = T)
   
   # SVM
   psKSVM = makeParamSet(makeDiscreteParam('C', values = 2^c(-8, -4, -2, 0)),
                         makeDiscreteParam('sigma', values = 2^c(-8, -4, 0, 4)))
   l4 = makeLearner("classif.ksvm", predict.type = "prob")
-  lrn_KSVM = makeTuneWrapper(learner = l4, resampling = inner, measures = auc, par.set = psKSVM, control = control, show.info = T)
+  lrn_KSVM = makeTuneWrapper(learner = l4, resampling = inner, measures = auc, par.set = psKSVM, control = ctrl, show.info = T)
   
   # GBM
   psGBM = makeParamSet(makeDiscreteParam("distribution", values = "bernoulli"),
                        makeIntegerParam("n.trees", lower = 100, upper = 1000), 
                        makeIntegerParam("interaction.depth", lower = 2, upper = 10),
-                       makeIntegerParam("n.minobsinnode", lower = 10, upper = 80),
-                       makeNumericParam("shrinkage",lower = 0.01, upper = 1))
+                       makeIntegerParam("n.minobsinnode", lower = 10, upper = 50),
+                       makeNumericParam("shrinkage",lower = 0.50, upper = 1),
+                       makeNumericParam("bag.fraction", lower = 0.80, upper = 0.80))
   l5 = makeLearner("classif.gbm", predict.type = "prob")
-  lrn_GBM =  makeTuneWrapper(learner = l5, resampling = inner, measures = auc, par.set = psGBM, control = control, show.info = T)
+  lrn_GBM =  makeTuneWrapper(learner = l5, resampling = inner, measures = auc, par.set = psGBM, control = ctrl, show.info = T)
   
   learners = list(lrn_rf, lrn_glmnet, lrn_GB, lrn_KSVM, lrn_GBM)
   
   # Outer
-  outer = makeResampleDesc('RepCV' , reps = 3, folds = 10 , stratify = T)
+  outer = makeResampleDesc('RepCV' , reps = 5, folds = 3 , stratify = T)
 
   # Benchmarking
   #parallelStartSocket(cpus = detectCores()*0.5, level = 'mlr.tuneParams')
