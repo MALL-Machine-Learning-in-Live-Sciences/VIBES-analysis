@@ -30,6 +30,9 @@ train = train_test[[1]]
 test = train_test[[2]]
 table(test$target)
 
+#Cluster(With counts only)
+train.CLUST = CLUST.FS(train)
+
 # Kruskal Wallis
 train.KW = KW.FS(train, fs.type = "kruskal.test", nfeat = 20)
 # FCBF
@@ -41,8 +44,6 @@ variables = train[cols]
 train.LDM = LDM.FS(data = train,variables = variables,targets = targets, seed = 123)
 
 
-
-bmr = ML.exec(dataset = train.FCBF)
-
+bmr = ML.exec(dataset = data_clustered)
 
 

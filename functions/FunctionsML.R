@@ -6,6 +6,7 @@ ML.exec = function(dataset){
   #require(parallelMap)
   task = makeClassifTask(data = dataset, target = 'target')
   
+  
   # Hyperparameter tuning
   ctrl<-makeTuneControlGrid()
   inner<-makeResampleDesc("Holdout")
@@ -21,7 +22,7 @@ ML.exec = function(dataset){
     makeDiscreteParam("nodesize", values= c(1:3))
   )
   l1<-makeLearner("classif.randomForest", predict.type = "prob")
-  lrn_rf<-makeTuneWrapper(l1,  resampling = inner, par.set = psRF, measures = auc, control=ctrl,  show.info = T)
+  lrn_RF<-makeTuneWrapper(l1,  resampling = inner, par.set = psRF, measures = auc, control=ctrl,  show.info = T)
   
   # GLMNET
   psGL = makeParamSet(
@@ -54,8 +55,8 @@ ML.exec = function(dataset){
   l5 = makeLearner("classif.gbm", predict.type = "prob")
   lrn_GBM =  makeTuneWrapper(learner = l5, resampling = inner, measures = auc, par.set = psGBM, control = ctrl, show.info = T)
   
-  learners = list(lrn_rf, lrn_glmnet, lrn_GB, lrn_KSVM, lrn_GBM)
-  
+  #learners = list(lrn_RF, lrn_glmnet, lrn_GB, lrn_KSVM, lrn_GBM)
+  learners = list(lrn_RF) 
   # Outer
   outer = makeResampleDesc('RepCV' , reps = 5, folds = 3 , stratify = T)
 
