@@ -5,7 +5,12 @@ ML.exec = function(dataset){
   #require(parallel)
   #require(parallelMap)
   task = makeClassifTask(data = dataset, target = 'target')
-  
+  task = normalizeFeatures(
+    task,
+    method = "range",
+    cols = NULL,
+    range = c(0, 1),
+    on.constant = "quiet")
   
   # Hyperparameter tuning
   ctrl<-makeTuneControlGrid()
