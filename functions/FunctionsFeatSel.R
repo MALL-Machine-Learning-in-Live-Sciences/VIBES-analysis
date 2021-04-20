@@ -1,6 +1,6 @@
 # Functions Feature Selection 
 
-kruskal.FS = function(data, fs.type = 'kruskal.test', nfeat){
+KW.FS = function(data, fs.type = 'kruskal.test', nfeat){
   
   stopifnot('target' %in% names(data))
   
@@ -65,4 +65,21 @@ LDM.FS = function(data, variables, targets, seed, method="bray", thold= 0.1){
   filtered.data = as.data.frame(cbind(filtered.data, target = targets))
   # Return dataframe only w the features select from LDM
   return(filtered.data)
+}
+
+
+CLUST.FS = function(data){
+  require(dynamicTreeCut)
+  #Data Scale
+  sdata = scale(data)
+  # Dissimilarity matrix
+  d <- dist(t(datos), method = "euclidean")
+  
+  # Hierarchical clustering using Complete Linkage
+  hc1 <- hclust(d, method = "complete" )
+  
+  #Dinamic tree
+  dtree = cutreeDynamic(dendro = hc1,cutHeight = 0.90, minClusterSize = 3,method = "tree")
+  
+  
 }

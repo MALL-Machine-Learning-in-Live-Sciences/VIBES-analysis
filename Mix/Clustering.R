@@ -1,16 +1,21 @@
-library(devtools)
 
 library(dynamicTreeCut)
-datos = train[,1:52]
+# Remove target column
+datos = select(train, -(target))
 
-# Data Scale
-datos = scale(datos)
+#Data Scale
+sdata = scale(as.matrix(datos))
+
 # Dissimilarity matrix
-d <- dist(t(datos), method = "euclidean")
+d <- dist(t(sdata), method = "euclidean")
+
 # Hierarchical clustering using Complete Linkage
 hc1 <- hclust(d, method = "complete" )
+
 # Plot the obtained dendrogram
 plot(hc1, cex = 0.6, hang = -1)
 
 #Dinamic tree
-dtree = cutreeDynamic(dendro = hc1,cutHeight = 0.90, minClusterSize = 3,method = "tree")
+dtree = cutreeDynamic(dendro = hc1, cutHeight = 25, minClusterSize = 3,method = "tree")
+
+fviz_cluster(list(data = t(sdata), cluster = dtree))
