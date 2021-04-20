@@ -57,7 +57,7 @@ fs = list(train.CLUST, train.KW, train.FCBF,train.LDM)
 names(fs)= c("CLUST", "KW", "FCBF", "LDM")
 
 for (i in seq_along(fs)) {
-  saveRDS(fs[[i]], file = paste0("projects/Entropy/data/train/Genus","_",names(fs[i]),"_",ncol(fs[[i]])-1,".rds"))
+  saveRDS(fs[[i]], file = paste0("projects/Entropy/data/train/Counts_Genus","_",names(fs[i]),"_",ncol(fs[[i]])-1,".rds"))
 }
 
 # 6. ML
