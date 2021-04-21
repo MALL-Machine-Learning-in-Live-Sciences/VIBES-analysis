@@ -14,7 +14,7 @@ source("git/Entropy/functions/FunctionsML.R")
 
 # 3. Filter Phyloseq
 ## Get phy object and aglomerate by desired Rank 
-phyloseq = get.phylo(otu = otu, clin = clin, path = path, taxonomyTable = taxa, id = "BV")
+phyloseq = get.phylo.Ravel(otu = otu, clin = clin, path = path, taxonomyTable = taxa)
 genus_phy_C = phy.aglomerate(phyobject = phyloseq, rank = "Rank6")
 
 ## Here we can choose whether to continue with the counts or their relative abundance. AR as comment

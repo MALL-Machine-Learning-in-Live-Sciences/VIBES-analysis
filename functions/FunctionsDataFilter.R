@@ -1,5 +1,5 @@
 # Functions Data Filter
-get.phylo.Ravel = function(otu, clin, taxonomyTable,path, id){
+get.phylo.Ravel = function(otu, clin, taxonomyTable,path){
   require(phyloseq)
   require(dplyr)
   ## Retain only the access numbers
@@ -37,11 +37,11 @@ get.phylo.Ravel = function(otu, clin, taxonomyTable,path, id){
   samples = sample_data(clinics)
   BV_phyloseq <- phyloseq(OTU, TAX, samples)
   
-  saveRDS(BV_phyloseq, file = paste0(path,id,"_phyloseq.rds"))
+  saveRDS(BV_phyloseq, file = paste0(path,"Ravel_phyloseq.rds"))
   return(BV_phyloseq)
 }
 
-get.phylo.Sriniv = function(otu, clin, taxonomyTable,target,path,){
+get.phylo.Sriniv = function(otu, clin, taxonomyTable,target,path){
   require(phyloseq)
   require(dplyr)
   ## Categorize in: low, intermediate, high 
@@ -78,7 +78,7 @@ get.phylo.Sriniv = function(otu, clin, taxonomyTable,target,path,){
   samples = sample_data(clinics)
   BV_phyloseq <- phyloseq(OTU, TAX, samples)
   
-  saveRDS(BV_phyloseq, file = paste0(path,"Sriniv_phyloseq.rds"))
+  saveRDS(BV_phyloseq, file = paste0(path,"Sriniv_",target,"_phyloseq.rds"))
   return(BV_phyloseq)
 }
 
