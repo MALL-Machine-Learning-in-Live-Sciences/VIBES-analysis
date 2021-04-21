@@ -81,7 +81,7 @@ get.phylo = function(otu, clin, taxonomyTable,path, id){
   clinics = rbind(high, low)
   clinics = arrange(clinics, X.SampleID)
   clinics = data_frame(clinics)
-  
+  otu = data_frame(otu)
   ## Phyloseq format
   clinics <- clinics %>%
     tibble::column_to_rownames("X.SampleID") 
@@ -119,7 +119,7 @@ get.TaxID.Amsel = function(otu){
   taxid = unlist(taxid)
   return(taxid)
 }
-target = "Nugent"
+
 get.phylo.Amsel = function(otu, clin, taxonomyTable,target,path, id){
   require(phyloseq)
   require(dplyr)
@@ -135,14 +135,11 @@ get.phylo.Amsel = function(otu, clin, taxonomyTable,target,path, id){
     clinics = rbind(high, low)
     clinics = arrange(clinics, X.SampleID)
   } else if (target == "Amsel"){
-    
+    clin <- subset( clin, select = -Nugent )
+    clinics = clin[-1,]
   }
-  
-
-  #Remove NA and 
-
-
   clinics = data_frame(clinics)
+  otu = data_frame(otu)
   
   ## Phyloseq format
   clinics <- clinics %>%

@@ -9,8 +9,10 @@ setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data') ## CESGA d
 # setwd("projects/Entropy/data") ## PC Directory
 
 # Required libraries
-x = c("phyloseq", "data.table", "rentrez", "taxnomizr", "dplyr", "tibble")
-lapply(x, require, character.only = TRUE)
+library(phyloseq)
+library(data.table)
+library(rentrez)
+library(taxonomizr)
 
 path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/"
 prepareDatabase('accessionTaxa.sql')
