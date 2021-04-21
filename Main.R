@@ -7,7 +7,6 @@ clin = read.delim2(paste0(path,"task-nugent-score.txt"), header = T, sep = '\t')
 taxa = readRDS("projects/Entropy/data/TaxonomyTable.rds")
 
 # 2. Functions Load
-source("git/Entropy/functions/FunctionsTaxaAcquisition.R")
 source("git/Entropy/functions/FunctionsDataFilter.R")
 source("git/Entropy/functions/FunctionsGetSplitData.R")
 source("git/Entropy/functions/FunctionsFeatSel.R")

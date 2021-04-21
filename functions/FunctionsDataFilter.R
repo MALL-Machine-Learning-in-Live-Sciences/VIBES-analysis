@@ -41,24 +41,6 @@ get.phylo.Ravel = function(otu, clin, taxonomyTable,path, id){
   return(BV_phyloseq)
 }
 
-get.TaxID.Sriniv = function(otu){
-  # Retain names for each OTU.Keeping us with a vector containing only the name.
-  otu$X.OTU.ID = as.vector(otu$X.OTU.ID)
-  ncbi = as.vector(otu$X.OTU.ID)
-  # Convert Names to taxid. We hae to modify this fnct cause in Amstel have more than 1 id cause we havnt humber acces.
-  taxid = list()
-  for (j in seq_along(ncbi)) {
-    res = entrez_search(db = "nucleotide", term = ncbi[j])
-    esums = entrez_summary(db = "nucleotide", id = res$ids)
-    print(ncbi[j])
-    taxid[[j]] = extract_from_esummary(esums, "taxid")
-    taxid[[j]] = taxid[[j]][[1]]
-    print(taxid[[j]])
-  }
-  taxid = unlist(taxid)
-  return(taxid)
-}
-
 get.phylo.Sriniv = function(otu, clin, taxonomyTable,target,path,){
   require(phyloseq)
   require(dplyr)
