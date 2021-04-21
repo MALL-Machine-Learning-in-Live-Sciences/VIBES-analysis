@@ -1,4 +1,105 @@
 # Functions Data Filter
+get.phylo.Ravel = function(otu, clin, taxonomyTable,path, id){
+  require(phyloseq)
+  require(dplyr)
+  ## Retain only the access numbers
+  otu$X.OTU.ID = as.vector(otu$X.OTU.ID)
+  splitted = strsplit(otu$X.OTU.ID, '_')
+  ncbi = list()
+  for (i in seq_along(splitted)) {
+    ncbi[[i]] = paste(splitted[[i]][1], splitted[[i]][2], sep = '_')
+  }
+  ncbi = unlist(ncbi)
+  otu$X.OTU.ID = ncbi
+  
+  ## Categorize in: low, intermediate, high 
+  high = clin[which(clin$Var > 6),]
+  low = clin[which(clin$Var < 4),]
+  high$Var = "High"
+  low$Var = "Low"
+  clinics = rbind(high, low)
+  clinics = arrange(clinics, X.SampleID)
+  clinics = data_frame(clinics)
+  otu = data_frame(otu)
+  ## Phyloseq format
+  clinics <- clinics %>%
+    tibble::column_to_rownames("X.SampleID") 
+  
+  otu <- otu %>%
+    tibble::column_to_rownames("X.OTU.ID") 
+  
+  tax_mat <- as.matrix(taxonomyTable)
+  otu_mat <- as.matrix(otu)
+  
+  # Make the main phyloseq object
+  OTU = otu_table(otu_mat, taxa_are_rows = TRUE)
+  TAX = tax_table(tax_mat)
+  samples = sample_data(clinics)
+  BV_phyloseq <- phyloseq(OTU, TAX, samples)
+  
+  saveRDS(BV_phyloseq, file = paste0(path,id,"_phyloseq.rds"))
+  return(BV_phyloseq)
+}
+
+get.TaxID.Sriniv = function(otu){
+  # Retain names for each OTU.Keeping us with a vector containing only the name.
+  otu$X.OTU.ID = as.vector(otu$X.OTU.ID)
+  ncbi = as.vector(otu$X.OTU.ID)
+  # Convert Names to taxid. We hae to modify this fnct cause in Amstel have more than 1 id cause we havnt humber acces.
+  taxid = list()
+  for (j in seq_along(ncbi)) {
+    res = entrez_search(db = "nucleotide", term = ncbi[j])
+    esums = entrez_summary(db = "nucleotide", id = res$ids)
+    print(ncbi[j])
+    taxid[[j]] = extract_from_esummary(esums, "taxid")
+    taxid[[j]] = taxid[[j]][[1]]
+    print(taxid[[j]])
+  }
+  taxid = unlist(taxid)
+  return(taxid)
+}
+
+get.phylo.Sriniv = function(otu, clin, taxonomyTable,target,path,){
+  require(phyloseq)
+  require(dplyr)
+  ## Categorize in: low, intermediate, high 
+  clin$X.SampleID = paste0("X",clin$X.SampleID)
+  
+  if (target == "Nugent"){
+    clin <- subset( clin, select = -Amsel )
+    high = clin[which(clin$Nugent > 6),]
+    low = clin[which(clin$Nugent < 4),]
+    high$Nugent = "High"
+    low$Nugent = "Low"
+    clinics = rbind(high, low)
+    clinics = arrange(clinics, X.SampleID)
+  } else if (target == "Amsel"){
+    clin <- subset( clin, select = -Nugent )
+    clinics = clin[-1,]
+  }
+  clinics = data_frame(clinics)
+  otu = data_frame(otu)
+  
+  ## Phyloseq format
+  clinics <- clinics %>%
+    tibble::column_to_rownames("X.SampleID") 
+  
+  otu <- otu %>%
+    tibble::column_to_rownames("X.OTU.ID") 
+  
+  tax_mat <- as.matrix(taxonomyTable)
+  otu_mat <- as.matrix(otu)
+  
+  # Make the main phyloseq object
+  OTU = otu_table(otu_mat, taxa_are_rows = TRUE)
+  TAX = tax_table(tax_mat)
+  samples = sample_data(clinics)
+  BV_phyloseq <- phyloseq(OTU, TAX, samples)
+  
+  saveRDS(BV_phyloseq, file = paste0(path,"Sriniv_phyloseq.rds"))
+  return(BV_phyloseq)
+}
+
 
 phy.aglomerate = function(phyobject, rank){
   require(phyloseq)

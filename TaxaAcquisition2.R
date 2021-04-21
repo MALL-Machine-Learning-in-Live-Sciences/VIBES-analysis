@@ -4,8 +4,11 @@ path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/"
 #path = "projects/Entropy/data/"
 otu = read.delim2(paste0(path,"otutable-Amsel.txt" ), header = T, sep = '\t')
 clin = read.delim2(paste0(path,"task-amsel.txt"), header = T, sep = '\t')
-x = c("phyloseq", "data.table", "rentrez","taxnomizr", "dplyr", "tibble")
-lapply(x, require, character.only = TRUE)
+# Required libraries
+library(phyloseq)
+library(data.table)
+library(rentrez)
+library(taxonomizr)
 prepareDatabase('accessionTaxa.sql')
 
 
