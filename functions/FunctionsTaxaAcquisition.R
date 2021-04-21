@@ -119,27 +119,29 @@ get.TaxID.Amsel = function(otu){
   taxid = unlist(taxid)
   return(taxid)
 }
-
-get.phylo.Amsel = function(otu, clin, taxonomyTable,path, id){
+target = "Nugent"
+get.phylo.Amsel = function(otu, clin, taxonomyTable,target,path, id){
   require(phyloseq)
   require(dplyr)
-  ## Retain only the access numbers
-  otu$X.OTU.ID = as.vector(otu$X.OTU.ID)
-  splitted = strsplit(otu$X.OTU.ID, '_')
-  ncbi = list()
-  for (i in seq_along(splitted)) {
-    ncbi[[i]] = paste(splitted[[i]][1], splitted[[i]][2], sep = '_')
-  }
-  ncbi = unlist(ncbi)
-  otu$X.OTU.ID = ncbi
-  
   ## Categorize in: low, intermediate, high 
-  high = clin[which(clin$Var > 6),]
-  low = clin[which(clin$Var < 4),]
-  high$Var = "High"
-  low$Var = "Low"
-  clinics = rbind(high, low)
-  clinics = arrange(clinics, X.SampleID)
+  clin$X.SampleID = paste0("X",clin$X.SampleID)
+  
+  if (target == "Nugent"){
+    clin <- subset( clin, select = -Amsel )
+    high = clin[which(clin$Nugent > 6),]
+    low = clin[which(clin$Nugent < 4),]
+    high$Nugent = "High"
+    low$Nugent = "Low"
+    clinics = rbind(high, low)
+    clinics = arrange(clinics, X.SampleID)
+  } else if (target == "Amsel"){
+    
+  }
+  
+
+  #Remove NA and 
+
+
   clinics = data_frame(clinics)
   
   ## Phyloseq format
