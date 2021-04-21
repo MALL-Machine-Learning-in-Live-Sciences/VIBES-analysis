@@ -13,7 +13,6 @@ x = c("phyloseq", "data.table", "rentrez", "taxnomizr", "dplyr", "tibble")
 lapply(x, require, character.only = TRUE)
 
 path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/"
-project ="BV"
 prepareDatabase('accessionTaxa.sql')
 
 # In/out paths
@@ -74,5 +73,5 @@ taxTable$Rank5 = replace(taxTable$Rank5, taxTable$Rank5 == 'f__NA', 'f__')
 taxTable$Rank6 = replace(taxTable$Rank6, taxTable$Rank6 == 'g__NA', 'g__')
 taxTable$Rank7 = replace(taxTable$Rank7, taxTable$Rank6 == 's__NA', 's__')
 
-saveRDS(taxTable, file = paste0(path,"TaxonomyTable.rds" ))
+saveRDS(taxTable, file = paste0(path,"TaxonomyTableNugent.rds" ))
 

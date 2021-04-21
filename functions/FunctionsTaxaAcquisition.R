@@ -120,4 +120,46 @@ get.TaxID.Amsel = function(otu){
   return(taxid)
 }
 
+get.phylo.Amsel = function(otu, clin, taxonomyTable,path, id){
+  require(phyloseq)
+  require(dplyr)
+  ## Retain only the access numbers
+  otu$X.OTU.ID = as.vector(otu$X.OTU.ID)
+  splitted = strsplit(otu$X.OTU.ID, '_')
+  ncbi = list()
+  for (i in seq_along(splitted)) {
+    ncbi[[i]] = paste(splitted[[i]][1], splitted[[i]][2], sep = '_')
+  }
+  ncbi = unlist(ncbi)
+  otu$X.OTU.ID = ncbi
+  
+  ## Categorize in: low, intermediate, high 
+  high = clin[which(clin$Var > 6),]
+  low = clin[which(clin$Var < 4),]
+  high$Var = "High"
+  low$Var = "Low"
+  clinics = rbind(high, low)
+  clinics = arrange(clinics, X.SampleID)
+  clinics = data_frame(clinics)
+  
+  ## Phyloseq format
+  clinics <- clinics %>%
+    tibble::column_to_rownames("X.SampleID") 
+  
+  otu <- otu %>%
+    tibble::column_to_rownames("X.OTU.ID") 
+  
+  tax_mat <- as.matrix(taxonomyTable)
+  otu_mat <- as.matrix(otu)
+  
+  # Make the main phyloseq object
+  OTU = otu_table(otu_mat, taxa_are_rows = TRUE)
+  TAX = tax_table(tax_mat)
+  samples = sample_data(clinics)
+  BV_phyloseq <- phyloseq(OTU, TAX, samples)
+  
+  saveRDS(BV_phyloseq, file = paste0(path,id,"_phyloseq.rds"))
+  return(BV_phyloseq)
+}
+
 
