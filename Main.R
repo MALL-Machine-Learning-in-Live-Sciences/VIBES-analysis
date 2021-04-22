@@ -29,7 +29,9 @@ BV_Gen_C = get.dataset(pruned_genus_phy_C)
 
 # 4. Data Processing 
 ## Split in train/test
-train_test = split.data(data = BV_Gen_C, seed = 123, pctg = 0.90,path = "projects/Entropy/data/",project = "BV", id = "Genus")
+train_test = split.data(data = BV_Gen_C, seed = 123, pctg = 0.90,
+                        path = "projects/Entropy/data/",project = "Ravel", id = "Genus_AC")# project = Ravel or Sriniv. id = Rank and type of data
+
 train = train_test[[1]]
 test = train_test[[2]]
 table(test$target)

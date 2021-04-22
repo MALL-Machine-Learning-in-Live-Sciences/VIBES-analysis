@@ -23,7 +23,7 @@ ncbi = as.vector(otu$X.OTU.ID)
 # Convert Names to taxid. We hae to modify this fnct cause in Amstel have more than 1 id cause we havnt humber acces.
 taxid = list()
 for (j in seq_along(ncbi)) {
-  res = entrez_search(db = "nucleotide", term = ncbi[j])
+  res = entrez_search(db = "nucleotide", term = ncbi[j]) #paste0(ncbi[j],"[ORGN]")
   esums = entrez_summary(db = "nucleotide", id = res$ids)
   print(ncbi[j])
   taxid[[j]] = extract_from_esummary(esums, "taxid")

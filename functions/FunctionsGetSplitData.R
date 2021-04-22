@@ -22,6 +22,7 @@ norm.dataset = function(data){
 
 
 split.data = function(data,seed = 123, pctg = 0.90, path, project, id){ #set a seed to reproducibility and  % of train/test
+  #project = Ravel or Sriniv (Nugent or Amsel in Sriniv) | id = C o AR
   require(caret)
   set.seed(seed)
   tr_size <- floor(pctg * nrow(data))
