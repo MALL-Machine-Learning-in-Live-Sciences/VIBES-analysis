@@ -9,28 +9,35 @@ library(phyloseq)
 library(data.table)
 library(rentrez)
 library(taxonomizr)
+library(taxize)
 prepareDatabase('accessionTaxa.sql')
 
-
-otu<-otu[!(otu$X.OTU.ID=="Prevotella genogroup 3" | otu$X.OTU.ID=="Prevotella genogroup 4" | 
-              otu$X.OTU.ID=="Prevotella genogroup 7" | otu$X.OTU.ID=="Prevotella genogroup 6"|
-              otu$X.OTU.ID=="Veillonella atypica/parvula"),]
-
-
 # Retain names for each OTU.Keeping us with a vector containing only the name.
-otu$X.OTU.ID = as.vector(otu$X.OTU.ID)
 ncbi = as.vector(otu$X.OTU.ID)
-# Convert Names to taxid. We hae to modify this fnct cause in Amstel have more than 1 id cause we havnt humber acces.
 taxid = list()
 for (j in seq_along(ncbi)) {
-  res = entrez_search(db = "nucleotide", term = ncbi[j]) #paste0(ncbi[j],"[ORGN]")
-  esums = entrez_summary(db = "nucleotide", id = res$ids)
-  print(ncbi[j])
-  taxid[[j]] = extract_from_esummary(esums, "taxid")
-  taxid[[j]] = taxid[[j]][[1]]
-  print(taxid[[j]])
+  res = get_ids(ncbi[j],db = "ncbi")
+  #print(ncbi[j])
+  taxid[[j]] = res$ncbi[[1]]
+  #print(taxid[[j]])
 }
 taxid = unlist(taxid)
+# We have search manually taxid for corrupt/uncomplete OTUs 
+kk = cbind(otu, taxid)
+# Extract names from OTUs that have NA tax id
+a = subset(kk,is.na(taxid))
+# Extract index from data
+index = rownames(a)
+index = as.numeric(index)
+# Make by hand a vector  with taxids(we coudnt find 2 of them)
+vector = as.character(c("699240", "84111", NA, "838", "39948",
+                        "884684", "165779", "838", "1301", NA,
+                        "836", "838","1350","1301", "838", "29465",
+                        "2129", "201174"))
+# Replace NAs with taxIDs
+taxid = replace(x = taxid, list = index, values = vector)
+kk$taxid = v_taxid2 
+taxid2 = kk$taxid
 
 # Convert taxid to taxonomy table
 taxa = list()
@@ -63,8 +70,6 @@ taxTable$Rank6 = replace(taxTable$Rank6, taxTable$Rank6 == 'g__NA', 'g__')
 taxTable$Rank7 = replace(taxTable$Rank7, taxTable$Rank6 == 's__NA', 's__')
 
 saveRDS(taxTable, file = paste0(path,"TaxonomyTableSriniv.rds" ))
-
-
 
 
 

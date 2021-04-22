@@ -42,6 +42,7 @@ for (j in seq_along(ncbi)) {
   esums = entrez_summary(db = "nucleotide", id = res$ids)
   print(ncbi[j])
   taxid[[j]] = extract_from_esummary(esums, "taxid")
+  print(taxid[[j]])
 }
 taxid = unlist(taxid)
 
