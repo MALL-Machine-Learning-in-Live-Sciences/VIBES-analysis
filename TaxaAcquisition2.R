@@ -36,8 +36,8 @@ vector = as.character(c("699240", "84111", NA, "838", "39948",
                         "2129", "201174"))
 # Replace NAs with taxIDs
 taxid = replace(x = taxid, list = index, values = vector)
-kk$taxid = v_taxid2 
-taxid2 = kk$taxid
+kk$taxid = taxid
+
 
 # Convert taxid to taxonomy table
 taxa = list()
