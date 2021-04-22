@@ -39,7 +39,7 @@ taxid = replace(x = taxid, list = index, values = vector)
 kk$taxid = taxid
 
 
-# Convert taxid to taxonomy table
+# Convert taxid to taxonomy tables
 taxa = list()
 for (t in seq_along(taxid)) {
   tt = getTaxonomy(
