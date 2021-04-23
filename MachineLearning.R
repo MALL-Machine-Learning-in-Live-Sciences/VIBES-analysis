@@ -33,6 +33,7 @@ index = as.numeric(tail(rownames(models_index), 1))
 best = getLearnerModel(modelos_FCBF$dataset$classif.randomForest.tuned[[index]])
 # Get the featureas that we ll have to extract from test
 features = best$features
+#pathw = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/test//Ravel_Genus_C_test.rds"
 path2 = "projects/Entropy/data/test/Ravel_Genus_C_test.rds"
 test = readRDS(path2)
 target = test$target
