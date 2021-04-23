@@ -23,6 +23,7 @@ modelos_FCBF = getBMRModels(bmrs$Bmr_Ravel_Genus_C_train_FCBF_8.rds)
 resFCBF = as.data.frame(bmrs$Bmr_Ravel_Genus_C_train_FCBF_8.rds)
 
 # Check the model with best results(we asume here that we have only 1 algorithm)
+# We can change this according to algorithms used
 which.max(resFCBF$auc); which.max(resFCBF$acc); which.min(resFCBF$mmce)
 models_index = resFCBF[
   order( resFCBF[,5], resFCBF[,4],  resFCBF[,6] ),
@@ -34,8 +35,6 @@ best = getLearnerModel(modelos_FCBF$dataset$classif.randomForest.tuned[[index]])
 features = best$features
 path2 = "projects/Entropy/data/test/Ravel_Genus_C_test.rds"
 test = readRDS(path2)
-source("git/Entropy/functions/FunctionsGetSplitData.R")
-test = norm.dataset(test)
 target = test$target
 test = test[features]
 test = cbind(test, target)
@@ -46,5 +45,6 @@ test_task = normalizeFeatures(
   cols = NULL,
   range = c(0, 1),
   on.constant = "quiet")
-
 prediccion = predict(best, task= test_task)
+saveRDS(object = bmrs , file = "projects/Entropy/data/benchmarks/Ravel_Genus_C_Benchmarks.rds")
+saveRDS(object = best, file = "projects/Entropy/data/models/RF_8.rds")

@@ -26,6 +26,8 @@ Ravel_Genus_C = get.dataset(Ravel_Genus_C)
 
 
 # 4. Data Processing 
+## Data normalization 
+Ravel_Genus_C = norm.dataset(Ravel_Genus_C)
 ## Split in train/test
 Ravel_Genus_C_train_test = split.data(data = Ravel_Genus_C, seed = 123, pctg = 0.90,
                         path = "projects/Entropy/data/",project = "Ravel", id = "Genus_C")# project = Ravel or Sriniv. id = Rank and type of data
@@ -34,8 +36,7 @@ Ravel_Genus_C_train = Ravel_Genus_C_train_test[[1]]
 Ravel_Genus_C_test = Ravel_Genus_C_train_test[[2]]
 table(Ravel_Genus_C_test$target)
 
-## Data normalization (Remember to do this step with the test)
-Ravel_Genus_C_train = norm.dataset(Ravel_Genus_C_train)
+
 
 # 5. FS
 ## Cluster(With counts only)
