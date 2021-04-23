@@ -59,9 +59,4 @@ for (i in seq_along(fs)) {
   saveRDS(fs[[i]], file = paste0("projects/Entropy/data/train/Ravel_Genus_C_train","_",names(fs[i]),"_",ncol(fs[[i]])-1,".rds"))
 }
 
-# 6. ML
-## Executing machine learning with desirable data
-list.files(path = "projects/Entropy/data/train/")
-bmr = ML.exec(dataset = train.CLUST)
-
 
