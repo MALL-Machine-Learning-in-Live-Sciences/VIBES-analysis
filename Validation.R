@@ -19,6 +19,7 @@ vn = features[,1]
 #Extract a subset from second phyloseq with only features from the model
 Sriniv_sub <- subset_taxa(Sriniv, Rank6 %in% vg) # We have 7 from 8 features
 tax_table(Sriniv_sub)
+
 #We have to train again the model without this feature
 FCBF = readRDS("projects/Entropy/data/train/Ravel_Genus_C_train_FCBF_8.rds")
 FCBF <- subset( FCBF, select = -NR_028773.1 )
@@ -73,7 +74,6 @@ test.Sriniv = t(test.Sriniv)
 test.Sriniv = as.data.frame(cbind(test.Sriniv, target =targets ))
 
 # Type numeric
-test.Sriniv = norm.dataset(test.Sriniv)
 test.Sriniv$NR_044929.2 = as.numeric(test.Sriniv$NR_044929.2)
 test.Sriniv$NR_113356.1 = as.numeric(test.Sriniv$NR_113356.1)
 test.Sriniv$NR_117757.1 = as.numeric(test.Sriniv$NR_117757.1)
@@ -81,7 +81,7 @@ test.Sriniv$NR_118377.1 = as.numeric(test.Sriniv$NR_118377.1)
 test.Sriniv$NR_036982.1 = as.numeric(test.Sriniv$NR_036982.1)
 test.Sriniv$NR_041796.1 = as.numeric(test.Sriniv$NR_041796.1)
 test.Sriniv$NR_113093.1 = as.numeric(test.Sriniv$NR_113093.1)
-
+test.Sriniv = norm.dataset(test.Sriniv)
 
 # Make task
 test_task = makeClassifTask(data = test.Sriniv, target = "target")
@@ -92,10 +92,7 @@ test_task = normalizeFeatures(
   range = c(0, 1),
   on.constant = "quiet")
 
-prediccion = predict(best, task= test_task)
-
-View(prediccion$data)
-
-
-
-
+prediccion <- predict(best, task= test_task, type = "prob")
+library(caret)
+table(test.Sriniv$target,prediccion$data$response)
+confusionMatrix(data = prediccion$data$response, reference = as.factor(test.Sriniv$target))

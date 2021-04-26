@@ -2,8 +2,9 @@
 ML.exec = function(dataset){
   require(mlr)
   require(methods)
-  #require(parallel)
-  #require(parallelMap)
+  require(parallel)
+  require(parallelMap)
+  cores = detectCores()
   task = makeClassifTask(data = dataset, target = 'target')
   task = normalizeFeatures(
     task,
@@ -60,16 +61,15 @@ ML.exec = function(dataset){
   l5 = makeLearner("classif.gbm", predict.type = "prob")
   lrn_GBM =  makeTuneWrapper(learner = l5, resampling = inner, measures = auc, par.set = psGBM, control = ctrl, show.info = T)
   
-  #learners = list(lrn_RF, lrn_glmnet, lrn_GB, lrn_KSVM, lrn_GBM)
-  learners = list(lrn_RF) 
+  learners = list(lrn_RF, lrn_glmnet, lrn_GB, lrn_KSVM, lrn_GBM)
   # Outer
   outer = makeResampleDesc('RepCV' , reps = 5, folds = 3 , stratify = T)
 
   # Benchmarking
   #parallelStartSocket(cpus = detectCores()*0.5, level = 'mlr.tuneParams')
-  #parallelStartMulticore(detectCores()*0.5 , level = 'mlr.tuneParams')
+  parallelStartMulticore(cores , level = 'mlr.tuneParams')
   bmr = benchmark(learners, task, outer, measures =  list(acc,auc,mmce), show.info = T, models = T)
-  #parallelStop()
+  parallelStop()
   return(bmr)
 }
 

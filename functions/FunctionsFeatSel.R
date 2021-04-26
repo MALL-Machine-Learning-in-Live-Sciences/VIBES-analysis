@@ -1,25 +1,20 @@
 # Functions Feature Selection 
 
-KW.FS = function(data, fs.type = 'kruskal.test', nfeat){
-  
-  stopifnot('target' %in% names(data))
-  
+KW.FS = function(data, fs.type = 'kruskal.test', pctge = NULL, thold = NULL){
   require(mlr)
   task = makeClassifTask(data = data, target = 'target')
-  
-  tasks = lapply(nfeat, function(x) filterFeatures(task, method = fs.type, abs = x))
-  
-  for (i in 1:length(nfeat)) {
-    tasks[[i]]$task.desc$id =  paste(fs.type, ncol(tasks[[i]]$env$data) - 1 , sep = "_")
+  fv = generateFilterValuesData(task, method = fs.type)
+  print(fv)
+  if (is_null(pctge)){
+    filtered.task = filterFeatures(task, fval = fv, threshold = thold)
+    filtered.data = filtered.task$env$data
+  } else if(is_null(thold)){
+    filtered.task = filterFeatures(task, fval = fv, perc = pctge)
+    filtered.data = filtered.task$env$data
+  }else{
+    print("Uncorrect format, choose pctge or thold")
   }
-  
-  t = list()
-  for (i in 1:length(tasks)) {
-    t[[i]] = tasks[[i]]$env$data
-    names(t)[[i]] = paste(fs.type, nfeat[i], sep = '_')
-  }
-  
-  return(t[[1]])
+  return(filtered.data)
 }
 
 FCBF.FS = function(data, thold){
