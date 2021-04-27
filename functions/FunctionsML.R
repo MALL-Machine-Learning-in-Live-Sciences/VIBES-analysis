@@ -53,7 +53,7 @@ ML.exec = function(dataset){
   
   # GBM
   psGBM = makeParamSet(makeDiscreteParam("distribution", values = "bernoulli"),
-                       makeIntegerParam("n.trees", lower = 100, upper = 1000), 
+                       makeIntegerParam("n.trees", lower = 100, upper = 800), 
                        makeIntegerParam("interaction.depth", lower = 2, upper = 10),
                        makeIntegerParam("n.minobsinnode", lower = 10, upper = 50),
                        makeNumericParam("shrinkage",lower = 0.50, upper = 1),

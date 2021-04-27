@@ -82,11 +82,18 @@ CLUST.FS = function(data){
   
   #Dinamic tree
   dtree = cutreeDynamic(dendro = hc1, cutHeight = 20, minClusterSize = 3,method = "tree")
+  # Extract names for plots
+  kk = as.logical(dtree)
+  fs_names = colnames(datos)
+  fs_names = fs_names[kk]
+  # Extract names for plots
   colnames(datos) = as.character(dtree)
   prefixes = unique(sub("\\..*", "", colnames(datos)))
   data_clustered = as.data.frame(sapply(prefixes, function(x) rowSums(datos[,startsWith(colnames(datos), x)])))
   data_clustered = select(data_clustered, -("0"))
   colnames(data_clustered) <- paste("Clu", colnames(data_clustered), sep = "_")
   data_clustered = as.data.frame(cbind(data_clustered, target = data$target))
+  #Save names for plots
+  #saveRDS(object = fs_names, file = "projects/Entropy/data/CLUST_AR_names.rds")
   return(data_clustered)
 }
