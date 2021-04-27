@@ -19,13 +19,14 @@ ML.exec = function(dataset){
   
   # Random Forest
   psRF<-makeParamSet(
-    makeDiscreteParam("mtry", values = c(round(sqrt(ncol(task$env$data)))-2,
-                                         round(sqrt(ncol(task$env$data)))-1,
+    makeDiscreteParam("mtry", values = c(round(sqrt(ncol(task$env$data)))-1,
                                          round(sqrt(ncol(task$env$data))),
                                          round(sqrt(ncol(task$env$data)))+1,
-                                         round(sqrt(ncol(task$env$data)))+2)),
+                                         round(sqrt(ncol(task$env$data)))+2,
+                                         round(sqrt(ncol(task$env$data)))+3,
+                                         round(sqrt(ncol(task$env$data)))+4)),
     makeDiscreteParam("ntree", values= 1000L),
-    makeDiscreteParam("nodesize", values= c(1:3))
+    makeDiscreteParam("nodesize", values= c(1:10))
   )
   l1<-makeLearner("classif.randomForest", predict.type = "prob")
   lrn_RF<-makeTuneWrapper(l1,  resampling = inner, par.set = psRF, measures = auc, control=ctrl,  show.info = T)
@@ -41,8 +42,9 @@ ML.exec = function(dataset){
   # xGboost
   psGB = makeParamSet(makeNumericParam("eta", lower = 0, upper = 1),
                       makeNumericParam("lambda", lower = 0, upper = 200),
-                      makeIntegerParam("max_depth", lower = 1, upper = 20))
-  l3 = makeLearner("classif.xgboost", predict.type = "prob", nrounds = 10)
+                      makeIntegerParam("max_depth", lower = 1, upper = 20),
+                      makeDiscreteParam("eval_metric", "logloss"))
+  l3 = makeLearner("classif.xgboost", predict.type = "prob", nrounds=10)
   lrn_GB = makeTuneWrapper(learner = l3, resampling = inner, measures = auc, par.set = psGB, control = ctrl, show.info = T)
   
   # SVM
@@ -61,7 +63,8 @@ ML.exec = function(dataset){
   l5 = makeLearner("classif.gbm", predict.type = "prob")
   lrn_GBM =  makeTuneWrapper(learner = l5, resampling = inner, measures = auc, par.set = psGBM, control = ctrl, show.info = T)
   
-  learners = list(lrn_RF, lrn_glmnet, lrn_GB, lrn_KSVM, lrn_GBM)
+  learners = list(lrn_RF, lrn_glmnet, lrn_KSVM, lrn_GB, lrn_GBM)
+  #learners = (lrn_KSVM)
   # Outer
   outer = makeResampleDesc('RepCV' , reps = 5, folds = 3 , stratify = T)
 

@@ -2,9 +2,13 @@ require(ggplot2)
 require(viridis)
 library(ggvenn)
 require(plotly)
+require(ggpubr)
 
 ## Fig1
 # A) PLOTS COUNTS VS RELA ABUN
+
+
+
 comp_C = ggplot(Counts, aes(x = FS, y = AUC, color = Algorithm, shape = Algorithm)) +
   geom_point() +
   geom_line(aes(group = Algorithm, color = Algorithm))+
@@ -36,9 +40,9 @@ for (i in seq_along(list_C)){
   list_C[[i]] = list_C[[i]][!list_C[[i]] %in% remove]
 }
 library("ggVennDiagram")
-venn_C  = ggVennDiagram(list_C,color = viridis(1),lty = 1, label_alpha = 0, label= "count" ) 
+venn_C  = ggVennDiagram(list_C,color = viridis(1),lty = 1, label_alpha = 0.5, label= "count" ) 
 venn_C  = venn_C  + scale_fill_gradient(high="#21908CFF",low = "#FDE725FF")
-venn_C  = venn_C  + labs(fill = "Features")
+venn_C  = venn_C  + labs(fill = "Nº Features")
 
 venn_C
 
@@ -53,14 +57,31 @@ names(list_AR) = names
 for (i in seq_along(list_AR)){
   list_AR[[i]] = list_AR[[i]][!list_AR[[i]] %in% remove]
 }
-venn_AR  = ggVennDiagram(list_AR,color = viridis(1),lty = 1, label_alpha = 0, label= "count" ) 
+venn_AR  = ggVennDiagram(list_AR,color = viridis(1),lty = 1, label_alpha = 0.5, label= "count" ) 
 venn_AR  = venn_AR  + scale_fill_gradient(high="#21908CFF",low = "#FDE725FF")
-venn_AR  = venn_AR  + labs(fill = "Features")
+venn_AR  = venn_AR  + labs(fill = "Nº Features")
 
 venn_AR
 
 
 # C) Comparacion de los mejores modelos de cada tipo de datos
+
+
+j =  ggplot(mod, aes(x = FS, y = AUC, color = FS))+
+  geom_jitter()+
+  geom_boxplot(aes(fill = FS), notch = F)+
+  scale_fill_manual(values = viridis(4))+
+  theme_light()+
+  theme(axis.text.x = element_blank(), axis.title.x = element_blank(),
+        axis.text=element_text(size=20), axis.title.y = element_text(size = 30),
+        axis.ticks = element_blank(),
+        legend.title=element_text(size=25), 
+        legend.text=element_text(size=19))+
+  stat_compare_means(comparisons = my_comparaisons,bracket.size = 0.8,  size = 8)
+
+
+
+j
 
 
 # D) Variable importance del mejor modelo en general
@@ -79,11 +100,6 @@ venn_AR
 
 
 
-
-
-
-
- 
 
 
 
