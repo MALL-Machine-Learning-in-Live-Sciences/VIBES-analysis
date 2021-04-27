@@ -2,6 +2,7 @@ require(ggplot2)
 require(viridis)
 library(ggvenn)
 require(plotly)
+
 ## Fig1
 # A) PLOTS COUNTS VS RELA ABUN
 comp_C = ggplot(Counts, aes(x = FS, y = AUC, color = Algorithm, shape = Algorithm)) +
@@ -60,6 +61,8 @@ venn_AR
 
 
 # C) Comparacion de los mejores modelos de cada tipo de datos
+
+
 # D) Variable importance del mejor modelo en general
 
 ## Fig2
