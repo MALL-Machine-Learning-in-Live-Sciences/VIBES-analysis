@@ -3,8 +3,8 @@ setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data')
 path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/train/"
 source("/home/ulc/co/dfe/git/Entropy/functions/FunctionsML.R")
 #path = "projects/Entropy/data/train/"
-#pattern = "Ravel_Genus_AR"
-pattern = "Ravel_Genus_C"
+pattern = "Ravel_Genus_AR"
+#pattern = "Ravel_Genus_C"
 l = list.files(path, pattern = pattern)
 
 ldata = list()
@@ -19,5 +19,4 @@ for (i in seq_along(ldata)){
 #Rename Benchmarks by data input
 namesbmr <- paste("Bmr_",l, sep="")
 names(bmrs) = namesbmr
-
-saveRDS(object = bmrs , file = paste0("/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/benchmarks/",pattern,"Benchmarks.rds"))
+saveRDS(object = bmrs , file = paste0("projects/Entropy/data/benchmarks/",pattern,"_Benchmarks.rds"))

@@ -4,7 +4,7 @@ ML.exec = function(dataset){
   require(methods)
   require(parallel)
   require(parallelMap)
-  cores = detectCores()
+  cores = 4
   task = makeClassifTask(data = dataset, target = 'target')
   task = normalizeFeatures(
     task,
@@ -41,7 +41,6 @@ ML.exec = function(dataset){
   
   # xGboost
   psGB = makeParamSet(makeNumericParam("eta", lower = 0, upper = 1),
-                      makeNumericParam("lambda", lower = 0, upper = 200),
                       makeIntegerParam("max_depth", lower = 1, upper = 20),
                       makeDiscreteParam("eval_metric", "logloss"))
   l3 = makeLearner("classif.xgboost", predict.type = "prob", nrounds=10)
@@ -57,8 +56,6 @@ ML.exec = function(dataset){
   psGBM = makeParamSet(makeDiscreteParam("distribution", values = "bernoulli"),
                        makeIntegerParam("n.trees", lower = 100, upper = 800), 
                        makeIntegerParam("interaction.depth", lower = 2, upper = 10),
-                       makeIntegerParam("n.minobsinnode", lower = 10, upper = 50),
-                       makeNumericParam("shrinkage",lower = 0.50, upper = 1),
                        makeNumericParam("bag.fraction", lower = 0.80, upper = 0.80))
   l5 = makeLearner("classif.gbm", predict.type = "prob")
   lrn_GBM =  makeTuneWrapper(learner = l5, resampling = inner, measures = auc, par.set = psGBM, control = ctrl, show.info = T)
