@@ -38,6 +38,7 @@ library("ggVennDiagram")
 venn_C  = ggVennDiagram(list_C,color = viridis(1),lty = 1, label_alpha = 0, label= "count" ) 
 venn_C  = venn_C  + scale_fill_gradient(high="#21908CFF",low = "#FDE725FF")
 venn_C  = venn_C  + labs(fill = "Features")
+
 venn_C
 
 CLUST_AR = readRDS("projects/Entropy/data/CLUST_AR_names.rds")
@@ -54,6 +55,7 @@ for (i in seq_along(list_AR)){
 venn_AR  = ggVennDiagram(list_AR,color = viridis(1),lty = 1, label_alpha = 0, label= "count" ) 
 venn_AR  = venn_AR  + scale_fill_gradient(high="#21908CFF",low = "#FDE725FF")
 venn_AR  = venn_AR  + labs(fill = "Features")
+
 venn_AR
 
 
