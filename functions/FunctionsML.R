@@ -64,7 +64,7 @@ ML.exec = function(dataset){
   lrn_GBM =  makeTuneWrapper(learner = l5, resampling = inner, measures = auc, par.set = psGBM, control = ctrl, show.info = T)
   
   learners = list(lrn_RF, lrn_glmnet, lrn_KSVM, lrn_GB, lrn_GBM)
-  #learners = (lrn_KSVM)
+  #learners = (lrn_GB)
   # Outer
   outer = makeResampleDesc('RepCV' , reps = 5, folds = 3 , stratify = T)
 
