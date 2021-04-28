@@ -2,13 +2,14 @@
 
 KW.FS = function(data, fs.type = 'kruskal.test', pctge = NULL, thold = NULL){
   require(mlr)
+  require(testthat)
   task = makeClassifTask(data = data, target = 'target')
   fv = generateFilterValuesData(task, method = fs.type)
   print(fv)
-  if (is_null(pctge)){
+  if (is.null(pctge)){
     filtered.task = filterFeatures(task, fval = fv, threshold = thold)
     filtered.data = filtered.task$env$data
-  } else if(is_null(thold)){
+  } else if(is.null(thold)){
     filtered.task = filterFeatures(task, fval = fv, perc = pctge)
     filtered.data = filtered.task$env$data
   }else{
@@ -81,7 +82,7 @@ CLUST.FS = function(data){
   plot(hc1, cex = 0.6, hang = -1)
   
   #Dinamic tree
-  dtree = cutreeDynamic(dendro = hc1, cutHeight = 20, minClusterSize = 3,method = "tree")
+  dtree = cutreeDynamic(dendro = hc1, cutHeight = 25, minClusterSize = 3,method = "tree")
   # Extract names for plots
   kk = as.logical(dtree)
   fs_names = colnames(datos)
@@ -94,6 +95,6 @@ CLUST.FS = function(data){
   colnames(data_clustered) <- paste("Clu", colnames(data_clustered), sep = "_")
   data_clustered = as.data.frame(cbind(data_clustered, target = data$target))
   #Save names for plots
-  #saveRDS(object = fs_names, file = "projects/Entropy/data/CLUST_AR_names.rds")
+  #saveRDS(object = fs_names, file = "projects/Entropy/data/CLUST_C_names.rds")
   return(data_clustered)
 }

@@ -16,7 +16,7 @@ Ravel_phyloseq = get.phylo.Ravel(otu = otu, clin = clin, path = path, taxonomyTa
 Ravel_Genus_C = phy.aglomerate(phyobject = Ravel_phyloseq, rank = "Rank6")
 
 ## Here we can choose whether to continue with the counts or their relative abundance. AR as comment
-# Ravel_Genus_AR = relat.abun(Ravel_Genus_C) 
+#Ravel_Genus_AR = relat.abun(Ravel_Genus_C) 
   
 Ravel_Genus_C = prune.OTUs(phyobject = Ravel_Genus_C, Rank = "Rank6", pctg = 0.05, count = 0, vari = 0 )
 # Ravel_Genus_AR = prune.OTUs(phyobject = Ravel_Genus_AR, Rank = "Rank6", pctg = 0.05, count = 0, vari = 0 )

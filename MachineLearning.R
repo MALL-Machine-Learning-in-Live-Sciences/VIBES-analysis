@@ -1,10 +1,7 @@
-#ML CESGA
-setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data')
-path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/train/"
-source("/home/ulc/co/dfe/git/Entropy/functions/FunctionsML.R")
-#path = "projects/Entropy/data/train/"
-pattern = "Ravel_Genus_AR"
-#pattern = "Ravel_Genus_C"
+#ML 
+source("git/Entropy/functions/FunctionsML.R")
+path = "projects/Entropy/data/train/"
+pattern = "Ravel_Genus_C"
 l = list.files(path, pattern = pattern)
 
 ldata = list()
