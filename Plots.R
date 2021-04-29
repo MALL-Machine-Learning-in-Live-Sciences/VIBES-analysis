@@ -1,6 +1,6 @@
 require(ggplot2)
 require(viridis)
-library(ggvenn)
+library("ggVennDiagram")
 require(plotly)
 require(ggpubr)
 require(grid)
@@ -8,27 +8,49 @@ require(grid)
 counts = readRDS(file = "projects/Entropy/data/benchmarks/Ravel_Genus_C_Benchmarks.rds")
 ar = readRDS(file = "projects/Entropy/data/benchmarks/Ravel_Genus_AR_Benchmarks.rds")
 
-datac = as.data.frame(counts$Bmr_Ravel_Genus_C_train_LDM_40.rds)
-dldm= data.frame(FS = c("LDM", "LDM", "LDM","LDM", "LDM"),
-                   Algorithm = c("RF", "GLMNET","xGBOOST", "SVM", "GBM"),
-                   AUC = c(mean(datac$auc[1:15]),mean(datac$auc[16:30]),
-                                 mean(datac$auc[31:45]),mean(datac$auc[46:60]),
-                                 mean(datac$auc[61:75])))
-
-dataCounts = rbind(dclust, dfcbf, dkw, dldm)
-
-dataar = as.data.frame(ar$Bmr_Ravel_Genus_AR_train_LDM_39.rds)
-d2ldm= data.frame(FS = c("LDM", "LDM", "LDM","LDM", "LDM"),
-                 Algorithm = c("RF", "GLMNET","xGBOOST", "SVM", "GBM"),
-                 AUC = c(mean(dataar$auc[1:15]),mean(dataar$auc[16:30]),
-                         mean(dataar$auc[31:45]),mean(dataar$auc[46:60]),
-                         mean(dataar$auc[61:75])))
-
-dataAR = rbind(d2clust, d2fcbf, d2kw, d2ldm) 
-
 ## Fig1
-# A) PLOTS COUNTS VS RELA ABUN
+# A) PLOTS COUNTS vs AR
+# COUNTS
+dclust = as.data.frame(counts$Bmr_Ravel_Genus_C_train_CLUST_7.rds)
+dfcbf = as.data.frame(counts$Bmr_Ravel_Genus_C_train_FCBF_8.rds)
+dkw = as.data.frame(counts$Bmr_Ravel_Genus_C_train_KW_12.rds)
+dldm = as.data.frame(counts$Bmr_Ravel_Genus_C_train_LDM_40.rds)
+datal = list(dclust,dfcbf,dkw,dldm)
+nmes = c("CLUST", "FCBF", "KW","LDM")
+names(datal) =nmes
 
+
+for (i in seq_along(datal)){
+  FSnames = c(rep(names(datal[i]),5))
+  datal[[i]] = data.frame(FS =FSnames,Algorithm = c("RF", "GLMNET","xGBOOST", "SVM", "GBM"),
+                      AUC = c(mean(datal[[i]]$auc[1:15]),mean(datal[[i]]$auc[16:30]),
+                              mean(datal[[i]]$auc[31:45]),mean(datal[[i]]$auc[46:60]),
+                              mean(datal[[i]]$auc[61:75])))
+}
+
+dataCounts = rbind(datal[[1]], datal[[2]], datal[[3]], datal[[4]])
+
+# AR
+dclust2 = as.data.frame(ar$Bmr_Ravel_Genus_AR_train_CLUST_7.rds)
+dfcbf2 = as.data.frame(ar$Bmr_Ravel_Genus_AR_train_FCBF_9.rds)
+dkw2 = as.data.frame(ar$Bmr_Ravel_Genus_AR_train_KW_12.rds)
+dldm2 = as.data.frame(ar$Bmr_Ravel_Genus_AR_train_LDM_39.rds)
+datal2 = list(dclust2,dfcbf2,dkw2,dldm2)
+nmes = c("CLUST", "FCBF", "KW","LDM")
+names(datal2) =nmes
+
+for (i in seq_along(datal2)){
+  FSnames = c(rep(names(datal2[i]),5))
+  datal2[[i]] = data.frame(FS =FSnames,Algorithm = c("RF", "GLMNET","xGBOOST", "SVM", "GBM"),
+                          AUC = c(mean(datal2[[i]]$auc[1:15]),mean(datal2[[i]]$auc[16:30]),
+                                  mean(datal2[[i]]$auc[31:45]),mean(datal2[[i]]$auc[46:60]),
+                                  mean(datal2[[i]]$auc[61:75])))
+}
+
+dataAR = rbind(datal2[[1]], datal2[[2]], datal2[[3]], datal2[[4]]) 
+
+
+# PLOTS
 comp_C = ggplot(dataCounts, aes(x = AUC, y = FS, color = Algorithm, shape = Algorithm)) +
   geom_point(size = 3) +
   scale_color_manual(values = viridis(5))+
@@ -40,6 +62,7 @@ comp_C = ggplot(dataCounts, aes(x = AUC, y = FS, color = Algorithm, shape = Algo
   
 l1 <- get_legend(comp_C)
 comp_C = comp_C +theme(legend.position = "none")
+comp_C
 
 comp_AR = ggplot(dataAR, aes(x = AUC, y = FS, color = Algorithm, shape = Algorithm)) +
   geom_point(size = 3) +
@@ -51,42 +74,42 @@ comp_AR = ggplot(dataAR, aes(x = AUC, y = FS, color = Algorithm, shape = Algorit
   theme(plot.title = element_text(hjust = 0.5))
 comp_AR
 
-
-#C
-CLUST_C = readRDS("projects/Entropy/data/CLUST_C_names.rds")
+# B) PLOTS COUNTS vs AR (FEATURES)
+#Counts
+#CLUST_C = readRDS("projects/Entropy/data/CLUST_C_names.rds")
 KW_C = readRDS("projects/Entropy/data/train/Ravel_Genus_C_train_KW_12.rds")
 FCBF_C = readRDS("projects/Entropy/data/train/Ravel_Genus_C_train_FCBF_8.rds")
 LDM_C = readRDS("projects/Entropy/data/train/Ravel_Genus_C_train_LDM_40.rds")
-list_C = list(CLUST_C, names(KW_C), names(FCBF_C), names(LDM_C))
-names = c("CLUST","KW", "FCBF","LDM")
+list_C = list( names(KW_C), names(FCBF_C), names(LDM_C))
+names = c("KW", "FCBF","LDM")
 remove = "target"
 names(list_C) = names
 for (i in seq_along(list_C)){
   list_C[[i]] = list_C[[i]][!list_C[[i]] %in% remove]
 }
 #AR
-CLUST_AR = readRDS("projects/Entropy/data/CLUST_AR_names.rds")
+#CLUST_AR = readRDS("projects/Entropy/data/CLUST_AR_names.rds")
 KW_AR = readRDS("projects/Entropy/data/train/Ravel_Genus_AR_train_KW_12.rds")
 FCBF_AR = readRDS("projects/Entropy/data/train/Ravel_Genus_AR_train_FCBF_9.rds")
 LDM_AR = readRDS("projects/Entropy/data/train/Ravel_Genus_AR_train_LDM_39.rds")
-list_AR = list(CLUST_AR, names(KW_AR), names(FCBF_AR), names(LDM_AR))
+list_AR = list( names(KW_AR), names(FCBF_AR), names(LDM_AR))
 names(list_AR) = names
 for (i in seq_along(list_AR)){
   list_AR[[i]] = list_AR[[i]][!list_AR[[i]] %in% remove]
 }
-library("ggVennDiagram")
 
-# B) Plot comparacon de features
-venn_C  = ggVennDiagram(list_C,color = viridis(1),lty = 1, label_alpha = 0.5, label= "count") 
-venn_C  = venn_C  + scale_fill_gradient(high="#21908CFF",low = "#FDE725FF")
+
+# PLOTS
+venn_C  = ggVennDiagram(list_C,color ="#21908CFF",lty = 1, label_alpha = 0.5, label= "count") 
+venn_C  = venn_C  + scale_fill_gradient(high=viridis(1),low = "#FDE725FF")
 venn_C  = venn_C  + labs(fill = "Nº Features")+ ggtitle("Features Intersection")+theme(plot.title = element_text(hjust = 0.5))
 l2 = get_legend(venn_C)
-venn_C = venn_C+theme(legend.position = "none", aspect.ratio = 0.56)
+venn_C = venn_C+theme(legend.position = "none")
 venn_C
 
-venn_AR  = ggVennDiagram(list_AR,color = viridis(1),lty = 1, label_alpha = 0.5, label= "count" ) 
-venn_AR  = venn_AR  + scale_fill_gradient(high="#21908CFF",low = "#FDE725FF")
-venn_AR  = venn_AR  + labs(fill = "Nº Features")+ggtitle("Features Intersection")+ theme(plot.title = element_text(hjust = 0.5))+theme(legend.position = "none",aspect.ratio = 0.56)
+venn_AR  = ggVennDiagram(list_AR,color = "#21908CFF",lty = 1, label_alpha = 0.5, label= "count" ) 
+venn_AR  = venn_AR  + scale_fill_gradient(high=viridis(1),low = "#FDE725FF")
+venn_AR  = venn_AR  + labs(fill = "Nº Features")+ggtitle("Features Intersection")+ theme(plot.title = element_text(hjust = 0.5))+theme(legend.position = "none")
 venn_AR
 
 # C) Comparacion de los mejores modelos de cada tipo de datos
@@ -104,7 +127,7 @@ FCBF.SVM = as.data.frame(counts$Bmr_Ravel_Genus_C_train_FCBF_8.rds$results$datas
 KW.GLMNET = as.data.frame(counts$Bmr_Ravel_Genus_C_train_KW_12.rds$results$dataset$classif.glmnet.tuned$measures.test) 
 LDM.RF = as.data.frame(counts$Bmr_Ravel_Genus_C_train_LDM_40.rds$results$dataset$classif.randomForest.tuned$measures.test)
 
-l = list(CLUST.GBM, FBF.SVM, KW.GLMNET, LDM.RF)
+l = list(CLUST.GBM, FCBF.SVM, KW.GLMNET, LDM.RF)
 names = c("CLUST.GBM", "FCBF.SVM", "KW.GLMNET", "LDM.RF")
 names(l)= names
 for (i in seq_along(l)){

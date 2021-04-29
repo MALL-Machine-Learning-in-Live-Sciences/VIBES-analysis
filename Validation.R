@@ -1,15 +1,33 @@
 # Validation Models
 # Enfrentar los datos del segundo articulo al modelo sacado con los del primero
 # Load phyloseq
+require(mlr)
+require(phyloseq)
+source("git/Entropy/functions/FunctionsDataFilter.R")
+source("git/Entropy/functions/FunctionsGetSplitData.R")
 Ravel = readRDS("projects/Entropy/data/Ravel_phyloseq.rds")
 Ravel = phy.aglomerate(phyobject = Ravel, rank = "Rank6")
 Sriniv = readRDS("projects/Entropy/data/Sriniv_Nugent_phyloseq.rds")
 Sriniv = phy.aglomerate(phyobject = Sriniv, rank = "Rank6")
 
+#------
 #Load model
-model= readRDS("projects/Entropy/data/models/RF_8.rds")
-# Extract features
-names = model$features
+modelsC = readRDS("projects/Entropy/data/benchmarks/Ravel_Genus_C_Benchmarks.rds")
+modelsAR = readRDS("projects/Entropy/data/benchmarks/Ravel_Genus_AR_Benchmarks.rds")
+
+#Get algoruthm and index 
+model = as.data.frame(modelsC$Bmr_Ravel_Genus_C_train_FCBF_8.rds)
+model = model[model$learner.id == "classif.ksvm.tuned",]
+index = which.max(model$auc)
+
+# Get best model
+modelos = getBMRModels(modelsC$Bmr_Ravel_Genus_C_train_FCBF_8.rds)
+modelos = modelos$dataset$classif.ksvm.tuned
+best = getLearnerModel(modelos$dataset$classif.ksvm.tuned[[index]])
+#Get features
+names = best$features
+#-------
+
 # Extract corespondence between OTU anf Genus
 Ravel = as.data.frame(tax_table(Ravel))
 features = Ravel[names,]
@@ -22,19 +40,19 @@ tax_table(Sriniv_sub)
 
 #We have to train again the model without this feature
 FCBF = readRDS("projects/Entropy/data/train/Ravel_Genus_C_train_FCBF_8.rds")
-FCBF <- subset( FCBF, select = -NR_028773.1 )
+FCBF <- subset(FCBF, select = -NR_028773.1 )
 bmFCBF = ML.exec(dataset = FCBF)
 modelo = getBMRModels(bmFCBF)
 resFCBF = as.data.frame(bmFCBF)
+
 # Check the model with best results(we asume here that we have only 1 algorithm)
 # We can change this according to algorithms used
-which.max(resFCBF$auc); which.max(resFCBF$acc); which.min(resFCBF$mmce)
 models_index = resFCBF[
   order( resFCBF[,5], resFCBF[,4],  resFCBF[,6] ),
 ]
 index = as.numeric(tail(rownames(models_index), 1))
 # Get the model
-best = getLearnerModel(modelo$dataset$classif.randomForest.tuned[[index]])
+best = getLearnerModel(modelo$dataset$classif.ksvm.tuned[[index]])
 # Get the featureas that we ll have to extract from test
 features = best$features
 #
@@ -45,12 +63,7 @@ vg = features[,2]
 vn = features[,1]
 
 # Extract a subset from second phyloseq with only features from the model
-Sriniv_sub <- subset_taxa(Sriniv, Rank6 %in% vg) # We have 7 from 8 features
-tax_table(Sriniv_sub)
-
-
-
-
+Sriniv_sub <- subset_taxa(Sriniv, Rank6 %in% vg) 
 table = as.data.frame(tax_table(Sriniv_sub))
 table = cbind(rownames(table), table$Rank6)
 k = table[,2]
@@ -64,9 +77,11 @@ dataset = as.data.frame(t(dataset))
 features = as.data.frame(features)
 require(dplyr)
 df <- tibble::rownames_to_column(dataset, "V2")
-
 aa = merge(x = df, y = features, by = "V2", all = TRUE)
+dataset = as.data.frame(t(dataset))
 dataset = as.data.frame(cbind(dataset, target =targets ))
+
+#
 library(tidyverse)
 aa = aa %>% remove_rownames %>% column_to_rownames(var="V1")
 test.Sriniv <- subset( aa, select = -V2)
@@ -81,6 +96,7 @@ test.Sriniv$NR_118377.1 = as.numeric(test.Sriniv$NR_118377.1)
 test.Sriniv$NR_036982.1 = as.numeric(test.Sriniv$NR_036982.1)
 test.Sriniv$NR_041796.1 = as.numeric(test.Sriniv$NR_041796.1)
 test.Sriniv$NR_113093.1 = as.numeric(test.Sriniv$NR_113093.1)
+
 test.Sriniv = norm.dataset(test.Sriniv)
 
 # Make task
@@ -96,3 +112,7 @@ prediccion <- predict(best, task= test_task, type = "prob")
 library(caret)
 table(test.Sriniv$target,prediccion$data$response)
 confusionMatrix(data = prediccion$data$response, reference = as.factor(test.Sriniv$target))
+a = asROCRPrediction(prediccion)
+p = ROCR::performance(a, "tpr", "fpr")
+plot(p)
+
