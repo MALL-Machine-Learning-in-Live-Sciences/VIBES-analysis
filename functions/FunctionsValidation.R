@@ -1,13 +1,10 @@
 # Funciones Validacion
-bench = readRDS("projects/Entropy/data/benchmarks/Ravel_Genus_C_Benchmarks.rds")
-modelsAR = readRDS("projects/Entropy/data/benchmarks/Ravel_Genus_AR_Benchmarks.rds")
-indice = 2
-algoritmo = "classif.ksvm.tuned"
+
 get.features = function(bench, algoritmo, indice){
   require(mlr)
   #Get algorithm and index 
   models = as.data.frame(bench[[indice]])
-  model = model[model$learner.id == algoritmo,]
+  model = models[models$learner.id == algoritmo,]
   index = which.max(model$auc)
   
   # Get best model
@@ -20,23 +17,14 @@ get.features = function(bench, algoritmo, indice){
   return(names)
 }
 
-
-Ravel = readRDS("projects/Entropy/data/Ravel_phyloseq.rds")
-Ravel = phy.aglomerate(phyobject = Ravel, rank = "Rank6")
-Sriniv = readRDS("projects/Entropy/data/Sriniv_Nugent_phyloseq.rds")
-Sriniv = phy.aglomerate(phyobject = Sriniv, rank = "Rank6")
+require(phyloseq)
 
 
-check.features = function(Ravel, Sriniv, FT){
-  require(phyloseq)
-  Ravel.df = as.data.frame(tax_table(Ravel))
-  Ravel.df = Ravel.df[FT,]
-  features = as.data.frame(cbind(rownames(Ravel.df),Ravel.df$Rank6))
-  Sriniv_sub <- subset_taxa(Sriniv, Rank6 %in% features[,2]) 
-  Sriniv.df = as.data.frame(tax_table(Sriniv_sub))
+check.features = function(Sriniv.df, features){
+
   if (length(features[,2]) == length(Sriniv.df$Rank6)){
     print("All OK")
-    return(FT)
+    return(features)
   } else if (length(features[,2]) != length(Sriniv.df$Rank6)){
   length(features[,2]) == length(Sriniv.df$Rank6)
   dif = setdiff(features[,2], Sriniv.df$Rank6)
@@ -50,7 +38,6 @@ check.features = function(Ravel, Sriniv, FT){
   return(features)
   }
 }
-bncmark = bmFCBF
 
 get.best.model = function(bncmark){
   modelo = getBMRModels(bncmark)
@@ -65,6 +52,35 @@ get.best.model = function(bncmark){
   # Get the model
   best = getLearnerModel(modelo$dataset[[1]][[index]])
   return(best)
+}
+
+get.sriniv.test = function(Sriniv_sub, Sriniv.df, features){
+  require(phyloseq)
+  require(dplyr)
+  require(tidyverse)
+  source("git/Entropy/functions/FunctionsGetSplitData.R")
+  #Creo una tabla de correspondencia entre EL OTU y los generos traidos de Ravel
+  features2 = as.data.frame(cbind(rownames(Sriniv.df), Sriniv.df$Rank6))
+  #Recupero el dataset Matcheo las dos tablas de correspondencia y me quedo con los number acces
+  Sriniv_sub = get.dataset(phyobject = Sriniv_sub)
+  # Me quedo con los targets
+  targets = Sriniv_sub$target
+  # Cojo solo las columnas que sean numericas
+  cols <- sapply(Sriniv_sub, is.numeric)
+  tt = Sriniv_sub[cols]
+  tt = as.data.frame(t(tt))
+  # Matcheo los features de ambos datasets
+  equi = merge(features2,features, by = "V2",sort = FALSE)
+  tt <- tibble::rownames_to_column(tt, "V1.x")
+  j = merge(tt, equi,by = "V1.x",sort = FALSE)
+  aa = j %>% remove_rownames %>% column_to_rownames(var="V1.y")
+  #Borro las columnas innecesarias
+  test.Sriniv <- subset( aa, select = -c(V2,V1.x))
+  # Añado los targets
+  test.Sriniv = as.data.frame(cbind(as.data.frame(t(test.Sriniv)),
+                                    target =targets ))
+  test.Sriniv = norm.dataset(test.Sriniv)
+  return(test.Sriniv)
 }
 
 

@@ -19,6 +19,7 @@ test = readRDS(path2)
 target = test$target
 test = test[features]
 test = cbind(test, target)
+test = norm.dataset(test)
 test_task = makeClassifTask(data = test, target = "target")
 test_task = normalizeFeatures(
   test_task,
@@ -27,5 +28,8 @@ test_task = normalizeFeatures(
   range = c(0, 1),
   on.constant = "quiet")
 prediccion = predict(best, task= test_task)
+a = asROCRPrediction(prediccion)
+p = ROCR::performance(a, "tpr", "fpr")
+plot(p)
 saveRDS(object = best, file = "projects/Entropy/data/models/RF_8.rds")
 
