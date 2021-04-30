@@ -17,3 +17,5 @@ for (i in seq_along(ldata)){
 namesbmr <- paste("Bmr_",l, sep="")
 names(bmrs) = namesbmr
 saveRDS(object = bmrs , file = paste0("projects/Entropy/data/benchmarks/",pattern,"_Benchmarks.rds"))
+kk = readRDS("projects/Entropy/data/benchmarks/Sriniv_Amsel_Genus_C_Benchmarks.rds")
+bmrs$Bmr_Sriniv_Amsel_Genus_AR_train_CLUST_5.rds$results$dataset$classif.ksvm.tuned$measures.test

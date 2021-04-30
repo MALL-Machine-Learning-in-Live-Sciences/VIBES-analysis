@@ -228,7 +228,17 @@ getFeatureImportance(x)
 
 
 
-
+library(ROCR)
+data(ROCR.simple)
+preds <- cbind(p1 = ROCR.simple$predictions, 
+               p2 = abs(ROCR.simple$predictions + 
+                          rnorm(length(ROCR.simple$predictions), 0, 0.1)))
+n <- 2 # you have n models
+colors <- c('red', 'blue') # 2 colors
+for (i in 1:n) {
+  plot(performance(prediction(preds[,i],ROCR.simple$labels),"tpr","fpr"), 
+       add=(i!=1),col=colors[i],lwd=2)
+}
 
 
 # Curva ROC
