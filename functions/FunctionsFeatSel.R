@@ -39,7 +39,7 @@ FCBF.FS = function(data, thold){
   return(filtered.data)
 }
 
-LDM.FS = function(data, variables, targets, seed, method="bray", thold= 0.1){
+LDM.FS = function(data, variables, targets, seed, method="bray", thold= 0.05){
   require(LDM)
   #ExecuteLDM
   fit.ldm = ldm(variables ~target,
@@ -82,7 +82,7 @@ CLUST.FS = function(data){
   plot(hc1, cex = 0.6, hang = -1)
   
   #Dinamic tree
-  dtree = cutreeDynamic(dendro = hc1, cutHeight = 25, minClusterSize = 3,method = "tree")
+  dtree = cutreeDynamic(dendro = hc1, cutHeight = 20, minClusterSize = 3,method = "tree")
   # Extract names for plots
   kk = as.logical(dtree)
   fs_names = colnames(datos)

@@ -1,7 +1,7 @@
 #ML 
 source("git/Entropy/functions/FunctionsML.R")
 path = "projects/Entropy/data/train/"
-pattern = "Ravel_Genus_C"
+pattern = "Sriniv_Amsel_Genus_C"
 l = list.files(path, pattern = pattern)
 
 ldata = list()

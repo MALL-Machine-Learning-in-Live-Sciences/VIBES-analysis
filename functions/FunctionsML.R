@@ -40,9 +40,12 @@ ML.exec = function(dataset){
   lrn_glmnet<-makeTuneWrapper(l2, inner, psGL, measures = auc, ctrl, show.info=T)
   
   # xGboost
-  psGB = makeParamSet(makeNumericParam("eta", lower = 0, upper = 1),
-                      makeIntegerParam("max_depth", lower = 1, upper = 20),
-                      makeDiscreteParam("eval_metric", "logloss"))
+  psGB = makeParamSet(
+    makeDiscreteLearnerParam("booster", values = c("gbtree", "gblinear", "dart")),
+    makeNumericParam("eta", lower = 0, upper = 1),
+    makeNumericLearnerParam("lambda", upper = 1, lower = 0),
+    makeIntegerParam("max_depth", lower = 1, upper = 20),
+    makeDiscreteParam("eval_metric", "logloss"))
   l3 = makeLearner("classif.xgboost", predict.type = "prob", nrounds=10)
   lrn_GB = makeTuneWrapper(learner = l3, resampling = inner, measures = auc, par.set = psGB, control = ctrl, show.info = T)
   
@@ -53,15 +56,15 @@ ML.exec = function(dataset){
   lrn_KSVM = makeTuneWrapper(learner = l4, resampling = inner, measures = auc, par.set = psKSVM, control = ctrl, show.info = T)
   
   # GBM
-  psGBM = makeParamSet(makeDiscreteParam("distribution", values = "bernoulli"),
+  psGBM = makeParamSet(makeDiscreteParam("distribution", values = c("bernoulli", "gaussian", "huberized")),
                        makeIntegerParam("n.trees", lower = 100, upper = 800), 
                        makeIntegerParam("interaction.depth", lower = 2, upper = 10),
-                       makeNumericParam("bag.fraction", lower = 0.80, upper = 0.80))
+                       makeNumericParam("bag.fraction", lower = 0.90, upper = 0.90))
   l5 = makeLearner("classif.gbm", predict.type = "prob")
   lrn_GBM =  makeTuneWrapper(learner = l5, resampling = inner, measures = auc, par.set = psGBM, control = ctrl, show.info = T)
   
-  #learners = list(lrn_RF, lrn_glmnet, lrn_GB, lrn_KSVM, lrn_GBM)
-  learners = (lrn_RF)
+  learners = list(lrn_RF, lrn_glmnet, lrn_GB, lrn_KSVM, lrn_GBM)
+  #learners = (lrn_RF)
   # Outer
   outer = makeResampleDesc('RepCV' , reps = 5, folds = 3 , stratify = T)
 
