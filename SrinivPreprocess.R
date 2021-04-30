@@ -29,7 +29,7 @@ Sriniv_Genus_C = get.dataset(Sriniv_Genus_C)
 colnames(Sriniv_Genus_C) <- make.names(colnames(Sriniv_Genus_C), unique=TRUE)
 
 Sriniv_Genus_C_train_test = split.data(data = Sriniv_Genus_C, seed = 123, pctg = 0.90,
-                                      path = "projects/Entropy/data/",project = "Sriniv_Amsel", id = "Genus_C")# project = Ravel or Sriniv. id = Rank and type of data
+                                      path = "projects/Entropy/data/",project = "Sriniv_Amsel", id = "Genus_AR")# project = Ravel or Sriniv. id = Rank and type of data
 
 Sriniv_Genus_C_train = Sriniv_Genus_C_train_test[[1]]
 Sriniv_Genus_C_test = Sriniv_Genus_C_train_test[[2]]
@@ -55,6 +55,6 @@ fs = list(Sriniv_Genus_C_train.CLUST, Sriniv_Genus_C_train.KW, Sriniv_Genus_C_tr
 names(fs)= c("CLUST", "KW", "FCBF", "LDM")
 
 for (i in seq_along(fs)) {
-  saveRDS(fs[[i]], file = paste0("projects/Entropy/data/train/Sriniv_Amsel_Genus_C_train","_",names(fs[i]),"_",ncol(fs[[i]])-1,".rds"))
+  saveRDS(fs[[i]], file = paste0("projects/Entropy/data/train/Sriniv_Amsel_Genus_AR_train","_",names(fs[i]),"_",ncol(fs[[i]])-1,".rds"))
 }
 
