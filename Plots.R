@@ -8,6 +8,7 @@ require(grid)
 counts = readRDS(file = "projects/Entropy/data/benchmarks/Ravel_Genus_C_Benchmarks.rds")
 ar = readRDS(file = "projects/Entropy/data/benchmarks/Ravel_Genus_AR_Benchmarks.rds")
 
+#P1
 ## Fig1
 # A) PLOTS COUNTS vs AR
 # COUNTS
@@ -209,10 +210,33 @@ p = ggarrange(comp_C, comp_AR, venn_C,venn_AR,mod_C,mod_AR,
               labels = list("A", "", "B", "", "C"))
 p = p + theme(plot.margin = unit(c(1.2, 0.5, 1.2, 0.5), "cm"))
 p
-# D) Variable importance del mejor modelo en general
 
+#P2
+#P2
+require(mlr)
+# A) Feature importance
+#Counts
+models = as.data.frame(counts$Bmr_Ravel_Genus_C_train_LDM_40.rds)
+model = models[models$learner.id == "classif.randomForest.tuned",]
+index = which.max(model$auc)
+# Get best model
+modelos = getBMRModels(counts$Bmr_Ravel_Genus_C_train_LDM_40.rds)
+alg_index = which(names(modelos$dataset)=="classif.randomForest.tuned")
+best_mod_C = getLearnerModel(modelos$dataset[[alg_index]][[index]])
+FI_C = getFeatureImportance(best_mod_C)
+View(FI_C$res)
 
-getFeatureImportance(x)
+#AR
+models = as.data.frame(ar$Bmr_Ravel_Genus_AR_train_FCBF_9.rds)
+model = models[models$learner.id == "classif.gbm.tuned",]
+index = which.max(model$auc)
+
+# Get best model
+modelos = getBMRModels(ar$Bmr_Ravel_Genus_AR_train_FCBF_9.rds)
+alg_index = which(names(modelos$dataset)=="classif.gbm.tuned")
+best_mod_AR = getLearnerModel(modelos$dataset[[alg_index]][[index]])
+FI_AR = getFeatureImportance(best_mod_AR)
+View(FI_AR$res)
 
 ## Fig2
 # AUROC Curve Predict
