@@ -240,36 +240,50 @@ View(FI_AR$res)
 
 ## Fig2
 # AUROC Curve Predict
+source("git/Entropy/functions/FunctionsDataFilter.R")
+source("git/Entropy/functions/FunctionsValidation.R")
+source("git/Entropy/functions/FunctionsGetSplitData.R")
+source("git/Entropy/functions/FunctionsML.R")
+require(phyloseq)
+# Load phyloseqs
+Ravel = readRDS("projects/Entropy/data/Ravel_phyloseq.rds")
+Ravel = phy.aglomerate(phyobject = Ravel, rank = "Rank6")
+Sriniv = readRDS("projects/Entropy/data/Sriniv_Nugent_phyloseq.rds")
+Sriniv = relat.abun(Sriniv)
+Sriniv = phy.aglomerate(phyobject = Sriniv, rank = "Rank6")
 
-## Fig3
-# Heatmap Phyloseq
+best= readRDS(file = "projects/Entropy/data/models/RetrainBestGBMFCBF7Feat")
+features = best$features
 
+# Saco las correspondencias entre el genero y number acceso
+Ravel.df = as.data.frame(tax_table(Ravel))
+Ravel.df = Ravel.df[features,]
+#Creo una tabla de igualdad entre number acces y generos
+features = as.data.frame(cbind(rownames(Ravel.df),Ravel.df$Rank6))
+# Selecciono los generos en el dataframe de Sriniv
+Sriniv_sub <- subset_taxa(Sriniv, Rank6 %in% c(features[,2])) 
+Sriniv.df = as.data.frame(tax_table(Sriniv_sub))
 
+test.Sriniv = get.sriniv.test(Sriniv_sub =Sriniv_sub,Sriniv.df = Sriniv.df, features = features  )
+# Make task
+test_task = makeClassifTask(data = test.Sriniv, target = "target")
+test_task = normalizeFeatures(
+  test_task,
+  method = "range",
+  cols = NULL,
+  range = c(0, 1),
+  on.constant = "quiet")
 
-
-
-
-
-
-
-library(ROCR)
-data(ROCR.simple)
-preds <- cbind(p1 = ROCR.simple$predictions, 
-               p2 = abs(ROCR.simple$predictions + 
-                          rnorm(length(ROCR.simple$predictions), 0, 0.1)))
-n <- 2 # you have n models
-colors <- c('red', 'blue') # 2 colors
-for (i in 1:n) {
-  plot(performance(prediction(preds[,i],ROCR.simple$labels),"tpr","fpr"), 
-       add=(i!=1),col=colors[i],lwd=2)
-}
-
-
-# Curva ROC
+prediccion <- predict(best, task= test_task, type = "prob")
+library(caret)
+table(test.Sriniv$target,prediccion$data$response)
+confusionMatrix(data = prediccion$data$response, reference = as.factor(test.Sriniv$target))
 a = asROCRPrediction(prediccion)
 p = ROCR::performance(a, "tpr", "fpr")
 plot(p)
 
+## Fig3
+# Heatmap Phyloseq
 
 
 

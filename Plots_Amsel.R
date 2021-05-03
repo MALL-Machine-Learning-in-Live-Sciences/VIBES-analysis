@@ -282,8 +282,8 @@ prediccionAR <- predict(best_mod_AR, task= test_task, type = "prob")
 library(caret)
 confusionMatrix(data = prediccionAR$data$response, reference = as.factor(test_AR$target))
 a = asROCRPrediction(prediccionAR)
-p = ROCR::performance(a, "tpr", "fpr")
-plot(p)
+p2 = ROCR::performance(a, "tpr", "fpr")
+plot(p2)
 
 
 

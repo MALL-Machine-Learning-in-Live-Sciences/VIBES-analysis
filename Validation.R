@@ -13,11 +13,11 @@ Ravel = phy.aglomerate(phyobject = Ravel, rank = "Rank6")
 Sriniv = readRDS("projects/Entropy/data/Sriniv_Nugent_phyloseq.rds")
 Sriniv = phy.aglomerate(phyobject = Sriniv, rank = "Rank6")
 #Load Bncmarks
-BMR.C = readRDS("projects/Entropy/data/benchmarks/Ravel_Genus_C_Benchmarks.rds")
-#BMR.AR = readRDS("projects/Entropy/data/benchmarks/Ravel_Genus_AR_Benchmarks.rds")
+#BMR.C = readRDS("projects/Entropy/data/benchmarks/Ravel_Genus_C_Benchmarks.rds")
+BMR.AR = readRDS("projects/Entropy/data/benchmarks/Ravel_Genus_AR_Benchmarks.rds")
 
 
-features = get.features(bench = BMR.C, algoritmo = "classif.randomForest.tuned", indice = 4)
+features = get.features(bench = BMR.AR, algoritmo = "classif.gbm.tuned", indice = 2)
 
 Ravel.df = as.data.frame(tax_table(Ravel))
 Ravel.df = Ravel.df[features,]
@@ -27,10 +27,11 @@ Sriniv.df = as.data.frame(tax_table(Sriniv_sub))
 features = check.features(Sriniv.df= Sriniv.df, features = features)
 
 #We have to train again the model without this feature
-FCBF = readRDS("projects/Entropy/data/train/Ravel_Genus_C_train_LDM_40.rds")
-FCBF <- FCBF[ , !(names(FCBF) %in% features)]
-bmr = ML.exec(dataset = FCBF)
+data = readRDS("projects/Entropy/data/train/Ravel_Genus_AR_train_FCBF_9.rds")
+data <- data[ , !(names(data) %in% features)]
+bmr = ML.exec(dataset = data)
 best = get.best.model(bncmark = bmr)
+saveRDS(object = best, file = "projects/Entropy/data/models/RetrainBestGBMFCBF8Feat")
 features = best$features
 
 # Saco las correspondencias entre el genero y number acceso
