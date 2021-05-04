@@ -4,6 +4,7 @@ library("ggVennDiagram")
 require(plotly)
 require(ggpubr)
 require(grid)
+require(ggplotify)
 
 counts = readRDS(file = "projects/Entropy/data/benchmarks/Ravel_Genus_C_Benchmarks.rds")
 ar = readRDS(file = "projects/Entropy/data/benchmarks/Ravel_Genus_AR_Benchmarks.rds")
@@ -205,13 +206,13 @@ mod_AR =  ggplot(df, aes(x = Model, y = AUC, color = Model))+
 mod_AR
 
 #PANEL
-p = ggarrange(comp_C, comp_AR, venn_C,venn_AR,mod_C,mod_AR,
+panel1 = ggarrange(comp_C, comp_AR, venn_C,venn_AR,mod_C,mod_AR,
               ncol = 2, nrow = 3,widths = c(4,4,1),
               labels = list("A", "", "B", "", "C"))
-p = p + theme(plot.margin = unit(c(1.2, 0.5, 1.2, 0.5), "cm"))
-p
-
-#P2
+#p = p + theme(plot.margin = unit(c(1.2, 0.5, 1.2, 0.5), "cm"))
+annotate_figure(panel1, top = text_grob("Nugent Score", color = "black", face = "bold", size = 14))
+panel1
+                
 #P2
 require(mlr)
 # A) Feature importance
@@ -225,6 +226,31 @@ alg_index = which(names(modelos$dataset)=="classif.randomForest.tuned")
 best_mod_C = getLearnerModel(modelos$dataset[[alg_index]][[index]])
 FI_C = getFeatureImportance(best_mod_C)
 View(FI_C$res)
+df_FIc = as.data.frame(FI_C$res)
+kk = as.vector(df_FIc$variable)
+Ravel = readRDS("projects/Entropy/data/Ravel_phyloseq.rds")
+Ravel = phy.aglomerate(phyobject = Ravel, rank = "Rank6")
+Ravel.subC <- subset_taxa(Ravel, rownames(tax_table(Ravel)) %in% kk)
+Ravel.df = as.data.frame(tax_table(Ravel.subC))
+Ravel.df = Ravel.df[kk,]
+Ravel.df = as.data.frame(cbind(rownames(Ravel.df),Ravel.df$Rank6))
+df_FIc$variable = Ravel.df$V2
+df_FIc$variable = substr(df_FIc$variable, 4,100)
+
+plotFIC = ggplot(df_FIc, aes(x = reorder(variable, importance), y = importance))+
+  geom_segment( aes(xend=variable, yend=0,), color = viridis(3)[2]) +
+  geom_point( size=4, color=viridis(1)) +
+  coord_flip() +
+  theme_light()+
+  theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
+         legend.text=element_text(size=10))+
+  ggtitle("Feature Importance from LDM+RF model")+theme(plot.title = element_text(hjust = 0.5))
+plotFIC
+
+
+
+
+
 
 #AR
 models = as.data.frame(ar$Bmr_Ravel_Genus_AR_train_FCBF_9.rds)
@@ -237,53 +263,110 @@ alg_index = which(names(modelos$dataset)=="classif.gbm.tuned")
 best_mod_AR = getLearnerModel(modelos$dataset[[alg_index]][[index]])
 FI_AR = getFeatureImportance(best_mod_AR)
 View(FI_AR$res)
+df_FIAR= as.data.frame(FI_AR$res)
+kk2 = as.vector(df_FIAR$variable)
+Ravel = readRDS("projects/Entropy/data/Ravel_phyloseq.rds")
+Ravel = phy.aglomerate(phyobject = Ravel, rank = "Rank6")
+Ravel.subAR <- subset_taxa(Ravel, rownames(tax_table(Ravel)) %in% kk2)
+Ravel.df = as.data.frame(tax_table(Ravel.subAR))
+Ravel.df = Ravel.df[kk2,]
+Ravel.df = as.data.frame(cbind(rownames(Ravel.df),Ravel.df$Rank6))
+df_FIAR$variable = Ravel.df$V2
+df_FIAR$variable = substr(df_FIAR$variable, 4,100)
+
+
+
+plotFIAR = ggplot(df_FIAR, aes(x = reorder(variable, importance), y = importance))+
+  geom_segment( aes(xend=variable, yend=0,), color = viridis(3)[2]) +
+  geom_point( size=4, color=viridis(1)) +
+  coord_flip() +
+  theme_light()+
+  theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
+         legend.text=element_text(size=10))+
+ggtitle("Feature Importance from FCBF+GBM model")+theme(plot.title = element_text(hjust = 0.5))
+
+plotFIAR
+
 
 ## Fig2
 # AUROC Curve Predict
-source("git/Entropy/functions/FunctionsDataFilter.R")
-source("git/Entropy/functions/FunctionsValidation.R")
-source("git/Entropy/functions/FunctionsGetSplitData.R")
-source("git/Entropy/functions/FunctionsML.R")
-require(phyloseq)
-# Load phyloseqs
-Ravel = readRDS("projects/Entropy/data/Ravel_phyloseq.rds")
-Ravel = phy.aglomerate(phyobject = Ravel, rank = "Rank6")
-Sriniv = readRDS("projects/Entropy/data/Sriniv_Nugent_phyloseq.rds")
-Sriniv = relat.abun(Sriniv)
-Sriniv = phy.aglomerate(phyobject = Sriniv, rank = "Rank6")
+# COUNTS
+prediction_Counts = readRDS("projects/Entropy/data/validation/PredictionCountsRF_LDM.rds")
+asRoc = asROCRPrediction(prediction_Counts)
+p_Counts = ROCR::performance(asRoc, "tpr", "fpr")
 
-best= readRDS(file = "projects/Entropy/data/models/RetrainBestGBMFCBF7Feat")
+plotAUC_C = as.ggplot(~plot(p_Counts))
+plotAUC_C= plotAUC_C+ ggtitle("Validation with Sriniv using Counts")+theme(plot.title = element_text(hjust = 0.5))
+
+
+# AR
+prediction_RA = readRDS("projects/Entropy/data/validation/PredictionRA_GBM_FCBF.rds")
+asRoc2 = asROCRPrediction(prediction_RA)
+p_RA = ROCR::performance(asRoc2, "tpr", "fpr")
+plotAUC_AR = as.ggplot(~plot(p_RA))
+plotAUC_AR = plotAUC_AR + ggtitle("Validation with Sriniv using RA")+theme(plot.title = element_text(hjust = 0.5))
+
+panel2 = ggarrange(plotFIC, plotFIAR,
+                   ncol = 2, nrow = 1)
+annotate_figure(panel2, top = text_grob("Nugent Score", color = "black", face = "bold", size = 14))
+panel2
+panel3 = ggarrange(plotAUC_C, plotAUC_AR,
+                   ncol = 2, nrow = 1)
+annotate_figure(panel3, top = text_grob("Nugent Score", color = "black", face = "bold", size = 14))
+panel3
+
+## Fig3
+# Heatmap Phyloseq
+norm.dataset = function(data){
+  # Retain only numerics variables
+  cols <- sapply(data, is.numeric) 
+  
+  # Normalize that variables
+  data[cols] <- apply(X = data[cols], FUN = function(x) log2(x+1), MARGIN = 2) 
+  return(data) 
+}
+
+# Heatmap
+trainC = readRDS("projects/Entropy/data/train/Ravel_Genus_AR_train.rds")
+testC = readRDS("projects/Entropy/data/test/Ravel_Genus_AR_test.rds")
+best = readRDS("projects/Entropy/data/models/")
 features = best$features
+features = c(features,"target")
+kk = rbind(trainC,testC )
+kk = norm.dataset(kk)
+sub = subset(kk, select = features)
 
-# Saco las correspondencias entre el genero y number acceso
-Ravel.df = as.data.frame(tax_table(Ravel))
-Ravel.df = Ravel.df[features,]
-#Creo una tabla de igualdad entre number acces y generos
-features = as.data.frame(cbind(rownames(Ravel.df),Ravel.df$Rank6))
-# Selecciono los generos en el dataframe de Sriniv
-Sriniv_sub <- subset_taxa(Sriniv, Rank6 %in% c(features[,2])) 
-Sriniv.df = as.data.frame(tax_table(Sriniv_sub))
-
-test.Sriniv = get.sriniv.test(Sriniv_sub =Sriniv_sub,Sriniv.df = Sriniv.df, features = features  )
-# Make task
-test_task = makeClassifTask(data = test.Sriniv, target = "target")
+test_task = makeClassifTask(data = sub, target = "target")
 test_task = normalizeFeatures(
   test_task,
   method = "range",
   cols = NULL,
   range = c(0, 1),
   on.constant = "quiet")
-
 prediccion <- predict(best, task= test_task, type = "prob")
 library(caret)
-table(test.Sriniv$target,prediccion$data$response)
-confusionMatrix(data = prediccion$data$response, reference = as.factor(test.Sriniv$target))
-a = asROCRPrediction(prediccion)
-p = ROCR::performance(a, "tpr", "fpr")
-plot(p)
+confusionMatrix(data = prediccion$data$response, reference = as.factor(sub$target))
 
-## Fig3
-# Heatmap Phyloseq
+sorttaxa = arrange(df_FIAR, importance)
+sorttaxa = sorttaxa$variable
+pred.df = as.data.frame(prediccion$data)
+sortsample = arrange(pred.df, prob.High)
+sortsample = rownames(sortsample)
+
+phy = readRDS(file = "projects/Entropy/data/Ravel_phyloseq.rds")
+source("git/Entropy/functions/FunctionsDataFilter.R")
+phy = phy.aglomerate(phyobject = phy, rank = "Rank6")
+phy <- prune_samples((sample_names(phy) %in% sortsample), phy)
+phy.subset <- subset_taxa(phy, rownames(tax_table(phy)) %in% sorttaxa)
+
+Counts_Heatmap = plot_heatmap(phy.subset,
+                              sample.label = "Var",
+                              sample.order = sortsample,
+                              taxa.order = sorttaxa,
+                              taxa.label = "Rank6",
+                              title = "RA Heatmap")
+Counts_Heatmap =Counts_Heatmap + theme(legend.position = "none")
+Counts_Heatmap
 
 
 

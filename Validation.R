@@ -11,6 +11,7 @@ source("git/Entropy/functions/FunctionsML.R")
 Ravel = readRDS("projects/Entropy/data/Ravel_phyloseq.rds")
 Ravel = phy.aglomerate(phyobject = Ravel, rank = "Rank6")
 Sriniv = readRDS("projects/Entropy/data/Sriniv_Nugent_phyloseq.rds")
+Sriniv = relat.abun(Sriniv)
 Sriniv = phy.aglomerate(phyobject = Sriniv, rank = "Rank6")
 #Load Bncmarks
 #BMR.C = readRDS("projects/Entropy/data/benchmarks/Ravel_Genus_C_Benchmarks.rds")
@@ -31,7 +32,8 @@ data = readRDS("projects/Entropy/data/train/Ravel_Genus_AR_train_FCBF_9.rds")
 data <- data[ , !(names(data) %in% features)]
 bmr = ML.exec(dataset = data)
 best = get.best.model(bncmark = bmr)
-saveRDS(object = best, file = "projects/Entropy/data/models/RetrainBestGBMFCBF8Feat")
+saveRDS(object = best, file = "projects/Entropy/data/models/RetrainBestGBMFCBF8Feat.rds")
+best = readRDS("projects/Entropy/data/models/RetrainBestGBMFCBF8Feat.rds")
 features = best$features
 
 # Saco las correspondencias entre el genero y number acceso
@@ -56,6 +58,7 @@ test_task = normalizeFeatures(
   on.constant = "quiet")
 
 prediccion <- predict(best, task= test_task, type = "prob")
+saveRDS(object = prediccion, file = "projects/Entropy/data/validation/PredictionRA_GBM_FCBF.rds")
 library(caret)
 table(test.Sriniv$target,prediccion$data$response)
 confusionMatrix(data = prediccion$data$response, reference = as.factor(test.Sriniv$target))

@@ -211,10 +211,16 @@ Sriniv_mod_AR
 p1_Sriniv = ggarrange(plot_Sriniv_C, plot_Sriniv_AR, Svenn_C,Svenn_AR,Sriniv_mod_C,Sriniv_mod_AR,
               ncol = 2, nrow = 3,widths = c(4,4,1),
               labels = list("A", "", "B", "", "C"))
+annotate_figure(p1_Sriniv, top = text_grob("Amsel Score", color = "black", face = "bold", size = 14))
 #p1_Sriniv = p1_Sriniv + theme(plot.margin = unit(c(1.2, 0.5, 1.2, 0.5), "cm"))
 p1_Sriniv
 
 #P2
+phy.aglomerate = function(phyobject, rank){
+  require(phyloseq)
+  phy =  tax_glom(phyobject, rank)
+  return(phy)
+}
 require(mlr)
 # A) Feature importance
 #Counts
@@ -227,6 +233,31 @@ alg_index = which(names(modelos$dataset)=="classif.randomForest.tuned")
 best_mod_C = getLearnerModel(modelos$dataset[[alg_index]][[index]])
 FI_C = getFeatureImportance(best_mod_C)
 View(FI_C$res)
+df_FIc = as.data.frame(FI_C$res)
+kk = as.vector(df_FIc$variable)
+Sriniv = readRDS("projects/Entropy/data/Sriniv_Amsel_phyloseq.rds")
+Sriniv = phy.aglomerate(phyobject = Sriniv, rank = "Rank6")
+taxa_names(Sriniv) <- make.names(taxa_names(Sriniv), unique=TRUE)
+
+Sriniv.subC <- subset_taxa(Sriniv, rownames(tax_table(Sriniv)) %in% kk)
+Sriniv.df = as.data.frame(tax_table(Sriniv.subC))
+Sriniv.df = Sriniv.df[kk,]
+Sriniv.df = as.data.frame(cbind(rownames(Sriniv.df),Sriniv.df$Rank6))
+df_FIc$variable =Sriniv.df$V2
+df_FIc$variable = substr(df_FIc$variable, 4,100)
+
+
+
+
+plotFIC = ggplot(df_FIc, aes(x = reorder(variable, importance), y = importance))+
+geom_segment( aes(xend=variable, yend=0,), color = viridis(3)[2]) +
+  geom_point( size=4, color=viridis(1)) +
+  coord_flip() +
+  theme_light()+
+  theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
+         legend.text=element_text(size=10))
+plotFIC
+
 
 #AR
 models = as.data.frame(S_AR$Bmr_Sriniv_Amsel_Genus_AR_train_LDM_24.rds)
@@ -239,6 +270,30 @@ alg_index = which(names(modelos$dataset)=="classif.randomForest.tuned")
 best_mod_AR = getLearnerModel(modelos$dataset[[alg_index]][[index]])
 FI_AR = getFeatureImportance(best_mod_AR)
 View(FI_AR$res)
+df_FIAR= as.data.frame(FI_AR$res)
+kk = as.vector(df_FIAR$variable)
+Sriniv = readRDS("projects/Entropy/data/Sriniv_Amsel_phyloseq.rds")
+Sriniv = phy.aglomerate(phyobject = Sriniv, rank = "Rank6")
+taxa_names(Sriniv) <- make.names(taxa_names(Sriniv), unique=TRUE)
+
+Sriniv.subC <- subset_taxa(Sriniv, rownames(tax_table(Sriniv)) %in% kk)
+Sriniv.df = as.data.frame(tax_table(Sriniv.subC))
+Sriniv.df = Sriniv.df[kk,]
+Sriniv.df = as.data.frame(cbind(rownames(Sriniv.df),Sriniv.df$Rank6))
+df_FIAR$variable =Sriniv.df$V2
+df_FIAR$variable = substr(df_FIAR$variable, 4,100)
+
+
+plotFIAR = ggplot(df_FIAR, aes(x = reorder(variable, importance), y = importance))+
+  geom_segment( aes(xend=variable, yend=0,), color = viridis(3)[2]) +
+  geom_point( size=4, color=viridis(1)) +
+  coord_flip() +
+  theme_light()+
+  theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
+         legend.text=element_text(size=10))
+plotFIAR
+
+
 
 #B) Validation
 source("git/Entropy/functions/FunctionsGetSplitData.R")
@@ -260,10 +315,12 @@ test_task = normalizeFeatures(
   on.constant = "quiet")
 prediccion_C <- predict(best_mod_C, task= test_task, type = "prob")
 library(caret)
+library(ggplotify)
 confusionMatrix(data = prediccion_C$data$response, reference = as.factor(test_C$target))
 a = asROCRPrediction(prediccion_C)
 p = ROCR::performance(a, "tpr", "fpr")
-plot(p)
+plotAUC_C = as.ggplot(~plot(p))
+plotAUC_C
 #AR
 #We have to retain only the features used in the model
 features = best_mod_AR$features
@@ -281,9 +338,64 @@ test_task = normalizeFeatures(
 prediccionAR <- predict(best_mod_AR, task= test_task, type = "prob")
 library(caret)
 confusionMatrix(data = prediccionAR$data$response, reference = as.factor(test_AR$target))
-a = asROCRPrediction(prediccionAR)
-p2 = ROCR::performance(a, "tpr", "fpr")
-plot(p2)
+a2 = asROCRPrediction(prediccionAR)
+p2 = ROCR::performance(a2, "tpr", "fpr")
+plotAUC_AR = as.ggplot(~plot(p2))
+plotAUC_AR
 
+panel2 = ggarrange(plotAUC_C, plotAUC_AR,
+                   ncol = 2, nrow = 1)
+annotate_figure(panel2, top = text_grob("Amsel Score", color = "black", face = "bold", size = 14))
+panel2
 
+#Heatmap
+#Counts
+trainC = readRDS("projects/Entropy/data/train/Ravel_Genus_AR_train.rds")
+testC = readRDS("projects/Entropy/data/test/Ravel_Genus_AR_test.rds")
+best = readRDS("projects/Entropy/data/models/")
+
+library(dplyr)
+sorttaxa = arrange(df_FIc, importance)
+sorttaxa = sorttaxa$variable
+pred.df = as.data.frame(prediccion_C$data)
+sortsample = arrange(pred.df, prob.neg)
+sortsample = rownames(sortsample)
+phy = readRDS(file = "projects/Entropy/data/Sriniv_Amsel_phyloseq.rds")
+phy <- prune_samples((sample_names(phy) %in% sortsample), phy)
+taxa_names(phy) <- make.names(taxa_names(phy), unique=TRUE)
+
+phy.subset <- subset_taxa(phy, rownames(tax_table(phy)) %in% sorttaxa)
+
+Counts_Heatmap = plot_heatmap(phy.subset,
+  sample.label = "Amsel",
+  sample.order = sortsample,
+  taxa.order = sorttaxa,
+  taxa.label = "Rank6",
+  title = "Count Test Heatmap")
+Counts_Heatmap =Counts_Heatmap + theme(legend.position = "none")
+
+#RA
+library(dplyr)
+sorttaxa = arrange(df_FIAR, importance)
+sorttaxa = sorttaxa$variable
+pred.df = as.data.frame(prediccionAR$data)
+sortsample = arrange(pred.df, prob.neg)
+sortsample = rownames(sortsample)
+phy = readRDS(file = "projects/Entropy/data/Sriniv_Amsel_phyloseq.rds")
+phy <- prune_samples((sample_names(phy) %in% sortsample), phy)
+taxa_names(phy) <- make.names(taxa_names(phy), unique=TRUE)
+
+phy.subset <- subset_taxa(phy, rownames(tax_table(phy)) %in% sorttaxa)
+
+RA_Heatmap = plot_heatmap(phy.subset,
+                              sample.label = "Amsel",
+                              sample.order = sortsample,
+                              taxa.order = sorttaxa,
+                              taxa.label = "Rank6",
+                              title = "RA Test Heatmap")
+RA_Heatmap =RA_Heatmap + theme(legend.position = "none")
+
+panel3 = ggarrange(Counts_Heatmap, RA_Heatmap, ncol = 2, nrow = 1)
+annotate_figure(panel3, top = text_grob("Amsel Score", color = "black", face = "bold", size = 14))
+panel3
 
