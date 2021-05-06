@@ -297,7 +297,7 @@ plotFIAR
 
 #B) Validation
 source("git/Entropy/functions/FunctionsGetSplitData.R")
-test_C = readRDS("projects/Entropy/data/test/Sriniv_Amsel_Genus_C_test.rds")
+test_C = readRDS("projects/Entropy/data/test/")
 test_AR = readRDS("projects/Entropy/data/test/Sriniv_Amsel_Genus_AR_test.rds")
 # Counts
 #We have to retain only the features used in the model
@@ -348,54 +348,95 @@ panel2 = ggarrange(plotAUC_C, plotAUC_AR,
 annotate_figure(panel2, top = text_grob("Amsel Score", color = "black", face = "bold", size = 14))
 panel2
 
-#Heatmap
+#P2
+phy.aglomerate = function(phyobject, rank){
+  require(phyloseq)
+  phy =  tax_glom(phyobject, rank)
+  return(phy)
+}
+require(mlr)
+# A) Feature importance
 #Counts
-trainC = readRDS("projects/Entropy/data/train/Ravel_Genus_AR_train.rds")
-testC = readRDS("projects/Entropy/data/test/Ravel_Genus_AR_test.rds")
-best = readRDS("projects/Entropy/data/models/")
+models = as.data.frame(S_counts$Bmr_Sriniv_Amsel_Genus_C_train_LDM_29.rds)
+model = models[models$learner.id == "classif.randomForest.tuned",]
+index = which.max(model$auc)
+# Get best model
+modelos = getBMRModels(S_counts$Bmr_Sriniv_Amsel_Genus_C_train_LDM_29.rds)
+alg_index = which(names(modelos$dataset)=="classif.randomForest.tuned")
+best_mod_C = getLearnerModel(modelos$dataset[[alg_index]][[index]])
+FI_C = getFeatureImportance(best_mod_C)
+View(FI_C$res)
+df_FIc = as.data.frame(FI_C$res)
+kk = as.vector(df_FIc$variable)
+Sriniv = readRDS("projects/Entropy/data/Sriniv_Amsel_phyloseq.rds")
+Sriniv = phy.aglomerate(phyobject = Sriniv, rank = "Rank6")
+taxa_names(Sriniv) <- make.names(taxa_names(Sriniv), unique=TRUE)
 
-library(dplyr)
-sorttaxa = arrange(df_FIc, importance)
+Sriniv.subC <- subset_taxa(Sriniv, rownames(tax_table(Sriniv)) %in% kk)
+Sriniv.df = as.data.frame(tax_table(Sriniv.subC))
+Sriniv.df = Sriniv.df[kk,]
+
+#----------Heatmap
+# Data
+trainC = readRDS("projects/Entropy/data/train/Sriniv_Amsel_Genus_AR_train.rds")
+testC = readRDS("projects/Entropy/data/test/Sriniv_Amsel_Genus_AR_test.rds")
+dataC = rbind(trainC,testC)
+
+require(mlr)
+models = as.data.frame(S_AR$Bmr_Sriniv_Amsel_Genus_AR_train_LDM_24.rds)
+model = models[models$learner.id == "classif.randomForest.tuned",]
+index = which.max(model$auc)
+# Get best model
+modelos = getBMRModels(S_AR$Bmr_Sriniv_Amsel_Genus_AR_train_LDM_24.rds)
+alg_index = which(names(modelos$dataset)=="classif.randomForest.tuned")
+best_mod_C = getLearnerModel(modelos$dataset[[alg_index]][[index]])
+# Get dataset only with the features in the best model
+source("git/Entropy/functions/FunctionsGetSplitData.R")
+features = best_mod_C$features
+features = c(features,"target")
+kk = rbind(trainC,testC )
+kk = norm.dataset(kk)
+sub = subset(kk, select = features)
+test_task = makeClassifTask(data = sub, target = "target")
+test_task = normalizeFeatures(
+  test_task,
+  method = "range",
+  cols = NULL,
+  range = c(0, 1),
+  on.constant = "quiet")
+prediccion <- predict(best_mod_C, task= test_task, type = "prob")
+library(caret)
+confusionMatrix(data = prediccion$data$response, reference = as.factor(sub$target))
+
+require(dplyr)
+sorttaxa = arrange(df_FIAR, importance)
 sorttaxa = sorttaxa$variable
-pred.df = as.data.frame(prediccion_C$data)
-sortsample = arrange(pred.df, prob.neg)
+pred.df = as.data.frame(prediccion$data)
+
+sortsample = pred.df[order(pred.df$prob.neg),]
+
 sortsample = rownames(sortsample)
+
 phy = readRDS(file = "projects/Entropy/data/Sriniv_Amsel_phyloseq.rds")
+phy = phy.aglomerate(phy = phy, rank = "Rank6")
 phy <- prune_samples((sample_names(phy) %in% sortsample), phy)
 taxa_names(phy) <- make.names(taxa_names(phy), unique=TRUE)
 
 phy.subset <- subset_taxa(phy, rownames(tax_table(phy)) %in% sorttaxa)
 
 Counts_Heatmap = plot_heatmap(phy.subset,
-  sample.label = "Amsel",
-  sample.order = sortsample,
-  taxa.order = sorttaxa,
-  taxa.label = "Rank6",
-  title = "Count Test Heatmap")
-Counts_Heatmap =Counts_Heatmap + theme(legend.position = "none")
-
-#RA
-library(dplyr)
-sorttaxa = arrange(df_FIAR, importance)
-sorttaxa = sorttaxa$variable
-pred.df = as.data.frame(prediccionAR$data)
-sortsample = arrange(pred.df, prob.neg)
-sortsample = rownames(sortsample)
-phy = readRDS(file = "projects/Entropy/data/Sriniv_Amsel_phyloseq.rds")
-phy <- prune_samples((sample_names(phy) %in% sortsample), phy)
-taxa_names(phy) <- make.names(taxa_names(phy), unique=TRUE)
-
-phy.subset <- subset_taxa(phy, rownames(tax_table(phy)) %in% sorttaxa)
-
-RA_Heatmap = plot_heatmap(phy.subset,
                               sample.label = "Amsel",
                               sample.order = sortsample,
                               taxa.order = sorttaxa,
                               taxa.label = "Rank6",
-                              title = "RA Test Heatmap")
-RA_Heatmap =RA_Heatmap + theme(legend.position = "none")
+                              title = "AR Heatmap")
+Counts_Heatmap =Counts_Heatmap + theme(legend.position = "none")
 
-panel3 = ggarrange(Counts_Heatmap, RA_Heatmap, ncol = 2, nrow = 1)
-annotate_figure(panel3, top = text_grob("Amsel Score", color = "black", face = "bold", size = 14))
-panel3
+Counts_Heatmap
+
+
+
+
+kk = readRDS("projects/Entropy/data/train/Sriniv_Amsel_Genus_C_train.rds")
+
 
