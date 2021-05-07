@@ -1,8 +1,9 @@
 #ML 
 source("git/Entropy/functions/FunctionsML.R")
 path = "projects/Entropy/data/train/"
-pattern = "Sriniv_Amsel_Genus_AR"
+pattern = "Ravel_Genus_C"
 l = list.files(path, pattern = pattern)
+l = l[-5]
 
 ldata = list()
 for (i in 1:length(l)) {
