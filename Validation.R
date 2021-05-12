@@ -14,11 +14,11 @@ Sriniv = readRDS("projects/Entropy/data/Sriniv_Nugent_phyloseq.rds")
 Sriniv = relat.abun(Sriniv)
 Sriniv = phy.aglomerate(phyobject = Sriniv, rank = "Rank6")
 #Load Bncmarks
-#BMR.C = readRDS("projects/Entropy/data/benchmarks/Ravel_Genus_C_Benchmarks.rds")
-BMR.AR = readRDS("projects/Entropy/data/benchmarks/Ravel_Genus_AR_Benchmarks.rds")
+#BMR.C = readRDS("projects/Entropy/data/benchmarks/Ravel_Genus_C_Second_Benchmarks.rds")
+BMR.AR = readRDS("projects/Entropy/data/benchmarks/Ravel_Genus_AR_Second_Benchmarks.rds")
 
 
-features = get.features(bench = BMR.AR, algoritmo = "classif.gbm.tuned", indice = 2)
+features = get.features(bench = BMR.AR, algoritmo = "classif.randomForest.tuned", indice = 2)
 
 Ravel.df = as.data.frame(tax_table(Ravel))
 Ravel.df = Ravel.df[features,]
@@ -28,12 +28,12 @@ Sriniv.df = as.data.frame(tax_table(Sriniv_sub))
 features = check.features(Sriniv.df= Sriniv.df, features = features)
 
 #We have to train again the model without this feature
-data = readRDS("projects/Entropy/data/train/Ravel_Genus_AR_train_FCBF_9.rds")
+data = readRDS("projects/Entropy/data/train/Ravel_Genus_AR_train_FCBF_8.rds")
 data <- data[ , !(names(data) %in% features)]
 bmr = ML.exec(dataset = data)
 best = get.best.model(bncmark = bmr)
-saveRDS(object = best, file = "projects/Entropy/data/models/RetrainBestGBMFCBF8Feat.rds")
-best = readRDS("projects/Entropy/data/models/RetrainBestGBMFCBF8Feat.rds")
+saveRDS(object = best, file = "projects/Entropy/data/models/RetrainBest_AR_RF_FCBF_7Feat.rds")
+best = readRDS("projects/Entropy/data/models/RetrainBest_C_RF_FCBF8Feat.rds")
 features = best$features
 
 # Saco las correspondencias entre el genero y number acceso
@@ -58,7 +58,7 @@ test_task = normalizeFeatures(
   on.constant = "quiet")
 
 prediccion <- predict(best, task= test_task, type = "prob")
-saveRDS(object = prediccion, file = "projects/Entropy/data/validation/PredictionRA_GBM_FCBF.rds")
+saveRDS(object = prediccion, file = "projects/Entropy/data/validation/PredictionAR_RF_FCBF.rds")
 library(caret)
 table(test.Sriniv$target,prediccion$data$response)
 confusionMatrix(data = prediccion$data$response, reference = as.factor(test.Sriniv$target))
