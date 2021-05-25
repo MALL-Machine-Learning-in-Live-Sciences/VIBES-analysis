@@ -50,8 +50,8 @@ ML.exec = function(dataset){
   lrn_GB = makeTuneWrapper(learner = l3, resampling = inner, measures = auc, par.set = psGB, control = ctrl, show.info = T)
   
   # SVM
-  psKSVM = makeParamSet(makeDiscreteParam('C', values = 2^c(-8, -4, -2, 0)),
-                        makeDiscreteParam('sigma', values = 2^c(-8, -4, 0, 4)))
+  psKSVM = makeParamSet(makeDiscreteParam('C', values = 2^c(-8, -6, -4, -2, 0, 2, 4, 6, 8)),
+                        makeDiscreteParam('sigma', values = 2^c(-8, -6, -4, -2, 0,2 , 4, 6, 8)))
   l4 = makeLearner("classif.ksvm", predict.type = "prob")
   lrn_KSVM = makeTuneWrapper(learner = l4, resampling = inner, measures = auc, par.set = psKSVM, control = ctrl, show.info = T)
   
@@ -63,10 +63,10 @@ ML.exec = function(dataset){
   l5 = makeLearner("classif.gbm", predict.type = "prob")
   lrn_GBM =  makeTuneWrapper(learner = l5, resampling = inner, measures = auc, par.set = psGBM, control = ctrl, show.info = T)
   
-  learners = list(lrn_RF, lrn_glmnet, lrn_GB, lrn_KSVM, lrn_GBM)
-  #learners = (lrn_RF)
+  #learners = list(lrn_RF, lrn_glmnet, lrn_GB, lrn_KSVM, lrn_GBM)
+  learners = (lrn_RF)
   # Outer
-  outer = makeResampleDesc('RepCV' , reps = 5, folds = 10 , stratify = T)
+  outer = makeResampleDesc('RepCV' , reps = 10, folds = 5 , stratify = T)
 
   # Benchmarking
   #parallelStartSocket(cpus = detectCores()*0.5, level = 'mlr.tuneParams')

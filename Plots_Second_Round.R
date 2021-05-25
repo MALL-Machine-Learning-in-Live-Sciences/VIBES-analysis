@@ -5,7 +5,7 @@ require(plotly)
 require(ggpubr)
 require(grid)
 require(ggplotify)
-
+source("git/Entropy/functions/FunctionsDataFilter.R")
 counts = readRDS(file = "projects/Entropy/data/benchmarks/Ravel_Genus_C_Second_Benchmarks.rds")
 ar = readRDS(file = "projects/Entropy/data/benchmarks/Ravel_Genus_AR_Second_Benchmarks.rds")
 
@@ -57,9 +57,9 @@ comp_C = ggplot(dataCounts, aes(x = AUC, y = FS, color = Algorithm, shape = Algo
   geom_point(size = 3) +
   scale_color_manual(values = viridis(5))+
   theme_light()+
-  theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
+  theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_text(size=9), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
          legend.text=element_text(size=10))+
-  ggtitle("Benchmark Counts")+
+  ggtitle("Counts Benchmark")+
   theme(plot.title = element_text(hjust = 0.5))
 
 l1 <- get_legend(comp_C)
@@ -70,11 +70,52 @@ comp_AR = ggplot(dataAR, aes(x = AUC, y = FS, color = Algorithm, shape = Algorit
   geom_point(size = 3) +
   scale_color_manual(values = viridis(5))+
   theme_light()+
-  theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
+  theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_text(size=9), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
          legend.text=element_text(size=10))+
-  ggtitle("Benchmark Relative Abundance")+
+  ggtitle("R.A Benchmark")+
   theme(plot.title = element_text(hjust = 0.5))
 comp_AR
+
+
+
+#--------
+# B) VENNPLOTS COUNTS vs AR (FEATURES)
+#Counts
+#CLUST_C = readRDS("projects/Entropy/data/CLUST_C_names.rds")
+KW_C = readRDS("projects/Entropy/data/train/Ravel_Genus_C_train_KW_12.rds")
+FCBF_C = readRDS("projects/Entropy/data/train/Ravel_Genus_C_train_FCBF_8.rds")
+LDM_C = readRDS("projects/Entropy/data/train/Ravel_Genus_C_train_LDM_40.rds")
+list_C = list( names(KW_C), names(FCBF_C), names(LDM_C))
+names = c("KW", "FCBF","LDM")
+remove = "target"
+names(list_C) = names
+for (i in seq_along(list_C)){
+  list_C[[i]] = list_C[[i]][!list_C[[i]] %in% remove]
+}
+#AR
+#CLUST_AR = readRDS("projects/Entropy/data/CLUST_AR_names.rds")
+KW_AR = readRDS("projects/Entropy/data/train/Ravel_Genus_AR_train_KW_12.rds")
+FCBF_AR = readRDS("projects/Entropy/data/train/Ravel_Genus_AR_train_FCBF_9.rds")
+LDM_AR = readRDS("projects/Entropy/data/train/Ravel_Genus_AR_train_LDM_39.rds")
+list_AR = list( names(KW_AR), names(FCBF_AR), names(LDM_AR))
+names(list_AR) = names
+for (i in seq_along(list_AR)){
+  list_AR[[i]] = list_AR[[i]][!list_AR[[i]] %in% remove]
+}
+
+
+# PLOTS
+venn_C  = ggVennDiagram(list_C,color =viridis(1),lty = 1, label_alpha = 0.5, label= "count") 
+venn_C  = venn_C  + scale_fill_gradient(high="#21908CFF",low = "#FDE725FF")
+venn_C  = venn_C  + labs(fill = "Nº Features")+ ggtitle("Counts Features Intersection")+theme(plot.title = element_text(hjust = 0.5))
+l2 = get_legend(venn_C)
+venn_C = venn_C+theme(legend.position = "none")
+venn_C
+
+venn_AR  = ggVennDiagram(list_AR,color =viridis(1),lty = 1, label_alpha = 0.5, label= "count" ) 
+venn_AR  = venn_AR  + scale_fill_gradient(high="#21908CFF",low = "#FDE725FF")
+venn_AR  = venn_AR  + labs(fill = "Nº Features")+ggtitle("R.A Features Intersection")+ theme(plot.title = element_text(hjust = 0.5))+theme(legend.position = "none")
+venn_AR
 
 #--------------
 # C) Comparacion de los mejores modelos de cada tipo de datos
@@ -123,7 +164,7 @@ mod_C =  ggplot(df, aes(x = Model, y = AUC, color = Model))+
         legend.title=element_text(size=10), 
         legend.text=element_text(size=10),
         legend.position = "none")+
-  ggtitle("Best models Counts")+
+  ggtitle("Counts Best models")+
   theme(plot.title = element_text(hjust = 0.5))+
   stat_compare_means(comparisons = my_comparaisons, bracket.size = 0.3,  size = 3)
 mod_C
@@ -164,13 +205,16 @@ mod_AR =  ggplot(df, aes(x = Model, y = AUC, color = Model))+
         axis.ticks = element_blank(),
         legend.title=element_text(size=10), 
         legend.text=element_text(size=10))+
-  ggtitle("Best models Relative Abundance")+
+  ggtitle("R.A Best models")+
   theme(plot.title = element_text(hjust = 0.5))+
   stat_compare_means(comparisons = my_comparaisons, bracket.size = 0.3,  size = 3)
 mod_AR
 
 
-
+#PANEL
+panel1 = ggarrange(comp_C, comp_AR, venn_C,venn_AR,mod_C,mod_AR,
+                   ncol = 2, nrow = 3,widths = c(4,4,1),
+                   labels = list("A", "", "B", "", "C"))
 
 
 
@@ -205,11 +249,8 @@ plotFIC = ggplot(df_FIc, aes(x = reorder(variable, importance), y = importance))
   theme_light()+
   theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
          legend.text=element_text(size=10))+
-  ggtitle("Feature Importance from FCBF+RF model")+theme(plot.title = element_text(hjust = 0.5))
+  ggtitle("Feature Importance: Counts+FCBF+RF model")+theme(plot.title = element_text(hjust = 0.5))
 plotFIC
-
-
-
 
 
 
@@ -244,13 +285,135 @@ plotFIAR = ggplot(df_FIAR, aes(x = reorder(variable, importance), y = importance
   theme_light()+
   theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
          legend.text=element_text(size=10))+
-  ggtitle("Feature Importance from FCBF+RF model")+theme(plot.title = element_text(hjust = 0.5))
+  ggtitle("Feature Importance: RA+FCBF+RF model")+theme(plot.title = element_text(hjust = 0.5))
 
 plotFIAR
 
 
-#PANEL
-panel1 = ggarrange(comp_C, comp_AR,mod_C,mod_AR, plotFIC, plotFIAR,
-                   ncol = 2, nrow = 3,widths = c(4,4,1),
+
+
+#------------
+# Validation Models
+# Enfrentar los datos del segundo articulo al modelo sacado con los del primero
+# Load phyloseq
+require(mlr)
+require(phyloseq)
+source("git/Entropy/functions/FunctionsDataFilter.R")
+source("git/Entropy/functions/FunctionsValidation.R")
+source("git/Entropy/functions/FunctionsGetSplitData.R")
+source("git/Entropy/functions/FunctionsML.R")
+# Load phyloseqs
+Ravel = readRDS("projects/Entropy/data/Ravel_phyloseq.rds")
+Ravel = phy.aglomerate(phyobject = Ravel, rank = "Rank6")
+Sriniv = readRDS("projects/Entropy/data/Sriniv_Nugent_phyloseq.rds")
+#Sriniv = relat.abun(Sriniv)
+Sriniv = phy.aglomerate(phyobject = Sriniv, rank = "Rank6")
+
+#Cargo el mejor modelo
+best = readRDS("projects/Entropy/data/models/NugentCountsRFFCBF.rds")
+features = best$features
+# Saco las correspondencias entre el genero y number acceso
+Ravel.df = as.data.frame(tax_table(Ravel))
+Ravel.df = Ravel.df[features,]
+#Creo una tabla de igualdad entre number acces y generos
+features = as.data.frame(cbind(rownames(Ravel.df),Ravel.df$Rank6))
+# Selecciono los generos en el dataframe de Sriniv
+Sriniv_sub <- subset_taxa(Sriniv, Rank6 %in% c(features[,2])) 
+Sriniv.df = as.data.frame(tax_table(Sriniv_sub))
+
+test.Sriniv = get.sriniv.test(Sriniv_sub =Sriniv_sub,Sriniv.df = Sriniv.df, features = features  )
+
+
+# Make task
+test_task = makeClassifTask(data = test.Sriniv, target = "target")
+test_task = normalizeFeatures(
+  test_task,
+  method = "range",
+  cols = NULL,
+  range = c(0, 1),
+  on.constant = "quiet")
+
+prediccionC <- predict(best, task= test_task, type = "prob")
+#saveRDS(object = prediccion, file = "projects/Entropy/data/validation/PredictionRA_RF_FCBF.rds")
+library(caret)
+table(test.Sriniv$target,prediccionC$data$response)
+CM_C = confusionMatrix(data = prediccionC$data$response, reference = as.factor(test.Sriniv$target),positive = "High")
+
+#TestsPlots
+# COUNTS
+require(ggplotify)
+source("git/Entropy/functions/PlotCM.R")
+#prediction_Counts = readRDS("projects/Entropy/data/validation/PredictionCOUNTS_RF_FCBF.rds")
+#Plot CM
+plotCM_C= as.ggplot(~draw_confusion_matrix(CM_C))
+plotCM_C = plotCM_C + ggtitle("Counts Confusion matrix")+theme(plot.title = element_text(hjust = 0.5))
+plotCM_C
+
+#Plot AUC_Curve
+asRoc = asROCRPrediction(prediccion)
+p_Counts = ROCR::performance(asRoc, "tpr", "fpr")
+plotAUC_C = as.ggplot(~plot(p_Counts))
+plotAUC_C= plotAUC_C+ ggtitle("Validation with Sriniv using Counts")+theme(plot.title = element_text(hjust = 0.5))
+
+
+# AR
+# Load phyloseqs
+Ravel = readRDS("projects/Entropy/data/Ravel_phyloseq.rds")
+Ravel = phy.aglomerate(phyobject = Ravel, rank = "Rank6")
+Sriniv = readRDS("projects/Entropy/data/Sriniv_Nugent_phyloseq.rds")
+Sriniv = relat.abun(Sriniv)
+Sriniv = phy.aglomerate(phyobject = Sriniv, rank = "Rank6")
+
+#Cargo el mejor modelo
+best = readRDS("projects/Entropy/data/models/NugentRARFFCBF.rds")
+features = best$features
+# Saco las correspondencias entre el genero y number acceso
+Ravel.df = as.data.frame(tax_table(Ravel))
+Ravel.df = Ravel.df[features,]
+#Creo una tabla de igualdad entre number acces y generos
+features = as.data.frame(cbind(rownames(Ravel.df),Ravel.df$Rank6))
+# Selecciono los generos en el dataframe de Sriniv
+Sriniv_sub <- subset_taxa(Sriniv, Rank6 %in% c(features[,2])) 
+Sriniv.df = as.data.frame(tax_table(Sriniv_sub))
+
+test.Sriniv = get.sriniv.test(Sriniv_sub =Sriniv_sub,Sriniv.df = Sriniv.df, features = features  )
+
+
+# Make task
+test_task = makeClassifTask(data = test.Sriniv, target = "target")
+test_task = normalizeFeatures(
+  test_task,
+  method = "range",
+  cols = NULL,
+  range = c(0, 1),
+  on.constant = "quiet")
+
+prediccionRA <- predict(best, task= test_task, type = "prob")
+#saveRDS(object = prediccion, file = "projects/Entropy/data/validation/PredictionRA_RF_FCBF.rds")
+library(caret)
+table(test.Sriniv$target,prediccionRA$data$response)
+CM_RA = confusionMatrix(data = prediccionRA$data$response, reference = as.factor(test.Sriniv$target))
+
+#TestsPlots
+#prediction_Counts = readRDS("projects/Entropy/data/validation/PredictionCOUNTS_RF_FCBF.rds")
+#Plot CM
+plotCM_RA= as.ggplot(~draw_confusion_matrix(CM_RA))
+plotCM_RA = plotCM_RA + ggtitle("RA Confusion matrix")+theme(plot.title = element_text(hjust = 0.5))
+plotCM_RA
+
+
+#prediction_RA = readRDS("projects/Entropy/data/validation/PredictionRA_RF_FCBF.rds")
+asRoc2 = asROCRPrediction(prediction_RA)
+p_RA = ROCR::performance(asRoc2, "tpr", "fpr")
+plotAUC_AR = as.ggplot(~plot(p_RA))
+plotAUC_AR = plotAUC_AR + ggtitle("Validation with Sriniv using RA")+theme(plot.title = element_text(hjust = 0.5))
+
+
+
+
+
+#PANEL2
+panel2 = ggarrange(plotFIC, plotFIAR,plotCM_C,plotCM_RA,plotAUC_C,plotAUC_AR,
+                   ncol = 2, nrow = 3,widths = c(1,1),
                    labels = list("A", "", "B", "", "C"))
-panel1
+panel2

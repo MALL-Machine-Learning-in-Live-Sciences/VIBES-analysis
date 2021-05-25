@@ -8,7 +8,7 @@ require(ggplotify)
 
 counts = readRDS(file = "projects/Entropy/data/benchmarks/Ravel_Genus_C_Benchmarks.rds")
 ar = readRDS(file = "projects/Entropy/data/benchmarks/Ravel_Genus_AR_Benchmarks.rds")
-
+#--------
 #P1
 ## Fig1
 # A) PLOTS COUNTS vs AR
@@ -75,7 +75,7 @@ comp_AR = ggplot(dataAR, aes(x = AUC, y = FS, color = Algorithm, shape = Algorit
   ggtitle("Benchmark Relative Abundance")+
   theme(plot.title = element_text(hjust = 0.5))
 comp_AR
-
+#--------
 # B) PLOTS COUNTS vs AR (FEATURES)
 #Counts
 #CLUST_C = readRDS("projects/Entropy/data/CLUST_C_names.rds")
@@ -114,6 +114,7 @@ venn_AR  = venn_AR  + scale_fill_gradient(high=viridis(1),low = "#FDE725FF")
 venn_AR  = venn_AR  + labs(fill = "Nº Features")+ggtitle("Features Intersection")+ theme(plot.title = element_text(hjust = 0.5))+theme(legend.position = "none")
 venn_AR
 
+#--------
 # C) Comparacion de los mejores modelos de cada tipo de datos
 require(plyr)
 comp.models= function(dataset){
@@ -164,6 +165,7 @@ mod_C =  ggplot(df, aes(x = Model, y = AUC, color = Model))+
   stat_compare_means(comparisons = my_comparaisons, bracket.size = 0.3,  size = 3)
 mod_C
 
+
 # Abundancias relativas
 CLUST.RF =as.data.frame(ar$Bmr_Ravel_Genus_AR_train_CLUST_7.rds$results$dataset$classif.randomForest.tuned$measures.test)
 FCBF.GBM = as.data.frame(ar$Bmr_Ravel_Genus_AR_train_FCBF_9.rds$results$dataset$classif.gbm.tuned$measures.test)
@@ -205,6 +207,7 @@ mod_AR =  ggplot(df, aes(x = Model, y = AUC, color = Model))+
   stat_compare_means(comparisons = my_comparaisons, bracket.size = 0.3,  size = 3)
 mod_AR
 
+#--------
 #PANEL
 panel1 = ggarrange(comp_C, comp_AR, venn_C,venn_AR,mod_C,mod_AR,
               ncol = 2, nrow = 3,widths = c(4,4,1),
@@ -214,6 +217,7 @@ annotate_figure(panel1, top = text_grob("Nugent Score", color = "black", face = 
 panel1
                 
 #P2
+#------
 require(mlr)
 # A) Feature importance
 #Counts
@@ -246,10 +250,6 @@ plotFIC = ggplot(df_FIc, aes(x = reorder(variable, importance), y = importance))
          legend.text=element_text(size=10))+
   ggtitle("Feature Importance from LDM+RF model")+theme(plot.title = element_text(hjust = 0.5))
 plotFIC
-
-
-
-
 
 
 #AR
@@ -287,7 +287,7 @@ ggtitle("Feature Importance from FCBF+GBM model")+theme(plot.title = element_tex
 
 plotFIAR
 
-
+#-------
 ## Fig2
 # AUROC Curve Predict
 # COUNTS

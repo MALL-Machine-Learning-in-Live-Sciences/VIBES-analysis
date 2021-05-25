@@ -7,7 +7,7 @@ require(grid)
 require(ggplotify)
 
 counts = readRDS(file = "projects/Entropy/data/benchmarks/Sriniv_Amsel_Genus_C_Second_Benchmarks.rds")
-ar = readRDS(file = "projects/Entropy/data/benchmarks/Sriniv_Amsel_Genus_AR_Second_Benchmarks.rds")
+ar = readRDS(file = "projects/Entropy/data/benchmarks/Amsel_Genus_AR_THIRD_Benchmarks.rds")
 
 #P1
 #-----------
@@ -59,7 +59,7 @@ comp_C = ggplot(dataCounts, aes(x = AUC, y = FS, color = Algorithm, shape = Algo
   theme_light()+
   theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
          legend.text=element_text(size=10))+
-  ggtitle("Benchmark Counts")+
+  ggtitle("Counts Benchmark")+
   theme(plot.title = element_text(hjust = 0.5))
 
 l1 <- get_legend(comp_C)
@@ -72,9 +72,47 @@ comp_AR = ggplot(dataAR, aes(x = AUC, y = FS, color = Algorithm, shape = Algorit
   theme_light()+
   theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
          legend.text=element_text(size=10))+
-  ggtitle("Benchmark Relative Abundance")+
+  ggtitle("R.A Benchmark")+
   theme(plot.title = element_text(hjust = 0.5))
 comp_AR
+
+
+#B) PLOTS COUNTS vs AR (FEATURES)
+#Counts
+SKW_C = readRDS("projects/Entropy/data/train/Sriniv_Amsel_Genus_C_train_KW_9.rds")
+SFCBF_C = readRDS("projects/Entropy/data/train/Sriniv_Amsel_Genus_C_train_FCBF_4.rds")
+SLDM_C = readRDS("projects/Entropy/data/train/Sriniv_Amsel_Genus_C_train_LDM_29.rds")
+Slist_C = list( names(SKW_C), names(SFCBF_C), names(SLDM_C))
+names = c("KW", "FCBF","LDM")
+remove = "target"
+names(Slist_C) = names
+for (i in seq_along(Slist_C)){
+  Slist_C[[i]] = Slist_C[[i]][!Slist_C[[i]] %in% remove]
+}
+#AR
+#CLUST_AR = readRDS("projects/Entropy/data/CLUST_AR_names.rds")
+SKW_AR = readRDS("projects/Entropy/data/train/Sriniv_Amsel_Genus_AR_train_KW_9.rds")
+SFCBF_AR = readRDS("projects/Entropy/data/train/Sriniv_Amsel_Genus_AR_train_FCBF_3.rds")
+SLDM_AR = readRDS("projects/Entropy/data/train/Sriniv_Amsel_Genus_AR_train_LDM_24.rds")
+Slist_AR = list( names(SKW_AR), names(SFCBF_AR), names(SLDM_AR))
+names(Slist_AR) = names
+for (i in seq_along(Slist_AR)){
+  Slist_AR[[i]] = Slist_AR[[i]][!Slist_AR[[i]] %in% remove]
+}
+
+
+# PLOTS
+Svenn_C  = ggVennDiagram(Slist_C,color =viridis(1),lty = 1, label_alpha = 0.5, label= "count") 
+Svenn_C  = Svenn_C  + scale_fill_gradient(high="#21908CFF",low = "#FDE725FF")
+Svenn_C  = Svenn_C  + labs(fill = "Nº Features")+ ggtitle("Counts Features Intersection")+theme(plot.title = element_text(hjust = 0.5))
+l2 = get_legend(Svenn_C)
+Svenn_C = Svenn_C+theme(legend.position = "none")
+Svenn_C
+
+Svenn_AR  = ggVennDiagram(Slist_AR,color =viridis(1),lty = 1, label_alpha = 0.5, label= "count" ) 
+Svenn_AR  = Svenn_AR  + scale_fill_gradient(high="#21908CFF",low = "#FDE725FF")
+Svenn_AR  = Svenn_AR  + labs(fill = "Nº Features")+ggtitle("R.A Features Intersection")+ theme(plot.title = element_text(hjust = 0.5))+theme(legend.position = "none")
+Svenn_AR
 
 #--------------
 # C) Comparacion de los mejores modelos de cada tipo de datos
@@ -91,6 +129,7 @@ CLUST.GLMNET =as.data.frame(counts$Bmr_Sriniv_Amsel_Genus_C_train_CLUST_3.rds$re
 FCBF.GLMNET = as.data.frame(counts$Bmr_Sriniv_Amsel_Genus_C_train_FCBF_4.rds$results$dataset$classif.glmnet.tuned$measures.test)
 KW.RF = as.data.frame(counts$Bmr_Sriniv_Amsel_Genus_C_train_KW_9.rds$results$dataset$classif.randomForest.tuned$measures.test) 
 LDM.RF = as.data.frame(counts$Bmr_Sriniv_Amsel_Genus_C_train_LDM_29.rds$results$dataset$classif.randomForest.tuned$measures.test)
+
 
 l = list(CLUST.GLMNET, FCBF.GLMNET, KW.RF, LDM.RF)
 names = c("CLUST.GLMNET", "FCBF.GLMNET", "KW.RF", "LDM.RF")
@@ -121,21 +160,20 @@ mod_C =  ggplot(df, aes(x = Model, y = AUC, color = Model))+
         axis.text=element_text(size=10), axis.title.y = element_text(size = 10),
         axis.ticks = element_blank(),
         legend.title=element_text(size=10), 
-        legend.text=element_text(size=10),
-        legend.position = "none")+
-  ggtitle("Best models Counts")+
+        legend.text=element_text(size=10))+
+  ggtitle("Counts Best models")+
   theme(plot.title = element_text(hjust = 0.5))+
   stat_compare_means(comparisons = my_comparaisons, bracket.size = 0.3,  size = 3)
 mod_C
 
 # Abundancias relativas
 CLUST.GLMNET =as.data.frame(ar$Bmr_Sriniv_Amsel_Genus_AR_train_CLUST_5.rds$results$dataset$classif.glmnet.tuned$measures.test)
-FCBF.GLMNET = as.data.frame(ar$Bmr_Sriniv_Amsel_Genus_AR_train_FCBF_3.rds$results$dataset$classif.glmnet.tuned$measures.test)
+FCBF.SVM = as.data.frame(ar$Bmr_Sriniv_Amsel_Genus_AR_train_FCBF_3.rds$results$dataset$classif.ksvm.tuned$measures.test)
 KW.RF = as.data.frame(ar$Bmr_Sriniv_Amsel_Genus_AR_train_KW_9.rds$results$dataset$classif.randomForest.tuned$measures.test)
 LDM.RF = as.data.frame(ar$Bmr_Sriniv_Amsel_Genus_AR_train_LDM_24.rds$results$dataset$classif.randomForest.tuned$measures.test)
 
-l = list(CLUST.GLMNET, FCBF.GLMNET, KW.RF, LDM.RF)
-names = c("CLUST.GLMNET", "FCBF.GLMNET", "KW.RF", "LDM.RF")
+l = list(CLUST.GLMNET, FCBF.SVM, KW.RF, LDM.RF)
+names = c("CLUST.GLMNET", "FCBF.SVM", "KW.RF", "LDM.RF")
 names(l)= names
 for (i in seq_along(l)){
   l[[i]] = comp.models(l[[i]])
@@ -147,11 +185,11 @@ for (i in seq_along(l)){
 
 df = rbind.data.frame(l[[1]],l[[2]], l[[3]], l[[4]])
 
-my_comparaisons <- list(c("CLUST.GLMNET", "FCBF.GLMNET"),
+my_comparaisons <- list(c("CLUST.GLMNET", "FCBF.SVM"),
                         c("CLUST.GLMNET", "KW.RF"),
                         c("CLUST.GLMNET", "LDM.RF"),
-                        c("FCBF.GLMNET","KW.RF"),
-                        c("FCBF.GLMNET","LDM.RF"),
+                        c("FCBF.SVM","KW.RF"),
+                        c("FCBF.SVM","LDM.RF"),
                         c("KW.RF","LDM.RF"))
 
 mod_AR =  ggplot(df, aes(x = Model, y = AUC, color = Model))+
@@ -164,10 +202,16 @@ mod_AR =  ggplot(df, aes(x = Model, y = AUC, color = Model))+
         axis.ticks = element_blank(),
         legend.title=element_text(size=10), 
         legend.text=element_text(size=10))+
-  ggtitle("Best models Relative Abundance")+
+  ggtitle("R.A Best models")+
   theme(plot.title = element_text(hjust = 0.5))+
   stat_compare_means(comparisons = my_comparaisons, bracket.size = 0.3,  size = 3)
 mod_AR
+
+panel1 = ggarrange(comp_C, comp_AR, Svenn_C,Svenn_AR,mod_C,mod_AR,
+                   ncol = 2, nrow = 3,widths = c(4,4,1),
+                   labels = list("A", "", "B", "", "C"))
+
+
 
 #--------------
 #A) Feature importance
@@ -202,11 +246,12 @@ df_FIc$variable = substr(df_FIc$variable, 4,100)
 
 plotFIC = ggplot(df_FIc, aes(x = reorder(variable, importance), y = importance))+
   geom_segment( aes(xend=variable, yend=0,), color = viridis(3)[2]) +
-  geom_point( size=4, color=viridis(1)) +
+  geom_point( size=2, color=viridis(1)) +
   coord_flip() +
   theme_light()+
-  theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
-         legend.text=element_text(size=10))
+  theme( axis.text=element_text(size=7),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
+         legend.text=element_text(size=10))+
+  ggtitle("Feature Importance: Counts+LDM+RF model")+theme(plot.title = element_text(hjust = 0.5))
 plotFIC
 
 
@@ -244,21 +289,20 @@ plotFIAR = ggplot(df_FIAR, aes(x = reorder(variable, importance), y = importance
   coord_flip() +
   theme_light()+
   theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
-         legend.text=element_text(size=10))
+         legend.text=element_text(size=10))+
+  ggtitle("Feature Importance: RA+KW+RF model")+theme(plot.title = element_text(hjust = 0.5))
+
 plotFIAR
 
 
-#PANEL
-panel1 = ggarrange(comp_C, comp_AR,mod_C,mod_AR, plotFIC, plotFIAR,
-                   ncol = 2, nrow = 3,widths = c(4,4,1),
-                   labels = list("A", "", "B", "", "C"))
-panel1
 
 #--------
 #B) Validation
 source("git/Entropy/functions/FunctionsGetSplitData.R")
 test_C = readRDS("projects/Entropy/data/test/Sriniv_Amsel_Genus_C_test.rds")
 test_AR = readRDS("projects/Entropy/data/test/Sriniv_Amsel_Genus_AR_test.rds")
+require(ggplotify)
+source("git/Entropy/functions/PlotCM.R")
 # Counts
 #We have to retain only the features used in the model
 features = best_mod_C$features
@@ -273,14 +317,26 @@ test_task = normalizeFeatures(
   cols = NULL,
   range = c(0, 1),
   on.constant = "quiet")
+
 prediccion_C <- predict(best_mod_C, task= test_task, type = "prob")
 library(caret)
 library(ggplotify)
-confusionMatrix(data = prediccion_C$data$response, reference = as.factor(test_C$target),positive = "pos")
-a = asROCRPrediction(prediccion_C)
-p = ROCR::performance(a, "tpr", "fpr")
-plotAUC_C = as.ggplot(~plot(p))
-plotAUC_C
+CM_C = confusionMatrix(data = prediccion_C$data$response, reference = as.factor(test_C$target),positive = "pos")
+
+table(test_task$env$data$target, prediccion_C$data$response)
+#confusionMatrix(data = prediccion_C$data$response, reference = as.factor(test_C$target),positive = "pos")
+plotCM_C= as.ggplot(~draw_confusion_matrix(CM_C))
+plotCM_C = plotCM_C + ggtitle("Counts Confusion matrix")+theme(plot.title = element_text(hjust = 0.5))
+plotCM_C
+
+
+#Plot AUC_Curve
+asRoc = asROCRPrediction(prediccion_C)
+p_Counts = ROCR::performance(asRoc, "tpr", "fpr")
+plotAUC_C = as.ggplot(~plot(p_Counts))
+plotAUC_C= plotAUC_C+ ggtitle("Validation using Counts")+theme(plot.title = element_text(hjust = 0.5))
+
+
 #AR
 #We have to retain only the features used in the model
 features = best_mod_AR$features
@@ -297,15 +353,29 @@ test_task = normalizeFeatures(
   on.constant = "quiet")
 prediccionAR <- predict(best_mod_AR, task= test_task, type = "prob")
 library(caret)
-confusionMatrix(data = prediccionAR$data$response, reference = as.factor(test_AR$target),positive = "pos")
-a2 = asROCRPrediction(prediccionAR)
-p2 = ROCR::performance(a2, "tpr", "fpr")
-plotAUC_AR = as.ggplot(~plot(p2))
-plotAUC_AR
+#confusionMatrix(data = prediccionAR$data$response, reference = as.factor(test_AR$target),positive = "pos")
+CM_RA = confusionMatrix(data = prediccionAR$data$response, reference = as.factor(test_AR$target),positive = "pos")
+
+#TestsPlots
+#prediction_Counts = readRDS("projects/Entropy/data/validation/PredictionCOUNTS_RF_FCBF.rds")
+#Plot CM
+plotCM_RA= as.ggplot(~draw_confusion_matrix(CM_RA))
+plotCM_RA = plotCM_RA + ggtitle("RA Confusion matrix")+theme(plot.title = element_text(hjust = 0.5))
+plotCM_RA
 
 
+#prediction_RA = readRDS("projects/Entropy/data/validation/PredictionRA_RF_FCBF.rds")
+asRoc2 = asROCRPrediction(prediccionAR)
+p_RA = ROCR::performance(asRoc2, "tpr", "fpr")
+plotAUC_AR = as.ggplot(~plot(p_RA))
+plotAUC_AR = plotAUC_AR + ggtitle("Validation using RA")+theme(plot.title = element_text(hjust = 0.5))
 
 
+#PANEL
+panel2 = ggarrange(plotFIC, plotFIAR,plotCM_C,plotCM_RA,plotAUC_C ,plotAUC_AR,
+                   ncol = 2, nrow = 3,widths = c(4,4,1),
+                   labels = list("A", "", "B", "", "C"))
+panel2
 
 
 
