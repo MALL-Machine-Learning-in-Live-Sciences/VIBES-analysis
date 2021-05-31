@@ -1,4 +1,4 @@
-# ML Functions
+# ML Functions # meter sun segundo parametro para el ID
 ML.exec = function(dataset){
   require(mlr)
   require(methods)
@@ -64,7 +64,7 @@ ML.exec = function(dataset){
   lrn_GBM =  makeTuneWrapper(learner = l5, resampling = inner, measures = auc, par.set = psGBM, control = ctrl, show.info = T)
   
   #learners = list(lrn_RF, lrn_glmnet, lrn_GB, lrn_KSVM, lrn_GBM)
-  learners = (lrn_RF)
+  learners = (lrn_GB)
   # Outer
   outer = makeResampleDesc('RepCV' , reps = 10, folds = 5 , stratify = T)
 

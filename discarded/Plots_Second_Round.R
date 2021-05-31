@@ -6,8 +6,8 @@ require(ggpubr)
 require(grid)
 require(ggplotify)
 source("git/Entropy/functions/FunctionsDataFilter.R")
-counts = readRDS(file = "projects/Entropy/data/benchmarks/Ravel_Genus_C_Second_Benchmarks.rds")
-ar = readRDS(file = "projects/Entropy/data/benchmarks/Ravel_Genus_AR_Second_Benchmarks.rds")
+counts = readRDS(file = "projects/Entropy/data/benchmarks/Nugent/Ravel_Genus_C_Second_Benchmarks.rds")
+ar = readRDS(file = "projects/Entropy/data/benchmarks/Nugent/Ravel_Genus_AR_Second_Benchmarks.rds")
 
 #P1
 #-----------
