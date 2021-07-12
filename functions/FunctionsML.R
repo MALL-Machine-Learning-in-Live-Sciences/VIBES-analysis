@@ -4,14 +4,14 @@ ML.exec = function(dataset){
   require(methods)
   require(parallel)
   require(parallelMap)
-  cores = 4
+  cores = 2
   task = makeClassifTask(data = dataset, target = 'target')
-  task = normalizeFeatures(
-    task,
-    method = "range",
-    cols = NULL,
-    range = c(0, 1),
-    on.constant = "quiet")
+  #task = normalizeFeatures(
+  #  task,
+  #  method = "range",
+  #  cols = NULL,
+  #  range = c(0, 1),
+  #  on.constant = "quiet")
   
   # Hyperparameter tuning
   ctrl<-makeTuneControlGrid()
@@ -64,7 +64,7 @@ ML.exec = function(dataset){
   lrn_GBM =  makeTuneWrapper(learner = l5, resampling = inner, measures = auc, par.set = psGBM, control = ctrl, show.info = T)
   
   #learners = list(lrn_RF, lrn_glmnet, lrn_GB, lrn_KSVM, lrn_GBM)
-  learners = (lrn_GB)
+  learners = (lrn_RF)
   # Outer
   outer = makeResampleDesc('RepCV' , reps = 10, folds = 5 , stratify = T)
 

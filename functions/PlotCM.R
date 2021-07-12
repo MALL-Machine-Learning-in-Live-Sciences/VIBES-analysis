@@ -1,5 +1,5 @@
 draw_confusion_matrix <- function(cm) {
-  
+  require(viridis)
   layout(matrix(c(1,1,2)))
   par(mar=c(2,2,2,2))
   plot(c(100, 345), c(300, 450), type = "n", xlab="", ylab="", xaxt='n', yaxt='n')

@@ -11,11 +11,11 @@ for (i in 1:length(l)) {
   ldata[[i]] = readRDS(paste(path, l[[i]], sep=''))
 }
 names(ldata) = l
-bmrs2 = list()
+bmr = list()
 #identificador = list("Counts_FCBF", "Counts_KW", "Counts_LDM")
 #identificador = list("RA_Counts", "RA_KW", "RA_LDM")
 for (i in seq_along(ldata)){
-  bmrs2[[i]] = ML.exec(dataset = ldata[[i]], identificador[[i]])# MEter aqui el parametro ID
+  bmr[[i]] = ML.exec(dataset = ldata[[i]])# MEter aqui el parametro ID
 }
 
 #Rename Benchmarks by data input

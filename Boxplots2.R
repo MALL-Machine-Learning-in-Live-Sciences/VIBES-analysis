@@ -47,23 +47,21 @@ bp <- ggplot(df, aes(x=FS, y=AUC, group=FS)) +
   geom_boxplot(aes(fill=FS)) +
   theme_light()+ theme(axis.title.y = element_blank(), axis.ticks.x = element_blank(),legend.position = "bottom",legend.title = element_blank(),
                        axis.text.x = element_blank())+
-  facet_wrap(~ Algorithm, scales = "free_y",)+
-  stat_compare_means(comparisons = list(c("FCBF", "KW"),c("FCBF", "LDM"), c("KW", "LDM")), bracket.size = 0.2,  size = 2, paired = TRUE,label = "p.signif",hide.ns = TRUE,vjust = 0.5)+
+  facet_wrap(~ Algorithm, scales ="fixed")+
+  #stat_compare_means(comparisons = list(c("FCBF", "KW"),c("FCBF", "LDM"), c("KW", "LDM")),method = "wilcox.test", bracket.size = 0.2,  size = 2, paired = FALSE,label = "p.signif",hide.ns = TRUE,vjust = 0.5)+
   theme(strip.background = element_blank(),strip.text.x = element_text(
     size = 8, color = "black"), axis.ticks = element_blank(),axis.title.x.bottom = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank())
 
 bp =change_palette(bp, palette= viridis(3))
-bp1 = bp
-bp = bp+ggtitle("Counts Benchmark")+theme(legend.position = "none",plot.title = element_text(hjust = 0.5))
-
-bp_counts = cowplot::plot_grid(
-  bp %+% subset(df, Algorithm < "SVM"),
-  bp1 %+% subset(df, Algorithm > "RF"),
-  nrow = 2,label_y = "AUC"
-)
+bp_counts = bp+ggtitle("Counts Benchmark")+theme(legend.position = c(0.82, 0.25),
+                                                 legend.text =  element_text(size=10),
+                                                 legend.key = element_rect(size = 6),
+                                                 legend.key.height = unit(1, "cm"),
+                                                 legend.key.width = unit(1, "cm"),
+                                                 plot.title = element_text(hjust = 0.5))
 
 
-
+##### Fried. Test #####
 k_GBM = df[df$Algorithm == "GBM",]
 k_GLMNET = df[df$Algorithm == "GLMNET",]
 k_RF = df[df$Algorithm == "RF",]
@@ -76,6 +74,7 @@ ft_RF = friedman.test(k_RF$AUC, k_RF$FS, k_RF$rep)
 ft_SVM = friedman.test(k_SVM$AUC, k_SVM$FS, k_SVM$rep)
 ft_xGBOOST = friedman.test(k_xGBOOST$AUC, k_xGBOOST$FS, k_xGBOOST$rep)
 ft_Counts = list(ft_GBM,ft_GLMNET,ft_RF,ft_SVM,ft_xGBOOST )
+##### Fried.Test ####
 
 #Relative Abundances 
 #######
@@ -97,22 +96,20 @@ bp <- ggplot(df, aes(x=FS, y=AUC, group=FS)) +
   geom_boxplot(aes(fill=FS)) +
   theme_light()+ theme(axis.title.y = element_blank(), axis.ticks.x = element_blank(),legend.position = "bottom",legend.title = element_blank(),
                        axis.text.x = element_blank())+
-  facet_wrap(~ Algorithm, scales = "free_y",)+
-  stat_compare_means(comparisons = list(c("FCBF", "KW"),c("FCBF", "LDM"), c("KW", "LDM")), bracket.size = 0.2,  size = 2, paired = TRUE,label = "p.signif",hide.ns = TRUE,vjust = 0.5)+
+  facet_wrap(~ Algorithm, scales ="fixed")+
+  #stat_compare_means(comparisons = list(c("FCBF", "KW"),c("FCBF", "LDM"), c("KW", "LDM")),method = "wilcox.test", bracket.size = 0.2,  size = 2, paired = FALSE,label = "p.signif",hide.ns = TRUE,vjust = 0.5)+
   theme(strip.background = element_blank(),strip.text.x = element_text(
     size = 8, color = "black"), axis.ticks = element_blank(),axis.title.x.bottom = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank())
 
 bp =change_palette(bp, palette= viridis(3))
-bp1 = bp
-bp = bp+ggtitle("RA Benchmark")+theme(legend.position = "none",plot.title = element_text(hjust = 0.5))
+bp_RA = bp+ggtitle("R.A Benchmark")+theme(legend.position = c(0.82, 0.25),
+                                          legend.text =  element_text(size=10),
+                                          legend.key = element_rect(size = 6),
+                                          legend.key.height = unit(1, "cm"),
+                                          legend.key.width = unit(1, "cm"),
+                                          plot.title = element_text(hjust = 0.5))
 
-bp_RA = cowplot::plot_grid(
-  bp %+% subset(df, Algorithm < "SVM"),
-  bp1 %+% subset(df, Algorithm > "RF"),
-  nrow = 2,label_y = "AUC"
-)
-
-
+##### Fried.Test ####
 k_GBM = df[df$Algorithm == "GBM",]
 k_GLMNET = df[df$Algorithm == "GLMNET",]
 k_RF = df[df$Algorithm == "RF",]
@@ -125,6 +122,7 @@ ft_RF = friedman.test(k_RF$AUC, k_RF$FS, k_RF$rep)
 ft_SVM = friedman.test(k_SVM$AUC, k_SVM$FS, k_SVM$rep)
 ft_xGBOOST = friedman.test(k_xGBOOST$AUC, k_xGBOOST$FS, k_xGBOOST$rep)
 ft_RA = list(ft_GBM,ft_GLMNET,ft_RF,ft_SVM,ft_xGBOOST )
+##### Fried.Test ####
 
 #######
 #Best models comparations
@@ -280,9 +278,9 @@ mod_C = mod_C + theme(legend.position = "bottom")
 mod_AR = mod_AR + theme(legend.position = "bottom")
 
 
-panel1 = ggarrange(bp_counts,bp_RA,mod_C,mod_AR,venn_C,venn_AR,
-                   ncol = 2,nrow =3,
-                   labels = list("A)","","B)","", "C)",""))
+panel1 = ggarrange(bp_counts,bp_RA,venn_C,venn_AR,
+                   ncol = 2,nrow =2,
+                   labels = list("A","","B",""))
 #######
 
 #### PANEL 2 #####
@@ -290,11 +288,11 @@ panel1 = ggarrange(bp_counts,bp_RA,mod_C,mod_AR,venn_C,venn_AR,
 #Counts
 require(mlr)
 source("git/Entropy/functions/FunctionsDataFilter.R")
-models = as.data.frame(counts$Bmr_Sriniv_Amsel_Genus_C_train_LDM_29.rds)
+models = as.data.frame(counts$Bmr_Sriniv_Amsel_Genus_C_train_KW_9.rds)
 model = models[models$learner.id == "classif.randomForest.tuned",]
 index = which.max(model$acc)
 # Get best model
-modelos = getBMRModels(counts$Bmr_Sriniv_Amsel_Genus_C_train_LDM_29.rds)
+modelos = getBMRModels(counts$Bmr_Sriniv_Amsel_Genus_C_train_KW_9.rds)
 alg_index = which(names(modelos$dataset)=="classif.randomForest.tuned")
 best_mod_C = getLearnerModel(modelos$dataset[[alg_index]][[index]])
 FI_C = getFeatureImportance(best_mod_C)
@@ -314,12 +312,12 @@ df_FIc$variable = substr(df_FIc$variable, 4,100)
 
 plotFIC = ggplot(df_FIc, aes(x = reorder(variable, importance), y = importance))+
   geom_segment( aes(xend=variable, yend=0,), color = viridis(3)[2]) +
-  geom_point( size=2, color=viridis(1)) +
+  geom_point( size=4, color=viridis(1)) +
   coord_flip() +
   theme_light()+
-  theme( axis.text=element_text(size=7),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
+  theme( axis.text=element_text(size=10),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
          legend.text=element_text(size=10))+
-  ggtitle("Feature Importance: Counts+LDM+RF model")+theme(plot.title = element_text(hjust = 0.5))
+  ggtitle("Feature Importance: Counts+KW+RF model")+theme(plot.title = element_text(hjust = 0.5))
 plotFIC
 
 

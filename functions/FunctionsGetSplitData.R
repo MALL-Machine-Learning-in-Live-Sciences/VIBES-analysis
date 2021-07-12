@@ -40,6 +40,21 @@ split.data = function(data,seed = 123, pctg = 0.90, path, project, id){ #set a s
   
 }
 
+s.data = function(data, seed = 123, pctg = 0.90){ #set a seed to reproducibility and  % of train/test
+  #project = Ravel or Sriniv (Nugent or Amsel in Sriniv) | id = C o AR
+  require(caret)
+  set.seed(seed)
+  tr_size <- floor(pctg * nrow(data))
+  train_ind = sample(nrow(data), size =tr_size)
+  train <- data[train_ind, ]
+  test <- data[-train_ind, ]
+  data_pool <- list(train,test)
+  c = c("train", "test")
+  names(data_pool) = c
+  return(data_pool)
+}
+
+
 # save.splits = function(path, list, project, id){
 #   train = list[[1]]
 #   test = list[[2]]

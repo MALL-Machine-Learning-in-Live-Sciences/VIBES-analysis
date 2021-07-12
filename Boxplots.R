@@ -8,11 +8,12 @@ require(ggplotify)
 library(easyGgplot2)
 counts = readRDS(file = "projects/Entropy/data/benchmarks/Nugent/Ravel_Genus_C_Second_Benchmarks.rds")
 ar = readRDS(file = "projects/Entropy/data/benchmarks/Nugent/Ravel_Genus_AR_Second_Benchmarks.rds")
-
+two_ft = readRDS(file = "projects/Entropy/data/benchmarks/")
 #P1
 ###### PAnel 1
 # A) PLOTS COUNTS vs AR
 # COUNTS
+d2f = as.data.frame()
 dfcbf = as.data.frame(counts$Bmr_Ravel_Genus_C_train_FCBF_8.rds)
 dkw = as.data.frame(counts$Bmr_Ravel_Genus_C_train_KW_12.rds)
 dldm = as.data.frame(counts$Bmr_Ravel_Genus_C_train_LDM_40.rds)
@@ -47,35 +48,37 @@ bp <- ggplot(df, aes(x=FS, y=AUC, group=FS)) +
   geom_boxplot(aes(fill=FS)) +
   theme_light()+ theme(axis.title.y = element_blank(), axis.ticks.x = element_blank(),legend.position = "bottom",legend.title = element_blank(),
                                      axis.text.x = element_blank())+
-  facet_wrap(~ Algorithm, scales = "free_y",)+
-  stat_compare_means(comparisons = list(c("FCBF", "KW"),c("FCBF", "LDM"), c("KW", "LDM")), bracket.size = 0.2,  size = 2, paired = TRUE,label = "p.signif",hide.ns = TRUE,vjust = 0.5)+
+  facet_wrap(~ Algorithm, scales ="fixed")+#coord_cartesian(ylim = c(0.5, 1))+
+  #stat_compare_means(comparisons = list(c("FCBF", "KW"),c("FCBF", "LDM"), c("KW", "LDM")),method = "wilcox.test", bracket.size = 0.2,  size = 2, paired = FALSE,label = "p.signif",hide.ns = TRUE,vjust = 0.5)+
   theme(strip.background = element_blank(),strip.text.x = element_text(
     size = 8, color = "black"), axis.ticks = element_blank(),axis.title.x.bottom = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank())
 
 bp =change_palette(bp, palette= viridis(3))
-bp1 = bp
-bp = bp+ggtitle("Counts Benchmark")+theme(legend.position = "none",plot.title = element_text(hjust = 0.5))
-
-bp_counts = cowplot::plot_grid(
-  bp %+% subset(df, Algorithm < "SVM"),
-  bp1 %+% subset(df, Algorithm > "RF"),
-  nrow = 2,label_y = "AUC"
-)
+bp_counts = bp+ggtitle("Counts Benchmark")+theme(legend.position = c(0.82, 0.25),
+                                          legend.text =  element_text(size=10),
+                                          legend.key = element_rect(size = 6),
+                                          legend.key.height = unit(1, "cm"),
+                                          legend.key.width = unit(1, "cm"),
+                                          plot.title = element_text(hjust = 0.5))
 
 
-                   
+
+##### Fried Test #####                   
 k_GBM = df[df$Algorithm == "GBM",]
 k_GLMNET = df[df$Algorithm == "GLMNET",]
 k_RF = df[df$Algorithm == "RF",]
 k_SVM = df[df$Algorithm == "SVM",]
 k_xGBOOST = df[df$Algorithm == "xGBOOST",]
 
-ft_GBM = friedman.test(k_GBM$AUC, k_GBM$FS, k_GBM$rep)
+ft_GBM = friedman.test(k_GBM$AUC, k_GBM$FS)
 ft_GLMNET = friedman.test(k_GLMNET$AUC, k_GLMNET$FS, k_GLMNET$rep)
 ft_RF = friedman.test(k_RF$AUC, k_RF$FS, k_RF$rep)
 ft_SVM = friedman.test(k_SVM$AUC, k_SVM$FS, k_SVM$rep)
 ft_xGBOOST = friedman.test(k_xGBOOST$AUC, k_xGBOOST$FS, k_xGBOOST$rep)
 ft_Counts = list(ft_GBM,ft_GLMNET,ft_RF,ft_SVM,ft_xGBOOST )
+##### Fried Test #####
+
+
 
 #Relative Abundances 
 #######
@@ -97,22 +100,19 @@ bp <- ggplot(df, aes(x=FS, y=AUC, group=FS)) +
   geom_boxplot(aes(fill=FS)) +
   theme_light()+ theme(axis.title.y = element_blank(), axis.ticks.x = element_blank(),legend.position = "bottom",legend.title = element_blank(),
                        axis.text.x = element_blank())+
-  facet_wrap(~ Algorithm, scales = "free_y",)+
-  stat_compare_means(comparisons = list(c("FCBF", "KW"),c("FCBF", "LDM"), c("KW", "LDM")), bracket.size = 0.2,  size = 2, paired = TRUE,label = "p.signif",hide.ns = TRUE,vjust = 0.5)+
+  facet_wrap(~ Algorithm, scales ="fixed")+ #coord_cartesian(ylim = c(0.5, 1))+
+  #stat_compare_means(comparisons = list(c("FCBF", "KW"),c("FCBF", "LDM"), c("KW", "LDM")),method = "wilcox.test", bracket.size = 0.2,  size = 2, paired = FALSE,label = "p.signif",hide.ns = TRUE,vjust = 0.5)+
   theme(strip.background = element_blank(),strip.text.x = element_text(
     size = 8, color = "black"), axis.ticks = element_blank(),axis.title.x.bottom = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank())
 
 bp =change_palette(bp, palette= viridis(3))
-bp1 = bp
-bp = bp+ggtitle("RA Benchmark")+theme(legend.position = "none",plot.title = element_text(hjust = 0.5))
-
-bp_RA = cowplot::plot_grid(
-  bp %+% subset(df, Algorithm < "SVM"),
-  bp1 %+% subset(df, Algorithm > "RF"),
-  nrow = 2,label_y = "AUC"
-)
-
-
+bp_RA = bp+ggtitle("R.A Benchmark")+theme(legend.position = c(0.82, 0.25),
+                                          legend.text =  element_text(size=10),
+                                          legend.key = element_rect(size = 6),
+                                          legend.key.height = unit(1, "cm"),
+                                          legend.key.width = unit(1, "cm"),
+                                          plot.title = element_text(hjust = 0.5))
+##### Fried Test #####
 k_GBM = df[df$Algorithm == "GBM",]
 k_GLMNET = df[df$Algorithm == "GLMNET",]
 k_RF = df[df$Algorithm == "RF",]
@@ -125,6 +125,7 @@ ft_RF = friedman.test(k_RF$AUC, k_RF$FS, k_RF$rep)
 ft_SVM = friedman.test(k_SVM$AUC, k_SVM$FS, k_SVM$rep)
 ft_xGBOOST = friedman.test(k_xGBOOST$AUC, k_xGBOOST$FS, k_xGBOOST$rep)
 ft_RA = list(ft_GBM,ft_GLMNET,ft_RF,ft_SVM,ft_xGBOOST )
+##### Fried Test #####
 
 #######
 #COUNTS
@@ -279,9 +280,9 @@ mod_C = mod_C + theme(legend.position = "bottom")
 mod_AR = mod_AR + theme(legend.position = "bottom")
 
 
-panel1 = ggarrange(bp_counts,bp_RA,mod_C,mod_AR,venn_C,venn_AR,
-                   ncol = 2,nrow =3,
-                   labels = list("A)","","B)","", "C)",""))
+panel1 = ggarrange(bp_counts,bp_RA,venn_C,venn_AR,
+                   ncol = 2,nrow =2,
+                   labels = list("A","","B"))
 #######
 
 #### PANEL 2 #####
