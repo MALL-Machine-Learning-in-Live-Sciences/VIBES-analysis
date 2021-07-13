@@ -306,6 +306,7 @@ Ravel_data = subset(All_data_21, Study == "Ravel")
 Sriniv_data = subset(All_data_21, Study == "Srinivasan")
 
 #CLR transform (Alternative transform)
+require(mixOmics)
 AD_21 = All_data_21
 AD_21[1:21] = AD_21[1:21] +1 # Sum 1 to avoid 0 values with log ratio transformation
 mat_AD21 = logratio.transfo(AD_21[1:21], logratio = 'CLR')
@@ -341,3 +342,5 @@ test_task3 = makeClassifTask(data = Sriniv.limma.predict_3C[1:22], target = "clu
 predict3 = predict(bm3, task = test_task3, type = "prob")
 CM3 = confusionMatrix(data = predict3$data$response, reference = as.factor(Sriniv.limma.predict_3C$cluster))
 
+print(CM2)
+print(CM3)

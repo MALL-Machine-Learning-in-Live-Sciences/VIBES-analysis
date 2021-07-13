@@ -346,5 +346,6 @@ test_task3 = makeClassifTask(data = Sriniv.mmu.predict_3C[1:22], target = "clust
 predict3 = predict(bm3, task = test_task3, type = "prob")
 CM3 = confusionMatrix(data = predict3$data$response, reference = as.factor(Sriniv.mmu.predict_3C$cluster))
 
-
+print(CM2)
+print(CM3)
 
