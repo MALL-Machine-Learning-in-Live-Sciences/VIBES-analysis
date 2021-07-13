@@ -23,6 +23,21 @@ percentile_norm = function(data = data, batch = batch, trt = trt){
   data.pn.df.reorder = data.pn.df[rownames(data), ]
   return(data.pn.df.reorder)
 }
+percentileofscore = function(df, control.index){
+  df.percentile = df
+  df.percentile[1:nrow(df), 1:ncol(df)] = NA
+  for(i in 1:ncol(df)){
+    control = sort(df[control.index, i])
+    for(j in 1:nrow(df)){
+      percentile.strick = sum(control < df[j, i])/length(control)
+      percentile.weak = (length(control) - sum(control > df[j, i]))/length(control)
+      percentile = (percentile.strick + percentile.weak)/2
+      df.percentile[j, i] = percentile
+      
+    }
+  }
+  return(df.percentile)
+}
 PN.combat = function(dataset){
   require(mixOmics)
   AD_21 = dataset
