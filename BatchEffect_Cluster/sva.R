@@ -328,6 +328,7 @@ Sriniv.sva.predict_2C = make.cl_predict(lista = Ravel.sva_2C, newdata = Sriniv.s
 Sriniv.sva.predict_3C = make.cl_predict(lista = Ravel.sva_3C, newdata = Sriniv.sva)
 
 #Train
+set.seed(1312)
 bmr_2C = ML.exec_C2(dataset = Ravel.sva_2C$dataframe)
 bmr_3C = ML.exec_C3(dataset = Ravel.sva_3C$dataframe)
 

@@ -332,6 +332,7 @@ Sriniv.mmu.predict_3C = make.cl_predict(lista = Ravel.mmu_3C, newdata = Sriniv.m
 print(table(Ravel.mmu_2C$dataframe$cluster,Ravel.mmu_2C$dataframe$target))
 
 #Train
+set.seed(1312)
 bmr_2C = ML.exec_C2(dataset = Ravel.mmu_2C$dataframe)
 bmr_3C = ML.exec_C3(dataset = Ravel.mmu_3C$dataframe)
 

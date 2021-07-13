@@ -360,6 +360,7 @@ Sriniv.pn.predict_2C = make.cl_predict(lista = Ravel.pn_2C, newdata = Sriniv.pn)
 Sriniv.pn.predict_3C = make.cl_predict(lista = Ravel.pn_3C, newdata = Sriniv.pn)
 
 #Train
+set.seed(1312)
 bmr_2C = ML.exec_C2(dataset = Ravel.pn_2C$dataframe)
 bmr_3C = ML.exec_C3(dataset = Ravel.pn_3C$dataframe)
 

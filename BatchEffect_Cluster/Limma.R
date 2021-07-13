@@ -99,7 +99,7 @@ ML.exec_C2 = function(dataset){
                                          round(sqrt(ncol(task$env$data)))+2,
                                          round(sqrt(ncol(task$env$data)))+3,
                                          round(sqrt(ncol(task$env$data)))+4)),
-    makeDiscreteParam("ntree", values= 3L),
+    makeDiscreteParam("ntree", values= 1000L),
     makeDiscreteParam("nodesize", values= c(1:10))
   )
   l1<-makeLearner("classif.randomForest", predict.type = "prob")
@@ -191,7 +191,7 @@ ML.exec_C3 = function(dataset){
                                          round(sqrt(ncol(task$env$data)))+2,
                                          round(sqrt(ncol(task$env$data)))+3,
                                          round(sqrt(ncol(task$env$data)))+4)),
-    makeDiscreteParam("ntree", values= 3L),
+    makeDiscreteParam("ntree", values= 1000L),
     makeDiscreteParam("nodesize", values= c(1:10))
   )
   l1<-makeLearner("classif.randomForest", predict.type = "prob")
@@ -327,6 +327,7 @@ Sriniv.limma.predict_2C = make.cl_predict(lista = Ravel.limma_2C, newdata = Srin
 Sriniv.limma.predict_3C = make.cl_predict(lista = Ravel.limma_3C, newdata = Sriniv.limma)
 
 #Train
+set.seed(1312)
 bmr_2C = ML.exec_C2(dataset = Ravel.limma_2C$dataframe)
 bmr_3C = ML.exec_C3(dataset = Ravel.limma_3C$dataframe)
 
