@@ -43,7 +43,6 @@ make.cluster = function(dataset, k){
   var <- sapply(dataset, is.character)
   mat = dataset[cols]
   meta = dataset[var]
-  set.seed(123)
   opt = fviz_nbclust(mat, FUNcluster = kmeans) 
   km.res <- kmeans(mat, k, iter.max = 1000, nstart = 25)
   a = fviz_cluster(km.res,mat, geom = "point" )
@@ -313,13 +312,13 @@ draw_confusion_matrix <- function(cm) {
 
 # Load Data
 All_data_21 = readRDS("/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/All_data_21_RA.rds")
-#All_data_21 = readRDS("projects/Entropy/data/All_data_21.rds")
+All_data_21 = readRDS("projects/Entropy/data/All_data_21_RA.rds")
 Ravel_data = subset(All_data_21, Study == "Ravel")
 Sriniv_data = subset(All_data_21, Study == "Srinivasan")
 
 #Apply MMUPIH
 mmu.data = MMUPIH.combat(All_data_21)
-show.pca(norm.dataset(All_data_21), batch = "Study")
+show.pca(All_data_21, batch = "Study")
 show.pca(mmu.data, batch = "batch")
 
 #Cluster
@@ -329,6 +328,8 @@ Ravel.mmu_2C = make.cluster(dataset = Ravel.mmu, k = 2)
 Ravel.mmu_3C = make.cluster(dataset = Ravel.mmu, k = 3)
 Sriniv.mmu.predict_2C = make.cl_predict(lista = Ravel.mmu_2C, newdata = Sriniv.mmu)
 Sriniv.mmu.predict_3C = make.cl_predict(lista = Ravel.mmu_3C, newdata = Sriniv.mmu)
+
+print(table(Ravel.mmu_2C$dataframe$cluster,Ravel.mmu_2C$dataframe$target))
 
 #Train
 bmr_2C = ML.exec_C2(dataset = Ravel.mmu_2C$dataframe)
