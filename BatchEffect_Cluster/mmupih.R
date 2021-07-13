@@ -312,7 +312,7 @@ draw_confusion_matrix <- function(cm) {
 
 # Load Data
 All_data_21 = readRDS("/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/All_data_21_RA.rds")
-All_data_21 = readRDS("projects/Entropy/data/All_data_21_RA.rds")
+#All_data_21 = readRDS("projects/Entropy/data/All_data_21_RA.rds")
 Ravel_data = subset(All_data_21, Study == "Ravel")
 Sriniv_data = subset(All_data_21, Study == "Srinivasan")
 
