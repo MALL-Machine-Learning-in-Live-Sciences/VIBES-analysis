@@ -19,11 +19,11 @@ MMUPIH.combat = function(dataset){
   MMUPIH <- adjust_batch(feature_abd = t(mat),
                          batch = "study",
                          data = meta,
-                         control = list(verbose = FALSE))
+                         control = list(maxit = 5000, verbose = TRUE))
   MMUPIH.features <- MMUPIH$feature_abd_adj
   mat = as.data.frame(t(MMUPIH.features))
   dataframe = as.data.frame(cbind(mat, target, batch))
-  dataframe = norm.dataset(dataframe)
+  #dataframe = norm.dataset(dataframe)
   return(dataframe)
 }
 show.pca = function(dataset, batch = "batch", cond = "target"){
@@ -312,7 +312,7 @@ draw_confusion_matrix <- function(cm) {
 } 
 
 # Load Data
-All_data_21 = readRDS("/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/All_data_21.rds")
+All_data_21 = readRDS("/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/All_data_21_RA.rds")
 #All_data_21 = readRDS("projects/Entropy/data/All_data_21.rds")
 Ravel_data = subset(All_data_21, Study == "Ravel")
 Sriniv_data = subset(All_data_21, Study == "Srinivasan")
