@@ -99,7 +99,7 @@ ML.exec_C2 = function(dataset){
                                          round(sqrt(ncol(task$env$data)))+2,
                                          round(sqrt(ncol(task$env$data)))+3,
                                          round(sqrt(ncol(task$env$data)))+4)),
-    makeDiscreteParam("ntree", values= 1000L),
+    makeDiscreteParam("ntree", values= 3L),
     makeDiscreteParam("nodesize", values= c(1:10))
   )
   l1<-makeLearner("classif.randomForest", predict.type = "prob")
@@ -191,7 +191,7 @@ ML.exec_C3 = function(dataset){
                                          round(sqrt(ncol(task$env$data)))+2,
                                          round(sqrt(ncol(task$env$data)))+3,
                                          round(sqrt(ncol(task$env$data)))+4)),
-    makeDiscreteParam("ntree", values= 1000L),
+    makeDiscreteParam("ntree", values= 3L),
     makeDiscreteParam("nodesize", values= c(1:10))
   )
   l1<-makeLearner("classif.randomForest", predict.type = "prob")
@@ -333,11 +333,13 @@ bmr_3C = ML.exec_C3(dataset = Ravel.limma_3C$dataframe)
 #Predict
 require(caret)
 bm2 =get.best.model_C2(bncmark = bmr_2C)
+print(bm2)
 test_task2 = makeClassifTask(data = Sriniv.limma.predict_2C[1:22], target = "cluster")
 predict2 = predict(bm2, task = test_task2, type = "prob")
 CM2 = confusionMatrix(data = predict2$data$response, reference = as.factor(Sriniv.limma.predict_2C$cluster))
 
 bm3 = get.best.model_C3(bncmark = bmr_3C)
+print(bm3)
 test_task3 = makeClassifTask(data = Sriniv.limma.predict_3C[1:22], target = "cluster")
 predict3 = predict(bm3, task = test_task3, type = "prob")
 CM3 = confusionMatrix(data = predict3$data$response, reference = as.factor(Sriniv.limma.predict_3C$cluster))
