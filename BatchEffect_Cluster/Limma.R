@@ -78,7 +78,7 @@ ML.exec_C2 = function(dataset){
   require(parallelMap)
   drops <- c("target","batch")
   dataset = dataset[ , !(names(dataset) %in% drops)]
-  cores = 2
+  cores = detectCores()
   task = makeClassifTask(data = dataset, target = 'cluster')
   #task = normalizeFeatures(
   #  task,
@@ -170,7 +170,7 @@ ML.exec_C3 = function(dataset){
   require(parallelMap)
   drops <- c("target","batch")
   dataset = dataset[ , !(names(dataset) %in% drops)]
-  cores = 2
+  cores = detectCores()
   task = makeClassifTask(data = dataset, target = 'cluster')
   #task = normalizeFeatures(
   #  task,
@@ -300,7 +300,8 @@ draw_confusion_matrix <- function(cm) {
 }  
 
 # Load Data
-All_data_21 = readRDS("projects/Entropy/data/All_data_21.rds")
+All_data_21 = readRDS("/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/All_data_21.rds")
+#All_data_21 = readRDS("projects/Entropy/data/All_data_21.rds")
 Ravel_data = subset(All_data_21, Study == "Ravel")
 Sriniv_data = subset(All_data_21, Study == "Srinivasan")
 

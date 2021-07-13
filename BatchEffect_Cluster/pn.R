@@ -1,7 +1,30 @@
 #PN
+norm.dataset = function(data){
+  # Retain only numerics variables
+  cols <- sapply(data, is.numeric) 
+  
+  # Normalize that variables
+  data[cols] <- apply(X = data[cols], FUN = function(x) log2(x+1), MARGIN = 2) 
+  return(data)
+}
+percentile_norm = function(data = data, batch = batch, trt = trt){
+  batch = as.factor(batch)
+  trt = as.factor(trt)
+  trt.list = list()
+  data.pn.df = data.frame()
+  for(i in 1:nlevels(batch)){
+    trt.each.b = trt[batch == levels(batch)[i]]
+    trt.list[[i]] = trt.each.b
+    data.each.b.pn = percentileofscore(data[batch == levels(batch)[i],], 
+                                       which(trt.each.b == levels(trt.each.b)[1]))
+    data.pn.df = rbind(data.pn.df,data.each.b.pn)
+  }
+  names(trt.list) = levels(batch)
+  data.pn.df.reorder = data.pn.df[rownames(data), ]
+  return(data.pn.df.reorder)
+}
 PN.combat = function(dataset){
   require(mixOmics)
-  source(file = 'Managing_batch_effects-master/Managing_batch_effects/Functions.R')
   AD_21 = dataset
   target = AD_21$target
   batch = AD_21$Study
@@ -80,7 +103,7 @@ ML.exec_C2 = function(dataset){
   require(parallelMap)
   drops <- c("target","batch")
   dataset = dataset[ , !(names(dataset) %in% drops)]
-  cores = 2
+  cores = detectCores()
   task = makeClassifTask(data = dataset, target = 'cluster')
   #task = normalizeFeatures(
   #  task,
@@ -172,7 +195,7 @@ ML.exec_C3 = function(dataset){
   require(parallelMap)
   drops <- c("target","batch")
   dataset = dataset[ , !(names(dataset) %in% drops)]
-  cores = 2
+  cores = detectCores()
   task = makeClassifTask(data = dataset, target = 'cluster')
   #task = normalizeFeatures(
   #  task,
@@ -302,10 +325,11 @@ draw_confusion_matrix <- function(cm) {
 }  
 
 # Load Data
-All_data_21 = readRDS("projects/Entropy/data/All_data_21.rds")
+All_data_21 = readRDS("/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/All_data_21.rds")
+#All_data_21 = readRDS("projects/Entropy/data/All_data_21.rds")
 Ravel_data = subset(All_data_21, Study == "Ravel")
 Sriniv_data = subset(All_data_21, Study == "Srinivasan")
-source("git/Entropy/functions/FunctionsGetSplitData.R")
+
 
 #Apply PN
 pn.data = PN.combat(All_data_21)

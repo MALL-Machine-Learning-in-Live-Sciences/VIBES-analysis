@@ -1,7 +1,14 @@
 #MMUPIH
+norm.dataset = function(data){
+  # Retain only numerics variables
+  cols <- sapply(data, is.numeric) 
+  
+  # Normalize that variables
+  data[cols] <- apply(X = data[cols], FUN = function(x) log2(x+1), MARGIN = 2) 
+  return(data)
+}
 MMUPIH.combat = function(dataset){
   require(MMUPHin)
-  source("git/Entropy/functions/FunctionsGetSplitData.R")
   target = dataset$target
   batch = dataset$Study
   meta = data.frame(study = as.factor(dataset$Study),
@@ -83,7 +90,7 @@ ML.exec_C2 = function(dataset){
   require(parallelMap)
   drops <- c("target","batch")
   dataset = dataset[ , !(names(dataset) %in% drops)]
-  cores = 2
+  cores = detectCores()
   task = makeClassifTask(data = dataset, target = 'cluster')
   #task = normalizeFeatures(
   #  task,
@@ -175,7 +182,7 @@ ML.exec_C3 = function(dataset){
   require(parallelMap)
   drops <- c("target","batch")
   dataset = dataset[ , !(names(dataset) %in% drops)]
-  cores = 2
+  cores = detectCores()
   task = makeClassifTask(data = dataset, target = 'cluster')
   #task = normalizeFeatures(
   #  task,
@@ -305,10 +312,10 @@ draw_confusion_matrix <- function(cm) {
 } 
 
 # Load Data
-All_data_21 = readRDS("projects/Entropy/data/All_data_21.rds")
+All_data_21 = readRDS("/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/All_data_21.rds")
+#All_data_21 = readRDS("projects/Entropy/data/All_data_21.rds")
 Ravel_data = subset(All_data_21, Study == "Ravel")
 Sriniv_data = subset(All_data_21, Study == "Srinivasan")
-source("git/Entropy/functions/FunctionsGetSplitData.R")
 
 #Apply MMUPIH
 mmu.data = MMUPIH.combat(All_data_21)
