@@ -228,6 +228,7 @@ bmr_2C = ML.exec_C2(dataset = Ravel_data)
 #Predict
 require(caret)
 bm2 =get.best.model_C2(bncmark = bmr_2C)
+print(bm2)
 test_task2 = makeClassifTask(data = Sriniv_data[1:22], target = "target")
 predict2 = predict(bm2, task = test_task2, type = "prob")
 CM2 = confusionMatrix(data = predict2$data$response, reference = as.factor(Sriniv_data$target))
