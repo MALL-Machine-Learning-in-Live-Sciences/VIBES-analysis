@@ -207,6 +207,43 @@ draw_confusion_matrix <- function(cm) {
   text(70, 35, names(cm$overall[2]), cex=1, font=2)
   text(70, 20, round(as.numeric(cm$overall[2]), 3), cex=1)
 } 
+KW.FS = function(data, fs.type = 'kruskal.test', pctge = NULL, thold = NULL){
+  require(mlr)
+  require(testthat)
+  task = makeClassifTask(data = data, target = 'target')
+  fv = generateFilterValuesData(task, method = fs.type)
+  print(fv)
+  if (is.null(pctge)){
+    filtered.task = filterFeatures(task, fval = fv, threshold = thold)
+    filtered.data = filtered.task$env$data
+  } else if(is.null(thold)){
+    filtered.task = filterFeatures(task, fval = fv, perc = pctge)
+    filtered.data = filtered.task$env$data
+  }else{
+    print("Uncorrect format, choose pctge or thold")
+  }
+  return(filtered.data)
+}
+FCBF.FS = function(data, thold){
+  require(FCBF)
+  #Split target from other variables
+  targets = as.factor(data$target)
+  cols <- sapply(data, is.numeric)
+  variables = data[cols]
+  
+  # Discretize RA from OTUS in High and LOW. The transpose is done since the function wants the OTUS in the rows.
+  discretization = discretize_exprs(t(variables))
+  #su_plot(discretization, targets)
+  
+  #Execute Algm
+  fcbf = fcbf(discretization, targets, verbose = T, thresh = thold)
+  
+  #Select new features
+  filtered.data = variables[,fcbf$index]
+  filtered.data = as.data.frame(cbind(filtered.data, target = targets))
+  # Return dataframe only w the features select from FCBF
+  return(filtered.data)
+}
 
 # Load Data
 All_data_21 = readRDS("/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/All_data_21_RA.rds")
@@ -219,17 +256,41 @@ mmu.data = MMUPIH.combat(All_data_21)
 Ravel_data = subset(mmu.data, batch == "Ravel")
 Sriniv_data = subset(mmu.data, batch == "Srinivasan")
 
-#Feature Selection
-
 #Train
 set.seed(1312)
 bmr_2C = ML.exec_C2(dataset = Ravel_data)
-
 #Predict
 require(caret)
 bm2 =get.best.model_C2(bncmark = bmr_2C)
 print(bm2)
 test_task2 = makeClassifTask(data = Sriniv_data[1:22], target = "target")
+predict2 = predict(bm2, task = test_task2, type = "prob")
+CM2 = confusionMatrix(data = predict2$data$response,  reference = as.factor(Sriniv_data$target))
+print(CM2)
+
+#FS
+R_FCBF = FCBF.FS(Ravel_data[1:22],thold = 0.0025)
+R_KW = KW.FS(Ravel_data[1:22],thold = 90)
+#train
+bmrFC = ML.exec_C2(dataset = R_FCBF)
+bmrKW = ML.exec_C2(dataset = R_KW)
+#Predict
+#FCBF
+print("FCBF")
+bm2 =get.best.model_C2(bncmark = bmrFC)
+print(bm2)
+c = colnames(R_FCBF)
+test_task2 = makeClassifTask(data = Sriniv_data[c], target = "target")
+predict2 = predict(bm2, task = test_task2, type = "prob")
+CM2 = confusionMatrix(data = predict2$data$response, reference = as.factor(Sriniv_data$target))
+print(CM2)
+
+#KW
+print("KW")
+bm2 =get.best.model_C2(bncmark = bmrKW)
+print(bm2)
+c = colnames(R_KW)
+test_task2 = makeClassifTask(data = Sriniv_data[c], target = "target")
 predict2 = predict(bm2, task = test_task2, type = "prob")
 CM2 = confusionMatrix(data = predict2$data$response, reference = as.factor(Sriniv_data$target))
 print(CM2)
