@@ -1,6 +1,6 @@
 ## Project: Entropy ##
-## PC Work git directory: ~/git/Entropy ##
-## PC Work project directory: ~/projects/Entropy ##
+## PC Work git directory: ~/git/BVMetaGenomics ##
+## PC Work project directory: ~/git/BVMetaGenomics ##
 ## CESGA Work git direcotry: /home/ulc/co/dfe/git/Entropy/
 ## CESGA Work project directory: /mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data)
 
