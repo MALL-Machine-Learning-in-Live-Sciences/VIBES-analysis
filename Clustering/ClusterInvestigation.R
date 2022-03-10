@@ -60,12 +60,12 @@ dfresnumclust2$Clusters = as.factor(dfresnumclust2$Clusters)
 
 #Plot Index
 clIG = ggplot(data =dfresnumclust2, aes(x = Clusters, y = Freq, fill = Freq))+
-  geom_bar(position = 'dodge', stat='identity', width=.5)+ theme_light()+
+  geom_bar(position = 'dodge', stat='identity', width=.5)+ theme_light(base_size = 13)+
   ylab("Freq. among all Indices")+ xlab("Optimal Number of Clusters")
-
+require(ggpubr)
 clIG = change_palette(clIG, palette= viridis(10)[1:4])
 clIG = clIG + theme(legend.title = element_blank(),legend.position = "none",plot.title = element_text(hjust = 0.5))
-
+clIG
 
 
 #calculamos los tres clústers
@@ -82,12 +82,12 @@ clusterG = plot_ly(x = a$Prevotella,
         mode = "markers",colors =  c("#FDE725FF","#440154FF","#21908CFF" ),
         color = as.factor(a$cluster)) %>%
   layout(legend = list(x = 0.8, y = 0.5,size = 30),
-         scene = list(xaxis = list(title = "Prevotella"),
-                      yaxis = list(title = "Dialister"),
-                      zaxis = list(title = "Sneathia")))
+         scene = list(xaxis = list(title = "Prevotella",tickfont = list(size = 15)),
+                      yaxis = list(title = "Dialister", tickfont = list(size = 15)),
+                      zaxis = list(title = "Sneathia", tickfont = list(size = 15))))
 clusterG
 
-
+xaxis = list(tickfont = list(size = 15))
 #Specie
 Ravel = readRDS("~/git/BVMetaGenomics/data/SpeciesIntersect/Ravel_Sps_Counts.rds")
 Sriniv = readRDS("~/git/BVMetaGenomics/data/SpeciesIntersect/Sriniv_Sps_Counts.rds")
@@ -152,8 +152,11 @@ dfresnumclustS$Clusters = as.factor(dfresnumclustS$Clusters)
 
 #Plot Index
 clIG = ggplot(data =dfresnumclustS, aes(x = Clusters, y = Freq, fill = Freq))+
-  geom_bar(position = 'dodge', stat='identity', width=.5)+ theme_light()+
+  geom_bar(position = 'dodge', stat='identity', width=.5)+ theme_light(base_size = 13)+
+  scale_y_discrete(position = "right")+
   ylab("Freq. among all Indices")+ xlab("Optimal Number of Clusters")
 
 clIG = change_palette(clIG, palette= viridis(10)[1:5])
 clIG = clIG + theme(legend.title = element_blank(),legend.position = "none",plot.title = element_text(hjust = 0.5))
+clIG
+ggsave()
