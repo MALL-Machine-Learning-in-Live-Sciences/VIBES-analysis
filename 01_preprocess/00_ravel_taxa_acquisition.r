@@ -1,11 +1,9 @@
 ## Project: Entropy ##
-## PC Work git directory: ~/git/BVMetaGenomics ##
-## PC Work project directory: ~/git/BVMetaGenomics ##
-## CESGA Work git direcotry: /home/ulc/co/dfe/git/Entropy/
-## CESGA Work project directory: /mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data)
+## PC Work git directory: ~/git/BV_Microbiome ##
+## CESGA Work git direcotry: /home/ulc/co/dfe/git/BV_Microbiome/
 
 # Different directories according to the place of work
-setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data') ## CESGA directory
+setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata') ## CESGA directory
 # setwd("projects/Entropy/data") ## PC Directory
 
 # Required libraries
@@ -14,13 +12,13 @@ library(data.table)
 library(rentrez)
 library(taxonomizr)
 
-path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/"
+path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata/"
 prepareDatabase('accessionTaxa.sql')
 
 # In/out paths
 # CESGA
-# in.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data"
-# out.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data"
+# in.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata/"
+# out.path = "/mnt/netapp2/Store_uni/home/ulc/co/git/BV_Microbiome/extdata/"
 
 # Load data (OTU + clinical)
 otu = read.delim2(paste0(path,"otutableRefSeq.txt" ), header = T, sep = '\t')
@@ -76,5 +74,4 @@ taxTable$Rank5 = replace(taxTable$Rank5, taxTable$Rank5 == 'f__NA', 'f__')
 taxTable$Rank6 = replace(taxTable$Rank6, taxTable$Rank6 == 'g__NA', 'g__')
 taxTable$Rank7 = replace(taxTable$Rank7, taxTable$Rank6 == 's__NA', 's__')
 
-saveRDS(taxTable, file = paste0(path,"TaxonomyTableRavel.rds" ))
-
+saveRDS(taxTable, file = paste0(path,"TaxonomyTableRavel.rds" ))# Also saved as xlsx

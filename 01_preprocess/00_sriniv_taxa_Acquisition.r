@@ -1,7 +1,6 @@
 # Taxa Acquisition 
-setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data') 
-path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/projects/Entropy/data/"
-#path = "projects/Entropy/data/"
+setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata') 
+path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata/"
 otu = read.delim2(paste0(path,"otutable-Amsel.txt" ), header = T, sep = '\t')
 clin = read.delim2(paste0(path,"task-amsel.txt"), header = T, sep = '\t')
 # Required libraries
@@ -69,9 +68,4 @@ taxTable$Rank5 = replace(taxTable$Rank5, taxTable$Rank5 == 'f__NA', 'f__')
 taxTable$Rank6 = replace(taxTable$Rank6, taxTable$Rank6 == 'g__NA', 'g__')
 taxTable$Rank7 = replace(taxTable$Rank7, taxTable$Rank6 == 's__NA', 's__')
 
-saveRDS(taxTable, file = paste0(path,"TaxonomyTableSriniv.rds" ))
-
-
-
-
-
+saveRDS(taxTable, file = paste0(path,"TaxonomyTableSriniv.rds" ))# Also saved as xlsx
