@@ -1,9 +1,11 @@
 # DADA2 16S Paired-end Fastq Processing
 library(dada2)
 setwd(dir = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome")
-setwd("/Users/diego/git/BV_Microbiome")
+#setwd("/Users/diego/git/BV_Microbiome")
 source(file = "config_file.r")
 t1 = Sys.time()
+library(parallel)
+parallel::detectCores()
 
 # 1.Declare path to fastq and retain samples names
 l <- list.files(path = input_dir_path, pattern = pattern)
@@ -21,8 +23,6 @@ for (i in seq_along(l)) {
   l_fastq_rs[i] <- paste0(path, list.files(path = path, pattern = "_2.fastq.gz"))
 }
 fnrs <- unlist(l_fastq_rs, use.names = FALSE)
-fnfs <- fnfs[1:10]
-fnrs <- fnrs[1:10]
 sample_names <- sapply(strsplit(basename(fnfs), "_"), `[`, 1)
 
 print(paste0("Applying pipeline to ", length(fnfs), " pairs of sequences"))
@@ -128,7 +128,6 @@ colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR",
                       "merged", "nonchim")
 rownames(track) <- sample_names
 head(track)
-saveRDS(object = track, file = paste0(out_path,"/", experiment_name,"_summary.rds" ))
 
 # 9.Taxonomical assignment
 print("Performing Taxonomic Assignment")

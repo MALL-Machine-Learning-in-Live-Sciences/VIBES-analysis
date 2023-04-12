@@ -3,8 +3,8 @@ setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 #setwd(dir = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome")
 # Declare global paths
 experiment_name <- "PRJNA797778"
-input_dir_path <- paste0(experiment_name,"/")
-out_dir_path  <- "out_data"
+input_dir_path <- paste0("extdata/", experiment_name, "/")
+out_dir_path  <- "extdata"
 out_path <- paste(out_dir_path, "/", experiment_name, sep = "")
 if (dir.exists(out_path) == FALSE) {
   dir.create(out_path)

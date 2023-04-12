@@ -1,11 +1,11 @@
 # DADA2 16S Single-end Fastq Processing
 library(dada2)
-setwd(dirname(rstudioapi::getSourceEditorContext()$path))
-#setwd(dir = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome")
+#setwd(dirname(rstudioapi::getSourceEditorContext()$path))
+setwd(dir = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome")
 source(file = "config_file.r")
 
 # 1.Declare path to fastq and retain samples names
-l <- list.files(path = input_dir_path, pattern = "SRR")
+l <- list.files(path = input_dir_path, pattern = pattern)
 l_fastq_fs <- list()
 for (i in seq_along(l)) {
   l_fastq_fs[i] <- paste0(input_dir_path, l[i], "/",
@@ -15,7 +15,6 @@ for (i in seq_along(l)) {
 fnfs <- unlist(l_fastq_fs, use.names = FALSE)
 sample_names <- sapply(strsplit(basename(fnfs), ".fastq.gz"), `[`, 1)
 
-# plotQualityProfile(fl = fnfs, aggregate = TRUE)
 # 2.Create a folder for place filtered files
 filter_path <- paste(input_dir_path, "Filtered_FASTQ", sep = "")
 if (dir.exists(filter_path) == FALSE) {
@@ -58,6 +57,7 @@ d2 <- dim(seqtab_nochim)
 print("Distribution of sequence lengths after quimeras removal:")
 table(nchar(getSequences(seqtab_nochim)))
 k <- sum(seqtab_nochim) / sum(seqtab)
+k
 d3 <- d2[2] / d1[2]
 print(paste((1 - round(d3, digits = 3)) * 100,
             "% of the sequences were quimeras"))

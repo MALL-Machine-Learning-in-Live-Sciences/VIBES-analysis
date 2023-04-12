@@ -2,6 +2,7 @@ OBS:
 - A nivel de especie:
 - Con filtrado: 14 
 - Sin filtrado: 24
+
 A nivel de genero:
 - Con filtrado: 21
 - Sin filtrado: 37

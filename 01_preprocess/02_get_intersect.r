@@ -1,28 +1,36 @@
 setwd("~/git/BV_Microbiome/")
 require(phyloseq)
-rank <- "Genus" # "Genus" or "Species"
+rank <- "Species" # "Genus" or "Species"
 Ravel <- readRDS("extdata/Phyloseqs/Ravel_phyloseq.rds")
 Sriniv <- readRDS("extdata/Phyloseqs/Sriniv_phyloseq.rds")
-PRJNA3020 <- readRDS("extdata/Phyloseqs/PRJNA302078_phyloseq.rds")
-PRJNA7977 <- readRDS("extdata/Phyloseqs/PRJNA797778_phyloseq.rds")
+PRJNA3020 <- readRDS("extdata/Phyloseqs/PRJNA3020_phyloseq.rds")
+PRJNA7977 <- readRDS("extdata/Phyloseqs/PRJNA7977_phyloseq.rds")
+PRJNA2085 <- readRDS("extdata/Phyloseqs/PRJNA2085_phyloseq.rds")
+
 # 1.Rename tax names for Ravel and Sriniv
 taxnames <- colnames(tax_table(PRJNA3020))
 colnames(tax_table(Ravel)) <- taxnames
 colnames(tax_table(Sriniv)) <- taxnames
-
 # 2.1.Preprocess PRJNA3020 to retain patients without treatment
-meta <- data.frame(sample_data(PRJNA3020))
-d0 <- meta[grep("D0", meta$sample_alias), ]
-PRJNA3020 <- subset_samples(PRJNA3020,
-                            (sample_names(PRJNA3020) %in% rownames(d0)))
-
-# 2.2.Preprocess PRJNA7977 to retain last sample of each patient
-meta2 <- data.frame(sample_data(PRJNA7977))
-meta2 <- meta2[order(meta2$sample_alias, decreasing = FALSE),]
-meta2$sample_alias <- sapply(strsplit(basename(meta2$sample_alias), "_"), `[`, 1)
-meta2 <- meta2[!rev(duplicated(rev(meta2$sample_alias))),]
-PRJNA7977 <- subset_samples(PRJNA7977,
-                            (sample_names(PRJNA7977) %in% rownames(meta2)))
+#meta <- data.frame(sample_data(PRJNA3020))
+#d0 <- meta[grep("D0", meta$sample_alias), ]
+#PRJNA3020 <- subset_samples(PRJNA3020,
+#                            (sample_names(PRJNA3020) %in% rownames(d0)))
+# 2.2.Preprocess PRJNA7977 to retain first sample of each patient
+#meta2 <- data.frame(sample_data(PRJNA7977))
+#meta2 <- meta2[order(meta2$sample_alias, decreasing = TRUE),]
+#meta2 <- meta2[-grep("W10", meta2$sample_alias), ]
+#meta2$sample_alias <- sapply(strsplit(basename(meta2$sample_alias), "_"), `[`, 1)
+#meta2 <- meta2[!rev(duplicated(rev(meta2$sample_alias))),]
+#PRJNA7977 <- subset_samples(PRJNA7977,
+#                            (sample_names(PRJNA7977) %in% rownames(meta2)))
+# 2.2.Preprocess PRJNA7977 to retain first sample of each patient
+#meta3 <- data.frame(sample_data(PRJNA2085))
+#meta3 <- meta3[order(meta3$sample_title, decreasing = TRUE),]
+#meta3$sample_title <- sapply(strsplit(basename(meta3$sample_title), "_"), `[`, 1)
+#meta3 <- meta3[!rev(duplicated(rev(meta3$sample_title))),]
+#PRJNA2085 <- subset_samples(PRJNA2085,
+#                            sample_names(PRJNA2085) %in% rownames(meta3))
 
 # 3.Standardisation names of Ravel and Sriniv
 if (rank == "Genus") {
@@ -66,6 +74,12 @@ if (rank == "Genus") {
   tax_table(Ravel) <- as.matrix(Ravel.df)
   tax_table(Sriniv) <- as.matrix(Sriniv.df)
 }
+#Save psqs with tax and subsa,ples preprocessed for futurte analysis
+saveRDS(object = Ravel, file = paste0("extdata/Phyloseqs/processed/Ravel_", rank, "_pseq.rds"))
+saveRDS(object = Sriniv, file = paste0("extdata/Phyloseqs/processed/Sriniv_", rank, "_pseq.rds"))
+saveRDS(object = PRJNA7977, file = paste0("extdata/Phyloseqs/processed/PRJNA7977_", rank, "_pseq.rds"))
+saveRDS(object = PRJNA3020, file = paste0("extdata/Phyloseqs/processed/PRJNA3020_", rank, "_pseq.rds"))
+saveRDS(object = PRJNA2085, file = paste0("extdata/Phyloseqs/processed/PRJNA2085_", rank, "_pseq.rds"))
 
 #Funciones
 phy.aglomerate <- function(phyobject, rank){
@@ -117,12 +131,13 @@ Ravel <- phy.aglomerate(phyobject = Ravel, rank = rank)
 Sriniv <- phy.aglomerate(phyobject = Sriniv, rank = rank)
 PRJNA3020 <- phy.aglomerate(phyobject = PRJNA3020, rank = rank)
 PRJNA7977 <- phy.aglomerate(phyobject = PRJNA7977, rank = rank)
+PRJNA2085 <- phy.aglomerate(phyobject = PRJNA2085, rank = rank)
 
 # 5.Prune OTUs
-Ravel <- prune.OTUs(phyobject = Ravel, Rank = rank)
-Sriniv <- prune.OTUs(phyobject = Sriniv, Rank = rank)
-PRJNA3020 <- prune.OTUs(phyobject = PRJNA3020, Rank = rank)
-PRJNA7977 <- prune.OTUs(phyobject = PRJNA7977, Rank = rank)
+#Ravel <- prune.OTUs(phyobject = Ravel, Rank = rank)
+#Sriniv <- prune.OTUs(phyobject = Sriniv, Rank = rank)
+#PRJNA3020 <- prune.OTUs(phyobject = PRJNA3020, Rank = rank)
+#PRJNA7977 <- prune.OTUs(phyobject = PRJNA7977, Rank = rank)
 
 # 6.Extract common taxs
 if (rank == "Genus") {
@@ -130,14 +145,16 @@ if (rank == "Genus") {
     data.frame(tax_table(Ravel))$Genus,
     data.frame(tax_table(Sriniv))$Genus,
     data.frame(tax_table(PRJNA3020))$Genus,
-    data.frame(tax_table(PRJNA7977))$Genus
+    data.frame(tax_table(PRJNA7977))$Genus,
+    data.frame(tax_table(PRJNA2085))$Genus
   ))
 }else if (rank == "Species") {
   common_tax <- Reduce(intersect, list(
     data.frame(tax_table(Ravel))$Species,
     data.frame(tax_table(Sriniv))$Species,
     data.frame(tax_table(PRJNA3020))$Species,
-    data.frame(tax_table(PRJNA7977))$Species
+    data.frame(tax_table(PRJNA7977))$Species,
+    data.frame(tax_table(PRJNA2085))$Species
   ))
 }
 
@@ -150,6 +167,8 @@ PRJNA3020 <- tax_select(ps = PRJNA3020, tax_list = common_tax, ranks_searched = 
                     strict_matches = TRUE, n_typos = 1, deselect = FALSE)
 PRJNA7977 <- tax_select(ps = PRJNA7977, tax_list = common_tax, ranks_searched = rank,
                     strict_matches = TRUE, n_typos = 1, deselect = FALSE)
+PRJNA2085 <- tax_select(ps = PRJNA2085, tax_list = common_tax, ranks_searched = rank,
+                        strict_matches = TRUE, n_typos = 1, deselect = FALSE)
 
 # 7.Ordering phyloseqs and reanme OTUs
 # Return otu_table with OTUs on columns
@@ -161,6 +180,8 @@ PRJNA3020 <- tax_sort(data = PRJNA3020, by = "name", at = rank, tree_warn = TRUE
                   verbose = TRUE, trans = "identity", use_counts = TRUE)
 PRJNA7977 <- tax_sort(data = PRJNA7977, by = "name", at = rank, tree_warn = TRUE,
                   verbose = TRUE, trans = "identity", use_counts = TRUE)
+PRJNA2085 <- tax_sort(data = PRJNA2085, by = "name", at = rank, tree_warn = TRUE,
+                      verbose = TRUE, trans = "identity", use_counts = TRUE)
 # Rename for same ID
 if (rank == "Genus") {
   t_names <- data.frame(tax_table(Ravel))$Genus
@@ -171,9 +192,16 @@ taxa_names(Ravel) <- t_names
 taxa_names(Sriniv) <- t_names
 taxa_names(PRJNA3020) <- t_names
 taxa_names(PRJNA7977) <- t_names
+taxa_names(PRJNA2085) <- t_names
 
 # 8.Saving phyloseqs
-saveRDS(object = Ravel, file = paste0("extdata/",rank,"Intersect/Ravel_", rank, "_pseq.rds"))
-saveRDS(object = Sriniv, file = paste0("extdata/",rank,"Intersect/Sriniv_",rank, "_pseq.rds"))
-saveRDS(object = PRJNA3020, file = paste0("extdata/",rank,"Intersect/PRJNA3020_",rank, "_pseq.rds"))
-saveRDS(object = PRJNA7977, file = paste0("extdata/",rank,"Intersect/PRJNA7977_",rank, "_pseq.rds"))
+saveRDS(object = Ravel, file = paste0("extdata/",rank,"Intersect/Ravel_", rank,
+                                      "_pseq_", length(common_tax), ".rds"))
+saveRDS(object = Sriniv, file = paste0("extdata/",rank,"Intersect/Sriniv_",rank,
+                                       "_pseq_", length(common_tax), ".rds"))
+saveRDS(object = PRJNA3020, file = paste0("extdata/",rank,"Intersect/PRJNA3020_",
+                                          rank, "_pseq_", length(common_tax), ".rds"))
+saveRDS(object = PRJNA7977, file = paste0("extdata/",rank,"Intersect/PRJNA7977_",
+                                          rank, "_pseq_", length(common_tax), ".rds"))
+saveRDS(object = PRJNA2085, file = paste0("extdata/",rank,"Intersect/PRJNA2085_",
+                                          rank, "_pseq_", length(common_tax), ".rds"))

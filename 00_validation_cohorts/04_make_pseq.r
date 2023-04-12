@@ -4,9 +4,9 @@ library(dplyr)
 setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 
 # 1.Prepare paths and load required data
-project_name <- "PRJNA797778"
-path <- paste0("out_data/", project_name, "/")
-metadata <- readRDS(file = paste0(path, "/", project_name,
+project_name <- "PRJNA208535"
+path <- paste0("../extdata/", project_name, "/")
+metadata <- readRDS(file = paste0(path, project_name,
                                   "_metadata.rds"))
 tax <- readRDS(file = paste0(path, project_name, "_tax_table.rds"))
 otu <- readRDS(file = paste0(path, project_name, "_otu_table.rds"))
@@ -23,8 +23,6 @@ names(dna) <- taxa_names(ps)
 ps <- merge_phyloseq(ps, dna)
 taxa_names(ps) <- paste0("ASV", seq(ntaxa(ps)))
 
-#### QUIERO METER UN PASO FUTURO PARA CREAR ARBOL FILOGENÉTICO ####
-
 # 4.Correctly rename the species for a correct merge later on.
 tax <- data.frame(tax_table(ps))
 tax$Species[is.na(tax$Species)] <- 0
@@ -36,4 +34,5 @@ tax <- as.matrix(tax)
 tax_table(ps) <- tax
 
 # 5.Save phyloseq object
-saveRDS(object = ps, file = paste0(path, project_name, "_ps.rds"))
+saveRDS(object = ps, file = paste0("../extdata/Phyloseqs/", substr(x = project_name, start = 1,
+ stop = 9), "_phyloseq.rds"))
