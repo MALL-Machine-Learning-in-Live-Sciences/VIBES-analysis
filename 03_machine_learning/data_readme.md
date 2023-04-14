@@ -1,0 +1,1 @@
+En el folder data se albergan los datasets (salidos del script 00_prepare_data) preparados para mandar al script de mlr.

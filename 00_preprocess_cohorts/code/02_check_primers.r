@@ -2,7 +2,7 @@
 library(dada2)
 library(ShortRead)
 library(Biostrings)
-setwd("~/git/BV_Microbiome/")
+setwd("~/git/BV_Microbiome/extdata/")
 experiment_name <- "PRJNA208535"
 pattern <- "SRR"
 input_dir_path <- paste0(experiment_name)

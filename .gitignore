@@ -40,7 +40,14 @@ vignettes/*.pdf
 
 # Folders
 extdata/
-CCP_results/
+00_preprocess_cohorts/data
+01_get_valencias/data
+01_get_valencias/res
+02_cluster/data
+02_cluster/res
+03_machine_learning/data
+04_plots/plots
+trash/
 
 # Extensions
 Icon

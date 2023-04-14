@@ -1,11 +1,11 @@
-setwd("~/git/BV_Microbiome/")
+setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 require(phyloseq)
 rank <- "Species" # "Genus" or "Species"
-Ravel <- readRDS("extdata/Phyloseqs/Ravel_phyloseq.rds")
-Sriniv <- readRDS("extdata/Phyloseqs/Sriniv_phyloseq.rds")
-PRJNA3020 <- readRDS("extdata/Phyloseqs/PRJNA3020_phyloseq.rds")
-PRJNA7977 <- readRDS("extdata/Phyloseqs/PRJNA7977_phyloseq.rds")
-PRJNA2085 <- readRDS("extdata/Phyloseqs/PRJNA2085_phyloseq.rds")
+Ravel <- readRDS("../data/pseqs/Ravel_pseq.rds")
+Sriniv <- readRDS("../data/pseqs/Sriniv_pseq.rds")
+PRJNA3020 <- readRDS("../data/pseqs/PRJNA3020_pseq.rds")
+PRJNA7977 <- readRDS("../data/pseqs/PRJNA7977_pseq.rds")
+PRJNA2085 <- readRDS("../data/pseqs/PRJNA2085_pseq.rds")
 
 # 1.Rename tax names for Ravel and Sriniv
 taxnames <- colnames(tax_table(PRJNA3020))
@@ -33,53 +33,35 @@ colnames(tax_table(Sriniv)) <- taxnames
 #                            sample_names(PRJNA2085) %in% rownames(meta3))
 
 # 3.Standardisation names of Ravel and Sriniv
-if (rank == "Genus") {
-  Ravel.df = as.data.frame(tax_table(Ravel))
-  Sriniv.df = as.data.frame(tax_table(Sriniv))
-  # Rename Fannyhessea vaginae for Atopobium vaginae, same speceis 
-  Ravel.df["NR_117757.1",] <-c("k__Bacteria", "p__Actinobacteria", "c__Coriobacteriia",
+Ravel.df = as.data.frame(tax_table(Ravel))
+Sriniv.df = as.data.frame(tax_table(Sriniv))
+#Change also genus name
+# Rename Fannyhessea vaginae for Atopobium vaginae, same specie 
+Ravel.df["NR_117757.1",] <-c("k__Bacteria", "p__Actinobacteria", "c__Coriobacteriia",
                                "o__Coriobacteriales", "f__Atopobiaceae", "g__Atopobium",
                                "s__Atopobium vaginae")
-  Sriniv.df["Atopobium vaginae",] <-c("k__Bacteria", "p__Actinobacteria", "c__Coriobacteriia",
+Sriniv.df["Atopobium vaginae",] <-c("k__Bacteria", "p__Actinobacteria", "c__Coriobacteriia",
                                       "o__Coriobacteriales", "f__Atopobiaceae", "g__Atopobium",
                                       "s__Atopobium vaginae")
-  Ravel.df$Genus  <- substr(Ravel.df$Genus , start = 4, stop = 100)
-  Sriniv.df$Genus <- substr(Sriniv.df$Genus, start = 4, stop = 100)
-  require(stringr)
-  Ravel.df$Genus <- str_replace_all(string = Ravel.df$Genus, "[ ]", "_" )
-  Sriniv.df$Genus <- str_replace_all(string = Sriniv.df$Genus , "[ ]", "_" )
-  tax_table(Ravel) <- as.matrix(Ravel.df)
-  tax_table(Sriniv) <- as.matrix(Sriniv.df)
-}else if(rank == "Species"){
-  Ravel.df = as.data.frame(tax_table(Ravel))
-  Sriniv.df = as.data.frame(tax_table(Sriniv))
-  #Change also genus name
-  # Rename Fannyhessea vaginae for Atopobium vaginae, same specie 
-  Ravel.df["NR_117757.1",] <-c("k__Bacteria", "p__Actinobacteria", "c__Coriobacteriia",
-                               "o__Coriobacteriales", "f__Atopobiaceae", "g__Atopobium",
-                               "s__Atopobium vaginae")
-  Sriniv.df["Atopobium vaginae",] <-c("k__Bacteria", "p__Actinobacteria", "c__Coriobacteriia",
-                                      "o__Coriobacteriales", "f__Atopobiaceae", "g__Atopobium",
-                                      "s__Atopobium vaginae")
-  Ravel.df$Genus  <- substr(Ravel.df$Genus , start = 4, stop = 100)
-  Sriniv.df$Genus <- substr(Sriniv.df$Genus, start = 4, stop = 100)
-  require(stringr)
-  Ravel.df$Genus <- str_replace_all(string = Ravel.df$Genus, "[ ]", "_" )
-  Sriniv.df$Genus <- str_replace_all(string = Sriniv.df$Genus , "[ ]", "_" )
-  # Rename Fannyhessea for Atopobium 
-  Ravel.df$Species  <- substr(Ravel.df$Species , start = 4, stop = 100)
-  Sriniv.df$Species <- substr(Sriniv.df$Species, start = 4, stop = 100)
-  Ravel.df$Species <- str_replace_all(string = Ravel.df$Species, "[ ]", "_" )
-  Sriniv.df$Species <- str_replace_all(string = Sriniv.df$Species , "[ ]", "_" )
-  tax_table(Ravel) <- as.matrix(Ravel.df)
-  tax_table(Sriniv) <- as.matrix(Sriniv.df)
-}
-#Save psqs with tax and subsa,ples preprocessed for futurte analysis
-saveRDS(object = Ravel, file = paste0("extdata/Phyloseqs/processed/Ravel_", rank, "_pseq.rds"))
-saveRDS(object = Sriniv, file = paste0("extdata/Phyloseqs/processed/Sriniv_", rank, "_pseq.rds"))
-saveRDS(object = PRJNA7977, file = paste0("extdata/Phyloseqs/processed/PRJNA7977_", rank, "_pseq.rds"))
-saveRDS(object = PRJNA3020, file = paste0("extdata/Phyloseqs/processed/PRJNA3020_", rank, "_pseq.rds"))
-saveRDS(object = PRJNA2085, file = paste0("extdata/Phyloseqs/processed/PRJNA2085_", rank, "_pseq.rds"))
+Ravel.df$Genus  <- substr(Ravel.df$Genus , start = 4, stop = 100)
+Sriniv.df$Genus <- substr(Sriniv.df$Genus, start = 4, stop = 100)
+require(stringr)
+Ravel.df$Genus <- str_replace_all(string = Ravel.df$Genus, "[ ]", "_" )
+Sriniv.df$Genus <- str_replace_all(string = Sriniv.df$Genus , "[ ]", "_" )
+# Rename Fannyhessea for Atopobium 
+Ravel.df$Species  <- substr(Ravel.df$Species , start = 4, stop = 100)
+Sriniv.df$Species <- substr(Sriniv.df$Species, start = 4, stop = 100)
+Ravel.df$Species <- str_replace_all(string = Ravel.df$Species, "[ ]", "_" )
+Sriniv.df$Species <- str_replace_all(string = Sriniv.df$Species , "[ ]", "_" )
+tax_table(Ravel) <- as.matrix(Ravel.df)
+tax_table(Sriniv) <- as.matrix(Sriniv.df)
+
+#Save psqs with tax preprocessed for future analysis
+saveRDS(object = Ravel, file = paste0("../data/processed_pseqs/Ravel_processed_pseq.rds"))
+saveRDS(object = Sriniv, file = paste0("../data/processed_pseqs/Sriniv_processed_pseq.rds"))
+saveRDS(object = PRJNA7977, file = paste0("../data/processed_pseqs/PRJNA7977_processed_pseq.rds"))
+saveRDS(object = PRJNA3020, file = paste0("../data/processed_pseqs/PRJNA3020_processed_pseq.rds"))
+saveRDS(object = PRJNA2085, file = paste0("../data/processed_pseqs/PRJNA2085_processed_pseq.rds"))
 
 #Funciones
 phy.aglomerate <- function(phyobject, rank){
@@ -195,13 +177,13 @@ taxa_names(PRJNA7977) <- t_names
 taxa_names(PRJNA2085) <- t_names
 
 # 8.Saving phyloseqs
-saveRDS(object = Ravel, file = paste0("extdata/",rank,"Intersect/Ravel_", rank,
+saveRDS(object = Ravel, file = paste0("../data/",rank,"Intersect/Ravel_", rank,
                                       "_pseq_", length(common_tax), ".rds"))
-saveRDS(object = Sriniv, file = paste0("extdata/",rank,"Intersect/Sriniv_",rank,
+saveRDS(object = Sriniv, file = paste0("../data/",rank,"Intersect/Sriniv_",rank,
                                        "_pseq_", length(common_tax), ".rds"))
-saveRDS(object = PRJNA3020, file = paste0("extdata/",rank,"Intersect/PRJNA3020_",
+saveRDS(object = PRJNA3020, file = paste0("../data/",rank,"Intersect/PRJNA3020_",
                                           rank, "_pseq_", length(common_tax), ".rds"))
-saveRDS(object = PRJNA7977, file = paste0("extdata/",rank,"Intersect/PRJNA7977_",
+saveRDS(object = PRJNA7977, file = paste0("../data/",rank,"Intersect/PRJNA7977_",
                                           rank, "_pseq_", length(common_tax), ".rds"))
-saveRDS(object = PRJNA2085, file = paste0("extdata/",rank,"Intersect/PRJNA2085_",
+saveRDS(object = PRJNA2085, file = paste0("../data/",rank,"Intersect/PRJNA2085_",
                                           rank, "_pseq_", length(common_tax), ".rds"))

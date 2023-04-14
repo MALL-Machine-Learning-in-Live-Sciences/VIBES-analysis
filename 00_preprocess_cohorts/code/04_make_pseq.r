@@ -34,5 +34,5 @@ tax <- as.matrix(tax)
 tax_table(ps) <- tax
 
 # 5.Save phyloseq object
-saveRDS(object = ps, file = paste0("../extdata/Phyloseqs/", substr(x = project_name, start = 1,
- stop = 9), "_phyloseq.rds"))
+saveRDS(object = ps, file = paste0("../data/pseqs/", substr(x = project_name, start = 1,
+ stop = 9), "_pseq.rds"))

@@ -49,7 +49,7 @@ if (trans == "log2") {
 }
 
 #Load data
-Ravel <- readRDS(paste0("extdata/", rank, "Intersect/PRJNA2085_",
+Ravel <- readRDS(paste0("00_preprocess_cohorts/data/", rank, "Intersect/Ravel_",
                         rank, "_pseq_", nfeat, ".rds"))
 Ravel <- select_target(pseq = Ravel, tget = "Nugent_score_category")
 Ravel <- norm_dataset(pseq = Ravel)
@@ -57,7 +57,8 @@ ravel_mat <- t(otu_table(Ravel)@.Data) # samples on columns for CCP
 
 # CCP
 require(ConsensusClusterPlus)
-title <- paste0("CCP_PRJNA2085_", rank, "_", nfeat, "_", trans, "_", cl)
+title <- paste0("CCP_Ravel_", rank, "_", nfeat, "_", trans, "_", cl)
+setwd("~/git/BV_Microbiome/02_cluster/res/")
 ccp = ConsensusClusterPlus(d = ravel_mat, maxK = 6, reps = 1500, pItem = 0.8,
                            pFeature = 1, title = title, clusterAlg = cl,
                            distance = "euclidean", seed = 1580 ,

@@ -1,6 +1,6 @@
 # Taxa Acquisition 
 setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata') 
-path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata/"
+path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata/Sriniv/"
 otu = read.delim2(paste0(path,"otutable-Amsel.txt" ), header = T, sep = '\t')
 clin = read.delim2(paste0(path,"task-amsel.txt"), header = T, sep = '\t')
 # Required libraries

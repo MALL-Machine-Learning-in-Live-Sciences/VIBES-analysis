@@ -9,7 +9,7 @@ valencias <- read.delim2(
   sep = ',')
 
 # Load data
-setwd("~/git/vaginosis-jlb/extdata/raw/")
+setwd("~/git/BV_Microbiome/00_preprocess_cohorts/data/")
 cohort <- "Sriniv" #PRJNA2085 PRJNA3020 PRJNA7977 Ravel Sriniv
 file <- list.files(pattern = cohort)
 pseq <- readRDS(file)
@@ -226,6 +226,6 @@ data <-
 write.csv(
   data, 
   file = file.path(
-    "~/git/vaginosis-jlb/VALENCIAS/data/",
+    "~/git/vaginosis-jlb/00b_get_valencias/data/",
     paste0(cohort, ".csv")),
   row.names = FALSE)

@@ -42,16 +42,3 @@ for (i in seq_along(l)){
 for (i in seq_along(cmd)){
   system(cmd[[i]])
 }
-
-# 7. Una vez hecho esto yo abriría 10-15 y me quedaría más o menos donde cortar
-# Yo miré las 5 primeras, la primera tiene una longitud de > de 1000pb y 50000
-# lecturas pb no sé a que se debe. Las otras 4 parecen estar bien y de una calidad bastante buena
-# Yo le metería el corte cerca de 500 pb
-# En la pipeline te dejo puesto de corte 490, te pongo los parametros indicados
-# para la tecnología 454 y el resto de los parámetros los dejo por default
-
-# 8 Antes de correr la pipeline hay que descargar las bases de datos de referencia
-# de Silva:
-# -General: https://zenodo.org/record/4587955/files/silva_nr99_v138.1_train_set.fa.gz?download=1
-# -Especies: https://zenodo.org/record/4587955/files/silva_nr99_v138.1_wSpecies_train_set.fa.gz?download=1
-# **** Acuerdate de cambiar el path en el config file de estas dos bases de datos ****

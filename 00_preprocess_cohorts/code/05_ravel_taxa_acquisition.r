@@ -12,7 +12,7 @@ library(data.table)
 library(rentrez)
 library(taxonomizr)
 
-path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata/"
+path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata/Ravel/"
 prepareDatabase('accessionTaxa.sql')
 
 # In/out paths

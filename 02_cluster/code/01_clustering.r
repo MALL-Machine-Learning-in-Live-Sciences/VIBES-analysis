@@ -4,7 +4,7 @@ setwd("~/git/BV_Microbiome/")
 rank <-  "Species" # Genus or "Species"
 nfeat <- "22" # 24 and 14 for Species or 37 and 21 for Genus
 trans <- "clr" # "log2", "clr" or "alr"
-k <- 3
+k <- 4
 
 # Select Target
 select_target <- function(pseq, tget) {
@@ -48,15 +48,15 @@ if (trans == "log2") {
   print("Introduce valid normalization (log2, clr or alr)")
 }
 
-Ravel <- readRDS(paste0("extdata/", rank, "Intersect/Ravel_",
+Ravel <- readRDS(paste0("00_preprocess_cohorts/data/", rank, "Intersect/Ravel_",
                         rank, "_pseq_", nfeat, ".rds"))
-Sriniv <-readRDS(paste0("extdata/", rank, "Intersect/Sriniv_",
+Sriniv <-readRDS(paste0("00_preprocess_cohorts/data/", rank, "Intersect/Sriniv_",
                         rank, "_pseq_", nfeat, ".rds"))
-PR3020 <-readRDS(paste0("extdata/", rank, "Intersect/PRJNA3020_",
+PR3020 <-readRDS(paste0("00_preprocess_cohorts/data/", rank, "Intersect/PRJNA3020_",
                         rank, "_pseq_", nfeat, ".rds"))
-PR7977 <-readRDS(paste0("extdata/", rank, "Intersect/PRJNA7977D0_",
+PR7977 <-readRDS(paste0("00_preprocess_cohorts/data/", rank, "Intersect/PRJNA7977_",
                         rank, "_pseq_", nfeat, ".rds"))
-PR2085 <-readRDS(paste0("extdata/", rank, "Intersect/PRJNA2085D0_",
+PR2085 <-readRDS(paste0("00_preprocess_cohorts/data/", rank, "Intersect/PRJNA2085_",
                         rank, "_pseq_", nfeat, ".rds"))
 
 #3C
@@ -120,43 +120,43 @@ table(sample_data(PR2085)$cluster, sample_data(PR2085)$ABV)
 #Rename clusters
 # Ravel
 sample_data(Ravel)$cluster[sample_data(Ravel)$cluster == "C1"] <- "D"
-sample_data(Ravel)$cluster[sample_data(Ravel)$cluster == "C2"] <- "N"
-sample_data(Ravel)$cluster[sample_data(Ravel)$cluster == "C3"] <- "ID"
-#sample_data(Ravel)$cluster[sample_data(Ravel)$cluster == "C4"] <- "N"
+sample_data(Ravel)$cluster[sample_data(Ravel)$cluster == "C2"] <- "IDN"
+sample_data(Ravel)$cluster[sample_data(Ravel)$cluster == "C3"] <- "IDD"
+sample_data(Ravel)$cluster[sample_data(Ravel)$cluster == "C4"] <- "N"
 # Sriniv
 sample_data(Sriniv)$cluster[sample_data(Sriniv)$cluster == "C1"] <- "D"
-sample_data(Sriniv)$cluster[sample_data(Sriniv)$cluster == "C2"] <- "N"
-sample_data(Sriniv)$cluster[sample_data(Sriniv)$cluster == "C3"] <- "ID"
-#sample_data(Sriniv)$cluster[sample_data(Sriniv)$cluster == "C4"] <- "N"
+sample_data(Sriniv)$cluster[sample_data(Sriniv)$cluster == "C2"] <- "IDN"
+sample_data(Sriniv)$cluster[sample_data(Sriniv)$cluster == "C3"] <- "IDD"
+sample_data(Sriniv)$cluster[sample_data(Sriniv)$cluster == "C4"] <- "N"
 # PR3020
 sample_data(PR3020)$cluster[sample_data(PR3020)$cluster == "C1"] <- "D"
-sample_data(PR3020)$cluster[sample_data(PR3020)$cluster == "C2"] <- "N"
-sample_data(PR3020)$cluster[sample_data(PR3020)$cluster == "C3"] <- "ID"
-#sample_data(PR3020)$cluster[sample_data(PR3020)$cluster == "C4"] <- "N"
+sample_data(PR3020)$cluster[sample_data(PR3020)$cluster == "C2"] <- "IDN"
+sample_data(PR3020)$cluster[sample_data(PR3020)$cluster == "C3"] <- "IDD"
+sample_data(PR3020)$cluster[sample_data(PR3020)$cluster == "C4"] <- "N"
 # PR7977
 sample_data(PR7977)$cluster[sample_data(PR7977)$cluster == "C1"] <- "D"
-sample_data(PR7977)$cluster[sample_data(PR7977)$cluster == "C2"] <- "N"
-sample_data(PR7977)$cluster[sample_data(PR7977)$cluster == "C3"] <- "ID"
-#sample_data(PR7977)$cluster[sample_data(PR7977)$cluster == "C4"] <- "N"
+sample_data(PR7977)$cluster[sample_data(PR7977)$cluster == "C2"] <- "IDN"
+sample_data(PR7977)$cluster[sample_data(PR7977)$cluster == "C3"] <- "IDD"
+sample_data(PR7977)$cluster[sample_data(PR7977)$cluster == "C4"] <- "N"
 # PR2085
 sample_data(PR2085)$cluster[sample_data(PR2085)$cluster == "C1"] <- "D"
-sample_data(PR2085)$cluster[sample_data(PR2085)$cluster == "C2"] <- "N"
-sample_data(PR2085)$cluster[sample_data(PR2085)$cluster == "C3"] <- "ID"
-#sample_data(PR2085)$cluster[sample_data(PR2085)$cluster == "C4"] <- "N"
+sample_data(PR2085)$cluster[sample_data(PR2085)$cluster == "C2"] <- "IDN"
+sample_data(PR2085)$cluster[sample_data(PR2085)$cluster == "C3"] <- "IDD"
+sample_data(PR2085)$cluster[sample_data(PR2085)$cluster == "C4"] <- "N"
 
 # Saving
-saveRDS(object = Ravel, file = paste0("extdata/", rank, "Intersect/Cluster/C",
+saveRDS(object = Ravel, file = paste0("02_cluster/data/C",
                                       k,"/Ravel_Cluster_", rank, "_", nfeat,
                                       "_pseq.rds"))
-saveRDS(object = Sriniv, file = paste0("extdata/", rank, "Intersect/Cluster/C",
+saveRDS(object = Sriniv, file = paste0("02_cluster/data/C",
                                        k, "/Sriniv_Cluster_", rank, "_", nfeat,
                                        "_pseq.rds"))
-saveRDS(object = PR3020, file = paste0("extdata/", rank, "Intersect/Cluster/C",
+saveRDS(object = PR3020, file = paste0("02_cluster/data/C",
                                        k, "/PRJNA3020_Cluster_", rank, "_",
                                        nfeat, "_pseq.rds"))
-saveRDS(object = PR7977, file = paste0("extdata/", rank, "Intersect/Cluster/C",
-                                       k, "/PRJNA7977D0_Cluster_", rank, "_",
+saveRDS(object = PR7977, file = paste0("02_cluster/data/C",
+                                       k, "/PRJNA7977_Cluster_", rank, "_",
                                        nfeat, "_pseq.rds"))
-saveRDS(object = PR2085, file = paste0("extdata/", rank, "Intersect/Cluster/C",
-                                       k, "/PR2085D0_Cluster_", rank, "_",
+saveRDS(object = PR2085, file = paste0("02_cluster/data/C",
+                                       k, "/PRJNA2085_Cluster_", rank, "_",
                                        nfeat, "_pseq.rds"))
