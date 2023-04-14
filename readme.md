@@ -16,13 +16,13 @@ Methodology:
 
 Clustering (ConsensusClusterPlus)
 
-Pheatmap of all cohorts with cluster labels (k = 3 and k = 4)
+Pheatmap of all cohorts with cluster labels (k = 4)
 
 Meta-analysis of differential abundances with ALDEX2 or AMCOMBC for multiclass
 
 Results
 
-First approximation with kmeans and 24 species we have obtained 4 (?) clusters (pending of validation!). Healthy (H), Dysbiosis (D), Incipient Dysbiosis 1 (ID1) and Incipient Disbiosis 2 (ID2).
+First approximation with kmeans and 24 species we have obtained 4 (?) clusters (pending of validation!). Normal (N), Dysbiosis (D), Normal-Incipient Dysbiosis (IDN) and Incipient Disbiosis  (IDD).
 
 ### Second analysis
 
