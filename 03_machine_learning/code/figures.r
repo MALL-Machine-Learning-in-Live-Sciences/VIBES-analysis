@@ -11,7 +11,7 @@ ggscatter(
     shape = "algorithm",
     size = 6
     ) +
-  facet_wrap(~variable, scales = "free_x") +
+  facet_grid(~variable + transformation, scales = "free_x") +
   theme_bw()
 
 
