@@ -59,7 +59,7 @@ Icon?
 *.png
 *.Rmd
 *.html
-#*.rds
+*.rds
 *.txt
 *.pdf
 *.svg
