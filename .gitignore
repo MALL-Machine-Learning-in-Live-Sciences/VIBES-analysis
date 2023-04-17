@@ -46,7 +46,7 @@ extdata/
 02_cluster/data
 02_cluster/res
 03_machine_learning/data
-04_plots/plots
+figures/plots
 trash/
 
 # Extensions

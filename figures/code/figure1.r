@@ -18,7 +18,7 @@ for (i in seq_along(cl)) {
   identical(rownames(pseq@sam_data), rownames(val))
   # add valencia 
   pseq@sam_data$CST <- val$CST
-  # order pseq bu target
+  # order pseq by target
   df <- pseq@sam_data
   ordered_df <- df[order(df$cluster,decreasing = FALSE), ]
   pseq_sorted <- ps_reorder(ps = pseq, sample_order = rownames(ordered_df))
