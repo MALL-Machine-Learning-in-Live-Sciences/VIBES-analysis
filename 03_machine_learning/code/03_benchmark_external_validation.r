@@ -4,7 +4,7 @@ require(mlr3)
 require(mlr3measures)
 require(data.table)
 
-setwd("/mnt/netapp2/Store_uni/home/ulc/co/jlb/git/run_mlr3/results/BV_Microbiome")
+setwd("03_machine_learning/res")
 test_dir <- "/mnt/netapp2/Store_uni/home/ulc/co/jlb/git/run_mlr3/data/BV_Microbiome/test"
 
 # Measures
@@ -17,6 +17,7 @@ files <- list.files(pattern = "rsmp")
 
 # Load models and make predictions
 p <- list()
+i = 1
 for (i in seq_along(files)) {
 
     file <- files[i]

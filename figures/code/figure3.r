@@ -1,59 +1,73 @@
-packgs <- c("phyloseq", "ComplexHeatmap", "microViz")
-lapply(packgs, require, character.only = TRUE)
-setwd("~/git/BV_Microbiome/")
-cl <- readRDS("02_cluster/data/C4/PRJNA2085_Cluster_Species_22_pseq.rds")
-vl <- read.csv2(file  = "01_get_valencias/res/PRJNA2085.csv", sep = ",", header = TRUE)
-# check same order
-vl <- data.frame(vl[,-1], row.names = vl[,1])
-identical(rownames(cl@sam_data), rownames(vl))
-# add valencia 
-cl@sam_data$CST <- vl$CST
-# order pseq by target
-df <- cl@sam_data
-ordered_df <- df[order(df$cluster, decreasing = FALSE),]
-pseq_sorted <- ps_reorder(ps = cl, sample_order = rownames(ordered_df))
+#### Figure 3 ####
+# ForestPlot
+require("forestplot")
+require(dplyr)
+ext_val = readRDS("03_machine_learning/res/performances_extval.rds")
+names(ext_val)[2] <- "mean"
+names(ext_val)[3] <- "lower"
+names(ext_val)[4] <- "upper"
+ext_val <- ext_val %>% 
+  mutate_if(is.numeric, round, digits = 3)
 
-# prepare mat for plotting
-mat <- t(as.matrix(as.data.frame(pseq_sorted@otu_table)))
-common_min = min(mat)
-common_max = max(mat)
-col_fun = circlize::colorRamp2(c(common_min,
-                                 ((common_max+common_min)/2),
-                                 common_max),transparency = 0.2,
-                               c("cornflowerblue","white", "brown3"))
-# prepare complex heatmap
-ann <- data.frame(pseq_sorted@sam_data$SBV, pseq_sorted@sam_data$ABV,
-                  pseq_sorted@sam_data$cluster, pseq_sorted@sam_data$CST)
+base_data <- tibble::tibble(ext_val)
 
-colnames(ann) <- c('Status', 'Cluster', 'CST')
-colours <- list(
-  'Status' = c('Cured' = 'green', 'Failed' = 'red'),
-  'Cluster' = c('IDD' = "rosybrown1", 'D' = 'palevioletred1',
-                'IDN' = 'paleturquoise1'),
-  'CST' = c('III' = 'yellowgreen', 'IV-A' = 'darkgray',
-            'IV-B' = 'seagreen', 'IV-C' = 'mediumvioletred')
-)
-colAnn <- HeatmapAnnotation(df = ann,
-                            which = 'col',
-                            col = colours,
-                            annotation_name_gp = gpar(fontsize = 9),
-                            annotation_legend_param = list(
-                              'Status' = list(nrow = 1),
-                              'Cluster' = list(nrow = 1),
-                              'CST' = list(nrow = 1)),
-                            height = unit(4.5, 'mm'),
-                            annotation_name_side = "left",
-                            gap = unit(0.5, 'mm'))
 
-h0 <- Heatmap(mat1, name = "CLR Species Abundances",
-              heatmap_legend_param = list(legend_height = unit(6, "cm"),
-                                          title_position = "leftcenter-rot"),
-              column_title = "Pre-treatment",
-              row_title = "Species",
-              col = col_fun,
-              top_annotation = colAnn,
-              row_names_side = "left",
-              row_names_gp = gpar(fontsize = 8),
-              cluster_rows = FALSE,
-              cluster_columns = FALSE,
-              show_column_names = FALSE)
+# meter linea en 0.5, vamciar el eje X
+# Meter el nuymero de samples (n)
+# m3 ventilo todo menos acc en summary
+# MEter ravel
+
+base_data |>
+  forestplot(labeltext = c(cohort, brier, kappa, bacc),
+             vertice = TRUE,align = "c",
+             xlab = "Accuracy",
+             xlog=TRUE,
+             xticks = c(-0.46,-0.10, -0.05, 0)) |>
+  fp_add_lines(h_2 = gpar(lty = 2), 
+               h_6 = gpar(lwd = 1, columns = 1:4, col = "#000044")) |>
+  fp_set_style(box = "royalblue",
+               line = "darkblue",
+               summary = "royalblue") |> 
+  fp_add_header(cohort = c("Cohort"),
+                brier = c("Brier"),
+                kappa = c("Kappa"),
+                bacc = c("Balanced Acc.")) |>
+  fp_append_row(cohort = "Summary",
+                brier = 0.120,
+                kappa =  0.883,
+                bacc = 0.933,
+                mean  = 0.923,
+                lower = 0.8885,
+                upper = 0.9485,
+                is.summary = TRUE) |> 
+  fp_set_zebra_style("#EFEFEF")
+  
+# Feature Importance
+# 1.Extract betas and reduce abs for all class
+xx <- readRDS("03_machine_learning/model/pruned_glmnet.rds")
+species <- unique(c(rownames(xx$nbeta$N),
+                    rownames(xx$nbeta$IDN),
+                    rownames(xx$nbeta$IDD),
+                    rownames(xx$nbeta$D)))
+base <- rbind(abs(xx$nbeta$N),
+             abs(xx$nbeta$IDN),
+             abs(xx$nbeta$IDD),
+             abs(xx$nbeta$D))
+fi <- rowsum(as.matrix(base), row.names(base))
+d_fi <- data.frame(species = rownames(fi),
+                   importance = fi[,1]) [ -1,]
+d_fi <- d_fi[order(d_fi$importance,decreasing = TRUE),]
+
+# 2.Plot importances
+require(ggplot2)
+require(viridis)
+plotFIC = ggplot(data = d_fi, aes(x=reorder(species, importance), y = importance))+
+  geom_segment( aes(xend=species, yend=0,), color = viridis(3)[2]) +
+  geom_point( size=2, color = viridis(1)) +
+  coord_flip() +
+  theme_light(base_size = 16)+
+  theme( axis.text=element_text(size=9),axis.title.y = element_blank(),axis.title.x = element_blank(), axis.ticks.x = element_blank(),legend.title=element_text(size=10), 
+         legend.text=element_text(size=10))
+plotFIC
+
+# Facet !!

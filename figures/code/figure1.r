@@ -217,3 +217,5 @@ h4 <- Heatmap(mat4, name = "CLR Species Abundances",
 hlist <- h1 + h2 + h3 + h4 
 h <- draw(object = hlist, heatmap_legend_side = "right", 
           annotation_legend_side = "bottom")
+
+# METANANLYSIS??
