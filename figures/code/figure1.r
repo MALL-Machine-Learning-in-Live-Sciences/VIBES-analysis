@@ -1,5 +1,5 @@
 # Complex Heatmap
-packgs <- c("phyloseq", "ComplexHeatmap", "microViz")
+packgs <- c("phyloseq", "ComplexHeatmap", "microViz", "viridis")
 lapply(packgs, require, character.only = TRUE)
 setwd("~/git/BV_Microbiome/")
 rank = "Species"
@@ -43,32 +43,40 @@ col_fun = circlize::colorRamp2(c(common_min,
                                  ((common_max+common_min)/2),
                                  common_max),transparency = 0.2,
                                c("cornflowerblue","white", "brown3"))
-  
+ph1 <- t(as.matrix(as.data.frame(as.numeric(pseqs_list$Ravel@sam_data$pH))))
+ph2 <- t(as.matrix(as.data.frame(as.numeric(pseqs_list$Sriniv@sam_data$pH))))
+ph3 <- t(as.matrix(as.data.frame(as.numeric(pseqs_list$PRJNA2085@sam_data$pH))))
+ph_min = min(c(ph1, ph2, ph3), na.rm=T)
+ph_max = max(c(ph1, ph2, ph3), na.rm=T)
+ph_fun = circlize::colorRamp2(c(ph_min,
+                                ((ph_max+ph_min)/2),
+                                ph_max),transparency = 0.2,
+                              viridis(3))
+
 # prepare complex heatmap
 # Ravel
 library(viridisLite)
-ann <- data.frame(pseqs_list$Ravel@sam_data$pH, pseqs_list$Ravel@sam_data$target,
-                  pseqs_list$Ravel@sam_data$cluster, pseqs_list$Ravel@sam_data$CST)
+ann <- data.frame(as.numeric(pseqs_list$Ravel@sam_data$pH),
+                  pseqs_list$Ravel@sam_data$target,
+                  pseqs_list$Ravel@sam_data$cluster,
+                  pseqs_list$Ravel@sam_data$CST)
 colnames(ann) <- c('ph', 'Nugent', 'Cluster', 'CST')
 colours <- list(
-  'ph' = c("4" = "#440154FF","4.3" = "#481B6DFF", "4.4" = "#46337EFF",
-            "4.5" = "#3F4889FF", "4.7" = "#365C8DFF", "5" = "#2E6E8EFF",
-            "5.3" = "#277F8EFF", "5.4" = "#21908CFF", "5.5" = "#1FA187FF",
-            "5.6" = "#2DB27DFF", "5.7" = "#4AC16DFF", "5.8" = "#71CF57FF",
-            "6" = "#9FDA3AFF","6.1" = "#CFE11CFF","7" = "#FDE725FF"),
+  'ph' = ph_fun,
   'Nugent' = c('high' = 'red', 'intermediate' = 'yellow', 'low'= 'green'),
-  'Cluster' = c('IDD' = "rosybrown1" ,'N' = 'palegreen1',
-                'D' = 'palevioletred1', 'IDN' = 'paleturquoise1'),
+  'Cluster' = c('IDD' = "#A6CEE3" ,'N' = '#33A02C',
+                'D' = '#1F78B4', 'IDN' = '#B2DF8A'),
   'CST' = c('I'= 'cornflowerblue', 'II' = 'tan4', 'III' = 'yellowgreen',
             'IV-A' = 'darkgray', 'IV-B' = 'seagreen', 'IV-C' = 'mediumvioletred',
             'V' = 'tan2')
 )
+
 colAnn <- HeatmapAnnotation(df = ann,
                             which = 'col',
                             col = colours,
-                            annotation_name_gp = gpar(fontsize = 9),
+                            annotation_name_gp = gpar(fontsize = 14),
                             annotation_legend_param = list(
-                              'ph' = list(nrow = 1),
+                              'ph' = list(nrow = 1,legend_direction = "horizontal" ),
                               'Nugent' = list(nrow = 1),
                               'Cluster' = list(nrow = 1),
                               'CST' = list(nrow = 1)),
@@ -79,30 +87,27 @@ colAnn <- HeatmapAnnotation(df = ann,
 h1 <- Heatmap(mat1, name = "CLR Species Abundances",
               heatmap_legend_param = list(legend_height = unit(6, "cm"),
                                           title_position = "leftcenter-rot"),
-              column_title = "Ravel",
-              row_title = "Species",
+              column_title = "Train",
               col = col_fun,
               top_annotation = colAnn,
               row_names_side = "left",
-              row_names_gp = gpar(fontsize = 8),
+              row_names_gp = gpar(fontsize = 12),
               cluster_rows = FALSE,
               cluster_columns = FALSE,
               show_column_names = FALSE)
 
-
+h1
 # Sriniv
-ann <- data.frame(pseqs_list$Sriniv@sam_data$pH, pseqs_list$Sriniv@sam_data$target,
-                  pseqs_list$Sriniv@sam_data$cluster, pseqs_list$Sriniv@sam_data$CST)
+ann <- data.frame(as.numeric(pseqs_list$Sriniv@sam_data$pH),
+                  pseqs_list$Sriniv@sam_data$target,
+                  pseqs_list$Sriniv@sam_data$cluster,
+                  pseqs_list$Sriniv@sam_data$CST)
 colnames(ann) <- c('ph', 'Nugent', 'Cluster', 'CST')
 colours <- list(
-  'ph' = c("4" = "#440154FF","4.3" = "#481B6DFF", "4.4" = "#46337EFF",
-           "4.5" = "#3F4889FF", "4.7" = "#365C8DFF", "5" = "#2E6E8EFF",
-           "5.3" = "#277F8EFF", "5.4" = "#21908CFF", "5.5" = "#1FA187FF",
-           "5.6" = "#2DB27DFF", "5.7" = "#4AC16DFF", "5.8" = "#71CF57FF",
-           "6" = "#9FDA3AFF","6.1" = "#CFE11CFF","7" = "#FDE725FF", " " = "black"),
+  'ph' = ph_fun,
   'Nugent' = c('high' = 'red', 'intermediate' = 'yellow', 'low'= 'green'),
-  'Cluster' = c('IDD' = "rosybrown1" ,'N' = 'palegreen1',
-                'D' = 'palevioletred1', 'IDN' = 'paleturquoise1'),
+  'Cluster' = c('IDD' = "#A6CEE3" ,'N' = '#33A02C',
+                'D' = '#1F78B4', 'IDN' = '#B2DF8A'),
   'CST' = c('I'= 'cornflowerblue', 'II' = 'tan4', 'III' = 'yellowgreen',
             'IV-A' = 'darkgray', 'IV-B' = 'seagreen', 'IV-C' = 'mediumvioletred',
             'V' = 'tan2')
@@ -112,7 +117,7 @@ colAnn <- HeatmapAnnotation(df = ann,
                             col = colours,
                             annotation_name_gp = gpar(fontsize = 9),
                             annotation_legend_param = list(
-                              'ph' = list(nrow = 1),
+                              'ph' = list(nrow = 1,legend_direction = "horizontal" ),
                               'Nugent' = list(nrow = 1),
                               'Cluster' = list(nrow = 1),
                               'CST' = list(nrow = 1)),
@@ -124,7 +129,7 @@ colAnn <- HeatmapAnnotation(df = ann,
 h2 <- Heatmap(mat2, name = "CLR Species Abundances",
               heatmap_legend_param = list(legend_height = unit(6, "cm"),
                                           title_position = "leftcenter-rot"),
-              column_title = "Sriniv",
+              column_title = "Validation 1",
               row_title = "Species",
               col = col_fun,
               top_annotation = colAnn,
@@ -135,18 +140,14 @@ h2 <- Heatmap(mat2, name = "CLR Species Abundances",
               show_column_names = FALSE)
 
 # PR2085
-ann <- data.frame(pseqs_list$PRJNA2085@sam_data$pH, pseqs_list$PRJNA2085@sam_data$Nugent_Score,
+ann <- data.frame(as.numeric(pseqs_list$PRJNA2085@sam_data$pH), pseqs_list$PRJNA2085@sam_data$Nugent_Score,
                   pseqs_list$PRJNA2085@sam_data$cluster, pseqs_list$PRJNA2085@sam_data$CST)
 colnames(ann) <- c('ph', 'Nugent', 'Cluster', 'CST')
 colours <- list(
-  'ph' = c("4" = "#440154FF","4.3" = "#481B6DFF", "4.4" = "#46337EFF",
-           "4.5" = "#3F4889FF", "4.7" = "#365C8DFF", "5" = "#2E6E8EFF",
-           "5.3" = "#277F8EFF", "5.4" = "#21908CFF", "5.5" = "#1FA187FF",
-           "5.6" = "#2DB27DFF", "5.7" = "#4AC16DFF", "5.8" = "#71CF57FF",
-           "6" = "#9FDA3AFF","6.1" = "#CFE11CFF","7" = "#FDE725FF", "NA" = "black"),
+  'ph' = ph_fun,
   'Nugent' = c('high' = 'red', 'intermediate' = 'yellow', 'low'= 'green'),
-  'Cluster' = c('IDD' = "rosybrown1" ,'N' = 'palegreen1',
-                'D' = 'palevioletred1', 'IDN' = 'paleturquoise1'),
+  'Cluster' = c('IDD' = "#A6CEE3" ,'N' = '#33A02C',
+                'D' = '#1F78B4', 'IDN' = '#B2DF8A'),
   'CST' = c('I'= 'cornflowerblue', 'II' = 'tan4', 'III' = 'yellowgreen',
             'IV-A' = 'darkgray', 'IV-B' = 'seagreen', 'IV-C' = 'mediumvioletred',
             'V' = 'tan2')
@@ -154,9 +155,9 @@ colours <- list(
 colAnn <- HeatmapAnnotation(df = ann,
                             which = 'col',
                             col = colours,
-                            annotation_name_gp = gpar(fontsize = 9),
+                            annotation_name_gp = gpar(fontsize = 13),
                             annotation_legend_param = list(
-                              'ph' = list(nrow = 1),
+                              'ph' = list(nrow = 1,legend_direction = "horizontal" ),
                               'Nugent' = list(nrow = 1),
                               'Cluster' = list(nrow = 1),
                               'CST' = list(nrow = 1)),
@@ -168,7 +169,7 @@ colAnn <- HeatmapAnnotation(df = ann,
 h3 <- Heatmap(mat3, name = "CLR Species Abundances",
               heatmap_legend_param = list(legend_height = unit(6, "cm"),
                                           title_position = "leftcenter-rot"),
-              column_title = "PRJNA2085",
+              column_title = "Validation 2",
               row_title = "Species",
               col = col_fun,
               top_annotation = colAnn,
@@ -183,8 +184,8 @@ h3 <- Heatmap(mat3, name = "CLR Species Abundances",
 ann <- data.frame(pseqs_list$PRJNA7977@sam_data$cluster, pseqs_list$PRJNA7977@sam_data$CST)
 colnames(ann) <- c('Cluster', 'CST')
 colours <- list(
-  'Cluster' = c('IDD' = "rosybrown1" ,'N' = 'palegreen1',
-                'D' = 'palevioletred1', 'IDN' = 'paleturquoise1'),
+  'Cluster' = c('IDD' = "#A6CEE3" ,'N' = '#33A02C',
+                'D' = '#1F78B4', 'IDN' = '#B2DF8A'),
   'CST' = c('I'= 'cornflowerblue', 'II' = 'tan4', 'III' = 'yellowgreen',
             'IV-A' = 'darkgray', 'IV-B' = 'seagreen', 'IV-C' = 'mediumvioletred',
             'V' = 'tan2')
@@ -204,7 +205,7 @@ colAnn <- HeatmapAnnotation(df = ann,
 h4 <- Heatmap(mat4, name = "CLR Species Abundances",
               heatmap_legend_param = list(legend_height = unit(6, "cm"),
                                           title_position = "leftcenter-rot"),
-              column_title = "PRJNA7977",
+              column_title = "Validation 3",
               row_title = "Species",
               col = col_fun,
               top_annotation = colAnn,
@@ -217,5 +218,3 @@ h4 <- Heatmap(mat4, name = "CLR Species Abundances",
 hlist <- h1 + h2 + h3 + h4 
 h <- draw(object = hlist, heatmap_legend_side = "right", 
           annotation_legend_side = "bottom")
-
-# METANANLYSIS??

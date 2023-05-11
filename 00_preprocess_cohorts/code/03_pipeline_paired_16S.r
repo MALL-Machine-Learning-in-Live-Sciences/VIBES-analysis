@@ -1,5 +1,7 @@
-# DADA2 16S Paired-end Fastq Processing
+##### DADA2 16S Paired-end Fastq Processing #####
+# Load packages
 library(dada2)
+# Set paths and load scripts
 setwd(dir = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome")
 #setwd("/Users/diego/git/BV_Microbiome")
 source(file = "config_file.r")
@@ -115,9 +117,6 @@ print(paste((1 - round(d3, digits = 3)) * 100,
 print(paste("The abundance of these quimeras only represent",
                        (1 - round(x = k, digits = 3)) * 100,
                         "% of the total abundance"))
-
-#### QUIERO METER UN PASO PARA FILTRAR POR LONGITUD YA QUE LAS SECUENCIAS
-#### FINALES DEBEN TENER UNA LONG. REALISTA ####
 
 # 8.Showing evolution of sequences from raw to final step
 print("Summary of the first samples throughout all phases:")

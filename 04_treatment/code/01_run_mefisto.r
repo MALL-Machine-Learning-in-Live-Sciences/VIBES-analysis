@@ -8,10 +8,9 @@ library(cowplot)
 library(magrittr)
 
 # Arguments
-setwd("~/git/vaginosis-jlb/")
-cohort <- "PRJNA302078"   # PRJNA797778 PRJNA302078
-inputfile <- file.path("MEFISTO/data/", paste0(cohort, "_microbiome.rds"))
-outfile <- paste0("MEFISTO/res/", cohort, ".rds")
+cohort <- "PRJNA3020"
+inputfile <- file.path("04_treatment/data/", paste0(cohort, "_microbiome.rds"))
+outfile <- paste0("04_treatment/res/", cohort, ".rds")
 time_variable <- "time"
 nfactors <- 3
 
@@ -19,7 +18,7 @@ nfactors <- 3
 microbiome = readRDS(inputfile)
 
 # Create MOFA object (only with microbiome data)
-sm <- create_mofa_from_df(df = microbiome)
+sm <- create_mofa_from_df(df = microbiome, extract_metadata = TRUE)
 
 # Specify time covariate
 sm <- set_covariates(

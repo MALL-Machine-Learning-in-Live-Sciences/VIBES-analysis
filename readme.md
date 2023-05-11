@@ -1,8 +1,37 @@
-## Background
+# PAPER TITLE
 
-The diagnosis of BF is based on a few and non-precise (bacteria species + physical) parameters. In addition, only a few patients will be benefited by this diagnosis (extreme patients).
+This repository includes code based on the following publication:
+
+*link paper
+
+DOI: link DOI
+
+## Abstract
+
+## Prerequisites:
+
+Several packages have been used throughout this project. So, before running the code make sure that the following packages have been installed:
+
+```{r}
+# CRAN packages
+install.packages(c('openxlsx', 'dada2', 'dplyr', 'data.table', 'rentrez', 'taxonomizr', 'taxize', 'readxl', 'tidyverse', 'tibble', 'reshape2', 'mlr3', 'mlr3fselect', 'mlr3tuning', 'mlr3learners', 'mlr3filters', 'mlr3pipelines', 'mlr3misc', 'mlr3learners', 'genalg', 'pbapply', 'glmnet', 'pheatmap', 'cowplot', 'magrittr', 'ggplot2', 'viridis','ggpubr', 'forestplot'))
+
+# GitHub packages:
+devtools::install_github("david-barnett/microViz")
+
+# Bioconductor packages
+BiocManager::install(c('phyloseq','microbiome', 'ConsensusClusterPlus', 'MOFA2', 'ComplexHeatmap'))
+
+```
+
+In addition, the [enaBrowserTools](https://github.com/enasequence/enaBrowserTools) have been used to download data from the [European Nucleotide Archive](https://www.ebi.ac.uk/ena/browser/home),  [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) was used to make quality control checks on raw sequence data and adapted script from [Valencia](https://github.com/ravel-lab/VALENCIA) to compute CSTs.
+
+## Project workflow
+
+
 
 ## Motivation
+The diagnosis of BF is based on a few and non-precise (bacteria species + physical) parameters. In addition, only a few patients will be benefited by this diagnosis (extreme patients).
 
 Since bacterias live in an ecosystems, we need to use all of them to stratify patients. And, since for medical practice, is unviable obtain whole microbiome profile for every patient, our aim is to i) stratify patients according all microbiome profile and ii) build a ML able to predict this subgroups from a microbiome signature.
 

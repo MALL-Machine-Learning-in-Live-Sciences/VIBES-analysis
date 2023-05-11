@@ -4,7 +4,7 @@ require(mlr3)
 require(mlr3measures)
 require(data.table)
 
-setwd("03_machine_learning/res")
+setwd("/mnt/netapp2/Store_uni/home/ulc/co/jlb/git/run_mlr3/results/BV_Microbiome")
 test_dir <- "/mnt/netapp2/Store_uni/home/ulc/co/jlb/git/run_mlr3/data/BV_Microbiome/test"
 
 # Measures
@@ -17,7 +17,6 @@ files <- list.files(pattern = "rsmp")
 
 # Load models and make predictions
 p <- list()
-i = 1
 for (i in seq_along(files)) {
 
     file <- files[i]
@@ -65,6 +64,3 @@ for (i in seq_along(files)) {
 # Join all predictions
 ext_val <- data.table::rbindlist(p)
 ext_val <- melt(ext_val)
-
-# Save summary
-saveRDS(ext_val, file = "summary_performances_extval.rds")

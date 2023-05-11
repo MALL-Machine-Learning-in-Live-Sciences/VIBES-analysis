@@ -109,5 +109,5 @@ select_k2 <- function(data, res, maxK){
   return(nclust)
   
 }
-a <- select_k2(data = ravel_mat, res = ccp, maxK = 6)
-a
+#a <- select_k2(data = ravel_mat, res = ccp, maxK = 6)
+

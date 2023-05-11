@@ -35,7 +35,6 @@ pruned_predict <- function(pruned_glmnet, newdata){
 # 2.Delcare paths to data 
 path_test <- "03_machine_learning/data/"
 lf <- list.files(path = path_test, pattern = "clr")
-lf <- lf[-grep("Ravel", lf)]
 pl <- list()
 for (i in seq_along(lf)) {
   # 3.Load data and remove species

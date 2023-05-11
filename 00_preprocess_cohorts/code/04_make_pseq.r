@@ -1,6 +1,8 @@
-# Construct phyloseq object
+##### Construct phyloseq object from ENA cohorts  data #####
+# Load pakages
 library(phyloseq)
 library(dplyr)
+# Set WD
 setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 
 # 1.Prepare paths and load required data

@@ -39,13 +39,28 @@ vignettes/*.pdf
 .Renviron
 
 # Folders
+# Original data
 extdata/
-00_preprocess_cohorts/data
+# 00_Starting point
+00_preprocess_cohorts/data/GenusIntersect
+00_preprocess_cohorts/data/processed_pseqs
+00_preprocess_cohorts/data/SpeciesIntersect
+# 01_Get CSTs
 01_get_valencias/data
 01_get_valencias/res
+01_get_valencias/utils
+# 0_2Clustering
 02_cluster/data
 02_cluster/res
+# 03_Machine Learning
+03_machine_learning/code/old
 03_machine_learning/data
+03_machine_learning/res
+03_machine_learning/model
+# 04_treatment
+04_treatment/data
+04_treatment/res
+# figures
 figures/plots
 trash/
 

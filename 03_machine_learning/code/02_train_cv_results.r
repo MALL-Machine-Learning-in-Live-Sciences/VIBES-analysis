@@ -9,7 +9,7 @@ measures <- list(
 	msr("classif.bacc", id = "Balanced Accuracy"))
 
 # Path to results
-res_dir <- "/mnt/netapp2/Store_uni/home/ulc/co/jlb/git/run_mlr3/results/BV_Microbiome"
+res_dir <- "/mnt/netapp2/Store_uni/home/ulc/co/jlb/git/run_mlr3/results/BV_Microbiome_v2"
 
 # See CV results
 models_files <- list.files(res_dir, pattern = "rsmp_")

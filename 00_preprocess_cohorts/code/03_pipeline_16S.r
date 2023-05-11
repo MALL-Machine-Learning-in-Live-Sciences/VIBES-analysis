@@ -1,5 +1,7 @@
-# DADA2 16S Single-end Fastq Processing
+##### DADA2 16S Single-end Fastq Processing  #####
+# Load packages
 library(dada2)
+# Set paths and load scripts
 #setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 setwd(dir = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome")
 source(file = "config_file.r")

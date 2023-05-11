@@ -1,7 +1,9 @@
-# DADA2 16S Paired-end Fastq Processing
+##### Check primers in downloaded FASTQ #####
+# Load packages
 library(dada2)
 library(ShortRead)
 library(Biostrings)
+# Set paths
 setwd("~/git/BV_Microbiome/extdata/")
 experiment_name <- "PRJNA208535"
 pattern <- "SRR"

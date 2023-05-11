@@ -7,7 +7,11 @@ require(MOFA2)
 require(ggplot2)
 
 # Load model
-sm <- MOFA2::load_model("~/git/vaginosis-jlb/MEFISTO/res/PRJNA797778.rds")
+sm <- MOFA2::load_model("04_treatment/res/PRJNA302078.rds")
+
+# Feature data
+feat <- readRDS("04_treatment/data/PRJNA3020_featdata.rds")
+features_metadata(sm) <- feat
 
 # Variance that a factor explains in each sample
 p <- plot_variance_explained(
@@ -32,8 +36,8 @@ plot_factors_vs_cov(
   stat_summary(aes(col = color_by), geom="line", fun = "mean")
 
 # Plot weigths
-plot_weights(sm, factors = 1)
-plot_top_weights(sm, factors = 1)
+plot_weights(sm, factors = c(1, 2))
+plot_top_weights(sm, factors = c(1, 2))
 
 plot_data_vs_cov(
   sm,
@@ -78,3 +82,4 @@ plot_data_vs_cov(sm,
                  features = 2,
                  color_by = "time",
                  dot_size = 1)
+

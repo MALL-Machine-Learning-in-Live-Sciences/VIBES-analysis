@@ -4,10 +4,9 @@ require(reshape2)
 require(tidyverse)
 
 # Arguments
-setwd("~/../git/vaginosis-jlb/")
-data_dir <- "extdata/"
-out_dir <- "MEFISTO/data/"
-cohort <- "PRJNA302078"
+data_dir <- "00_preprocess_cohorts/data/pseqs/"
+out_dir <- "04_treatment/data"
+cohort <- "PRJNA3020"
 
 # Load data from cohort PRJNA302078
 files <- list.files(data_dir)
@@ -19,7 +18,7 @@ pseq <- readRDS(
 
 # Preprocess otu table
 pseq <- tax_glom(pseq, taxrank =  "Species")                                      # agglomerating by taxa
-pseq <- microbiome::transform(pseq, transform = "clr", shift = 1, reference = 1)  # normalization
+pseq <- microbiome::transform(pseq, transform = "clr", shift = 1)                 # normalization
 
 # Format clinical variable
 sample_id <- get_variable(pseq, "sample_alias")
@@ -36,7 +35,9 @@ otu <-
 
 taxa <- 
   data.frame(tax_table(pseq)) %>% 
-  rownames_to_column(var = "ASV")
+  rownames_to_column(var = "ASV") %>% 
+  rename(feature = ASV) %>% 
+  mutate(view = "microbiome")
 
 meta <- 
   data.frame(sample_data(pseq)) %>% 
@@ -49,7 +50,6 @@ microbiome <-
     feature = ASV,
     group = id) %>% 
   mutate(view = "microbiome")
-feature_meta <- left_join(otu, taxa, by = "ASV")
 
 saveRDS(microbiome, file = file.path(out_dir, paste0(cohort, "_microbiome.rds")))
-saveRDS(feature_meta, file = file.path(out_dir, paste0(cohort, "_featdata.rds")))
+saveRDS(taxa, file = file.path(out_dir, paste0(cohort, "_featdata.rds")))
