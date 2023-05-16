@@ -32,9 +32,9 @@ The starting point for Train and Validation 1 cohorts was the clinical data and 
 ### 00.Preprocess_cohorts
 w1- From [00_preprocess_metadata.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/00_preprocess_metadata.r)-[04_make_pseq.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/04_make_pseq.r)
 
-1. [00_preprocess_metadata.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/00_preprocess_metadata.r): This script extracts the data from the ENA Browser, filters samples and saves the metadata for each validation cohort.
+1. [00_preprocess_metadata.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/00_preprocess_metadata.r) This script extracts the data from the ENA Browser, filters samples and saves the metadata for each validation cohort.
 
-2.[01_download.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/01_download.r): This script downloads the fastq file(s) for each cohort, using the sample names extracted in the previous script as a guide. It also applies to each sample the fastqc program for quality control.
+2. [01_download.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/01_download.r) This script downloads the fastq file(s) for each cohort, using the sample names extracted in the previous script as a guide. It also applies to each sample the fastqc program for quality control.
 
 
 
