@@ -1,13 +1,11 @@
 ##### Construct phyloseq object from ENA cohorts  data #####
-# Load pakages
+# 0.Load pakages
 library(phyloseq)
 library(dplyr)
-# Set WD
-setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 
 # 1.Prepare paths and load required data
 project_name <- "PRJNA208535"
-path <- paste0("../extdata/", project_name, "/")
+path <- paste0("extdata/", project_name, "/")
 metadata <- readRDS(file = paste0(path, project_name,
                                   "_metadata.rds"))
 tax <- readRDS(file = paste0(path, project_name, "_tax_table.rds"))
@@ -36,5 +34,5 @@ tax <- as.matrix(tax)
 tax_table(ps) <- tax
 
 # 5.Save phyloseq object
-saveRDS(object = ps, file = paste0("../data/pseqs/", substr(x = project_name, start = 1,
+saveRDS(object = ps, file = paste0("00_preprocess_cohorts/data/pseqs/", substr(x = project_name, start = 1,
  stop = 9), "_pseq.rds"))

@@ -1,7 +1,8 @@
 ##### DADA2 16S Paired-end Fastq Processing #####
-# Load packages
+# 0.Load packages
 library(dada2)
-# Set paths and load scripts
+
+# 1.Set paths and load scripts
 setwd(dir = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome")
 #setwd("/Users/diego/git/BV_Microbiome")
 source(file = "config_file.r")
@@ -9,7 +10,7 @@ t1 = Sys.time()
 library(parallel)
 parallel::detectCores()
 
-# 1.Declare path to fastq and retain samples names
+# 2.Declare path to fastq and retain samples names
 l <- list.files(path = input_dir_path, pattern = pattern)
 ## Forward
 l_fastq_fs <- list()
@@ -28,7 +29,7 @@ fnrs <- unlist(l_fastq_rs, use.names = FALSE)
 sample_names <- sapply(strsplit(basename(fnfs), "_"), `[`, 1)
 
 print(paste0("Applying pipeline to ", length(fnfs), " pairs of sequences"))
-# 2.Create a folder for place filtered files
+# 3.Create a folder for place filtered files
 filter_path <- paste(input_dir_path, "Filtered_FASTQ", sep = "")
 if (dir.exists(filter_path) == FALSE) {
   dir.create(filter_path)
@@ -39,7 +40,7 @@ filtrs <- file.path(filter_path, paste0(sample_names, "_R_filt.fastq.gz"))
 names(filtfs) <- sample_names
 names(filtrs) <- sample_names
 
-# 3.Apply quality filters on sequences
+# 4.Apply quality filters on sequences
 print("Starting the filtering phase with:")
 print("truncLen:")
 dada2_trunclen
@@ -57,13 +58,13 @@ out <- filterAndTrim(fwd = fnfs, rev = fnrs, filt = filtfs, filt.rev = filtrs,
 print(paste0(round(sum(out[,2] / out[,1])/nrow(out) * 100, digits=2), "% of reads passed filtering"))
 print("Proceed only if the majority (>50%) of reads passed filtering.")
 
-# 4.Learning nucleotide errors from sequences
+# 5.Learning nucleotide errors from sequences
 print("Starting the parametric error model phase with nbases:")
 dada2_nbases
 errf <- learnErrors(filtfs, multithread = TRUE, nbases = dada2_nbases)
 errr <- learnErrors(filtrs, multithread = TRUE, nbases = dada2_nbases)
 
-# 5.Aplying core algorithm to infer real biological sequences
+# 6.Aplying core algorithm to infer real biological sequences
 print("Starting the sample inference phase with:")
 print("HOMOPOLYMER_GAP_PENALTY:")
 dada2_homopolymer_gap_penalty
@@ -78,7 +79,7 @@ dadars <- dada(filtrs, err = errr, multithread = TRUE, pool = dada2_pool,
                HOMOPOLYMER_GAP_PENALTY = dada2_homopolymer_gap_penalty,
                BAND_SIZE = dada2_band_size, verbose = FALSE)
 
-# 6.Merge paired reads and construct sequence table
+# 7.Merge paired reads and construct sequence table
 print("Starting the merging phase with:")
 print("minOverlap:")
 dada2_minoverlap
@@ -98,7 +99,7 @@ d1 <- dim(seqtab)
 print("Distribution of sequence lengths before quimeras removal:")
 table(nchar(getSequences(seqtab)))
 
-# 7.Remove quimeras from sequences
+# 8.Remove quimeras from sequences
 print("Starting the chimera elimination phase with:")
 print("method:")
 dada2_method
@@ -118,7 +119,7 @@ print(paste("The abundance of these quimeras only represent",
                        (1 - round(x = k, digits = 3)) * 100,
                         "% of the total abundance"))
 
-# 8.Showing evolution of sequences from raw to final step
+# 9.Showing evolution of sequences from raw to final step
 print("Summary of the first samples throughout all phases:")
 getn <- function(x) sum(getUniques(x))
 track <- cbind(out, sapply(dadafs, getn), sapply(dadars, getn),
@@ -128,14 +129,14 @@ colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR",
 rownames(track) <- sample_names
 head(track)
 
-# 9.Taxonomical assignment
+# 10.Taxonomical assignment
 print("Performing Taxonomic Assignment")
 taxa <- assignTaxonomy(seqs = seqtab_nochim, refFasta = dada2_path_ref_fasta,
                       tryRC = dada2_tryrc, multithread = TRUE)
 taxa <- addSpecies(taxtab = taxa, refFasta = dada2_path_ref_fasta_species,
                       tryRC =  dada2_tryrc_species)
 
-# 10.Save OTU table and taxa table
+# 11.Save OTU table and taxa table
 print("Finished, saving taxa and ASVs table")
 tax_table <- taxa
 otu_table <- seqtab_nochim

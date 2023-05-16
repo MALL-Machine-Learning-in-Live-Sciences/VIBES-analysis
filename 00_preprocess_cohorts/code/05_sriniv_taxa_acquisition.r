@@ -1,9 +1,12 @@
-# Taxa Acquisition 
+##### Check/Assign taxonomic profiles from Validation 1 Cohort #####
+## PC Work git directory: ~/git/BV_Microbiome ##
+## CESGA Work git direcotry: /home/ulc/co/dfe/git/BV_Microbiome/
+
+# Different directories according to the place of work
 setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata') 
 path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata/Sriniv/"
-otu = read.delim2(paste0(path,"otutable-Amsel.txt" ), header = T, sep = '\t')
-clin = read.delim2(paste0(path,"task-amsel.txt"), header = T, sep = '\t')
-# Required libraries
+
+# 0.Load packages
 library(phyloseq)
 library(data.table)
 library(rentrez)
@@ -11,7 +14,11 @@ library(taxonomizr)
 library(taxize)
 prepareDatabase('accessionTaxa.sql')
 
-# Retain names for each OTU.Keeping us with a vector containing only the name.
+# 1.Load data (OTU + clinical)
+otu = read.delim2(paste0(path,"otutable-Amsel.txt" ), header = T, sep = '\t')
+clin = read.delim2(paste0(path,"task-amsel.txt"), header = T, sep = '\t')
+
+# 2.Retain names for each OTU.Keeping us with a vector containing only the name.
 ncbi = as.vector(otu$X.OTU.ID)
 taxid = list()
 for (j in seq_along(ncbi)) {
@@ -33,12 +40,11 @@ vector = as.character(c("699240", "84111", NA, "838", "39948",
                         "884684", "165779", "838", "1301", NA,
                         "836", "838","1350","1301", "838", "29465",
                         "2129", "201174"))
-# Replace NAs with taxIDs
+# 3.Replace NAs with taxIDs
 taxid = replace(x = taxid, list = index, values = vector)
 kk$taxid = taxid
 
-
-# Convert taxid to taxonomy tables
+# 4.Convert taxid to taxonomy tables
 taxa = list()
 for (t in seq_along(taxid)) {
   tt = getTaxonomy(
@@ -59,7 +65,7 @@ for (t in seq_along(taxid)) {
 taxTable = as.data.frame(rbindlist(taxa))
 rownames(taxTable) = ncbi
 
-# Convert NA?s to 'g__'
+# 5.Convert NA?s to 'g__'
 taxTable$Rank1 = replace(taxTable$Rank1, taxTable$Rank1 == 'k__NA', 'k__')
 taxTable$Rank2 = replace(taxTable$Rank2, taxTable$Rank2 == 'p__NA', 'p__')
 taxTable$Rank3 = replace(taxTable$Rank3, taxTable$Rank3 == 'c__NA', 'c__')

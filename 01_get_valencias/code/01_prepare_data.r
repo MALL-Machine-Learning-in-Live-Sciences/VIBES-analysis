@@ -1,3 +1,5 @@
+##### Prepare data to compute Valencias CSTs #####
+# 0.Load packages
 require(dplyr)
 require(tibble)
 require(phyloseq)
@@ -8,28 +10,28 @@ valencias <- read.delim2(
   header = TRUE,
   sep = ',')
 
-# Load data
+# 1.Load data
 setwd("~/git/BV_Microbiome/00_preprocess_cohorts/data/")
 cohort <- "Sriniv" #PRJNA2085 PRJNA3020 PRJNA7977 Ravel Sriniv
 file <- list.files(pattern = cohort)
 pseq <- readRDS(file)
 
-# Extract OTU
+# 2.Extract OTU
 otu <- 
   data.frame(otu_table(pseq)) %>% 
   rownames_to_column(var = "ASV") %>% 
   melt()
 
-# Extract taxa
+# 3.Extract taxa
 taxa <- 
   data.frame(tax_table(pseq)) %>% 
   rownames_to_column(var = "ASV")
 
-# Join
+# 4.Join
 data <- 
   left_join(otu, taxa, by = "ASV")
 
-# Rename taxonomic values variables
+# 5.Rename taxonomic values variables
 colnames(data)[4:10] <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
 
 kk <- grep("^p_", data$Phylum)
@@ -61,7 +63,7 @@ data <-
     Species = gsub(" ", "_", Species)
   )
 
-# Calculate total counts (= library size)
+# 6.Calculate total counts (= library size)
 read_counts <- 
   data %>% 
   group_by(variable) %>% 
@@ -71,7 +73,7 @@ read_counts <-
     read_count = value
   )
 
-# Grep common features between valencia centroids and data
+# 7. Grep common features between valencia centroids and data
 dom <- names(valencias)[grep("^d_", names(valencias))]
 phy <- names(valencias)[grep("^p_", names(valencias))]
 cl <- names(valencias)[grep("^c_", names(valencias))]
@@ -82,7 +84,7 @@ spec <- setdiff(
   names(valencias)[2:200],
   c(dom, phy, cl, ord, fam, gen))
 
-# checking!!
+# 8.Checking!!
 l <- length(dom) + length(phy) + length(cl) + length(ord) + length(fam) + length(gen) + length(spec)
 stopifnot(l == (ncol(valencias) - 1))
 setdiff(dom, data$Kingdom)
@@ -93,7 +95,7 @@ setdiff(fam, data$Family)
 setdiff(gen, data$Genus)
 setdiff(spec, data$Species)
 
-# Selecting features
+# 9.Selecting features
 # Kingdom
 data_d <- 
   data %>% 
@@ -213,7 +215,7 @@ rm(list = setdiff(
     "data_o", "data_f", "data_g",
     "data_s")))
 
-# Join all datasets
+# 10.Join all datasets
 data <- 
   left_join(read_counts, data_d, by = "sampleID") %>% 
   left_join(., data_p, by = "sampleID") %>% 

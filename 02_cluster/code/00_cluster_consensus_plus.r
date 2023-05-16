@@ -1,12 +1,16 @@
+##### CCP investigation #####
+# 0.Load packages
 packgs <- c("phyloseq", "ConsensusClusterPlus")
 lapply(packgs, require, character.only = TRUE)
-setwd("~/git/BV_Microbiome/")
+
+# 1.Declare several variables to perform analysis on several configurations
 rank <-  "Species" # Genus or "Species"
 nfeat <- "22" # 24 and 14 for Species or 37 and 21 for Genus
 trans <- "clr" # "log2", "clr" or "alr"
 cl <- "km" # "km", "pam" or "hc"
 
-# Select Target
+# 2. Declare several functions for preprocess data
+# 2.1.Select Target
 select_target <- function(pseq, tget) {
   require(dplyr)
   require(phyloseq)
@@ -15,7 +19,7 @@ select_target <- function(pseq, tget) {
   sample_data(pseq) <- df
   return(pseq)
 }
-# Normalization
+# 2.2.Normalization
 if (trans == "log2") {
   norm_dataset <- function(pseq) {
     # Change columns by rows too, interested in maintain fts in columns
@@ -48,14 +52,14 @@ if (trans == "log2") {
   print("Introduce valid normalization (log2, clr or alr)")
 }
 
-#Load data
+# 3.Load data
 Ravel <- readRDS(paste0("00_preprocess_cohorts/data/", rank, "Intersect/Ravel_",
                         rank, "_pseq_", nfeat, ".rds"))
 Ravel <- select_target(pseq = Ravel, tget = "Nugent_score_category")
 Ravel <- norm_dataset(pseq = Ravel)
 ravel_mat <- t(otu_table(Ravel)@.Data) # samples on columns for CCP
 
-# CCP
+# 4. Compute CCP
 require(ConsensusClusterPlus)
 title <- paste0("CCP_Ravel_", rank, "_", nfeat, "_", trans, "_", cl)
 setwd("~/git/BV_Microbiome/02_cluster/res/")
@@ -64,50 +68,3 @@ ccp = ConsensusClusterPlus(d = ravel_mat, maxK = 6, reps = 1500, pItem = 0.8,
                            distance = "euclidean", seed = 1580 ,
                            plot = "pdf")
 icl <- calcICL(res = ccp, title = title, plot = "pdf")
-
-# Select k
-select_k2 <- function(data, res, maxK){
-  require(cluster)
-  require(fpc)
-  d <- data
-  clusters <- res
-  
-  stcl <- lapply(2:maxK, function(i) cluster.stats(dist(t(d)),clusters[[i]]$consensusClass))
-  ldunn <- sapply(1:(maxK-1), function(i) stcl[[i]]$dunn )
-  lwbr  <- sapply(1:(maxK-1), function(i) stcl[[i]]$wb.ratio )
-  lch   <- sapply(1:(maxK-1), function(i) stcl[[i]]$ch)
-  lsil <- vector("list",(maxK-1))
-  
-  for(i in 2:maxK){
-    sil <- silhouette(clusters[[i]]$consensusClass,dist(t(d),method = "euclidean"))
-    sizes <- table(clusters[[i]]$consensusClass)
-    lsil[[i-1]] <- sil
-  }
-  
-  msil <- sapply(1:(maxK-1), function(i) mean( lsil[[i]][,3] ) )
-  cdl <- lapply(2:maxK, function(i) as.dist(1-clusters[[i]]$consensusMatrix ) )
-  md <- dist(t(d),method = "euclidean")
-  corl <- sapply(cdl, cor,md)
-  
-  co <- rep(1,(maxK-1))
-  nclust.co <- which.max(corl) + 1  # cophenetic distance
-  
-  co <- rep(1,(maxK-1))
-  nclust.sil <- which.max(msil) + 1  # silhouette distance
-  
-  co <- rep(1,(maxK-1))
-  nclust.dunn <- which.max(ldunn) + 1  # dunn index
-  
-  indexes <- c(nclust.co, nclust.sil, nclust.dunn)
-  names(indexes) <- c('cophenetic', 'silhouette', 'dunn')
-  
-  nclust <- as.numeric(table(indexes)[as.numeric(which.max(table(indexes)))])
-  if (nclust == 1) {
-    nclust <- nclust.co
-  }
-  
-  return(nclust)
-  
-}
-#a <- select_k2(data = ravel_mat, res = ccp, maxK = 6)
-

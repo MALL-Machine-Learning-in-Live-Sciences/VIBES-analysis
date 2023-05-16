@@ -1,4 +1,4 @@
-## Project: Entropy ##
+##### Check/Assign taxonomic profiles from Descovery Cohort #####
 ## PC Work git directory: ~/git/BV_Microbiome ##
 ## CESGA Work git direcotry: /home/ulc/co/dfe/git/BV_Microbiome/
 
@@ -6,7 +6,7 @@
 setwd('/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata') ## CESGA directory
 # setwd("projects/Entropy/data") ## PC Directory
 
-# Required libraries
+# 0.Load pakages
 library(phyloseq)
 library(data.table)
 library(rentrez)
@@ -15,16 +15,16 @@ library(taxonomizr)
 path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata/Ravel/"
 prepareDatabase('accessionTaxa.sql')
 
-# In/out paths
+# 1.In/out paths
 # CESGA
 # in.path = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/extdata/"
 # out.path = "/mnt/netapp2/Store_uni/home/ulc/co/git/BV_Microbiome/extdata/"
 
-# Load data (OTU + clinical)
+# 2.Load data (OTU + clinical)
 otu = read.delim2(paste0(path,"otutableRefSeq.txt" ), header = T, sep = '\t')
 clin = read.delim2(paste0(path,"task-nugent-score.txt"), header = T, sep = '\t')
 
-# Retain NCBI ID?s for each OTU.Keeping us with a vector containing only the access numbers.
+# 3.Retain NCBI ID?s for each OTU.Keeping us with a vector containing only the access numbers.
 otu$X.OTU.ID = as.vector(otu$X.OTU.ID)
 splitted = strsplit(otu$X.OTU.ID, '_')
 ncbi = list()
@@ -33,7 +33,7 @@ for (i in seq_along(splitted)) {
 }
 ncbi = unlist(ncbi)
 
-# Convert NCBI ID?s to taxid. Each accession number corresponds to a taxonomy id.
+# 4.Convert NCBI IDs to taxid. Each accession number corresponds to a taxonomy id.
 taxid = list()
 for (j in seq_along(ncbi)) {
   res = entrez_search(db = "nucleotide", term = ncbi[j])
@@ -44,7 +44,7 @@ for (j in seq_along(ncbi)) {
 }
 taxid = unlist(taxid)
 
-# Convert taxid to taxonomy table
+# 5.Convert taxid to taxonomy table
 taxa = list()
 for (t in seq_along(taxid)) {
   tt = getTaxonomy(
@@ -65,7 +65,7 @@ for (t in seq_along(taxid)) {
 taxTable = as.data.frame(rbindlist(taxa))
 rownames(taxTable) = ncbi
 
-# Convert NA?s to 'g__'
+# 6.Convert NA?s to 'g__'
 taxTable$Rank1 = replace(taxTable$Rank1, taxTable$Rank1 == 'k__NA', 'k__')
 taxTable$Rank2 = replace(taxTable$Rank2, taxTable$Rank2 == 'p__NA', 'p__')
 taxTable$Rank3 = replace(taxTable$Rank3, taxTable$Rank3 == 'c__NA', 'c__')

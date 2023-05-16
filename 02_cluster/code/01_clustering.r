@@ -1,12 +1,16 @@
+##### Compute clusterization #####
+# 0.Load packages
 packgs <- c("phyloseq")
 lapply(packgs, require, character.only = TRUE)
-setwd("~/git/BV_Microbiome/")
+
+# 1.Declare several variables to perform analysis
 rank <-  "Species" # Genus or "Species"
 nfeat <- "22" # 24 and 14 for Species or 37 and 21 for Genus
 trans <- "clr" # "log2", "clr" or "alr"
 k <- 4
 
-# Select Target
+# 2. Declare several functions for preprocess data
+# 2.1.Select Target
 select_target <- function(pseq, tget) {
   require(dplyr)
   require(phyloseq)
@@ -15,7 +19,7 @@ select_target <- function(pseq, tget) {
   sample_data(pseq) <- df
   return(pseq)
 }
-# Normalization
+# 2.2.Normalization
 if (trans == "log2") {
   norm_dataset <- function(pseq) {
     # Change columns by rows too, interested in maintain fts in columns

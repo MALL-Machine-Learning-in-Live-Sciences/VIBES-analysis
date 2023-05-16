@@ -1,5 +1,5 @@
 ##### Prepare Metadata and IDs to download FASTQ from ENA #####
-# Load packages
+# 0.Load packages
 library(openxlsx)
 
 # 1.Ravel_2013: extract samples from 2013 (1657) and complete with metadata
