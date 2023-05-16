@@ -24,7 +24,7 @@ BiocManager::install(c('phyloseq','microbiome', 'ConsensusClusterPlus', 'MOFA2',
 
 ```
 
-In addition, the [enaBrowserTools](https://github.com/enasequence/enaBrowserTools) have been used to download data from the [European Nucleotide Archive](https://www.ebi.ac.uk/ena/browser/home),  [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) was used to make quality control checks on raw sequence data and adapted script from [Valencia](https://github.com/ravel-lab/VALENCIA) to compute CSTs.
+In addition, the [enaBrowserTools](https://github.com/enasequence/enaBrowserTools) have been used to download data from the [European Nucleotide Archive](https://www.ebi.ac.uk/ena/browser/home),  [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) was used to make quality control checks on raw sequence data and adapted script from [VALENCIA](https://github.com/ravel-lab/VALENCIA) to compute CSTs.
 
 ## Project workflow
 The starting point for Train and Validation 1 cohorts was the clinical data and the Operational Taxonomic Units (OTUs) count tables. The remaining validation cohorts were obtained by processing the 16S rRNA sequences hosted in the European Nucleotide Archive (ENA). Therefore, there are two workflows in [00_preprocess_cohorts](https://github.com/DiegoFE94/BV_Microbiome/tree/main/00_preprocess_cohorts/code)
@@ -64,8 +64,29 @@ w2 - From [05_ravel_taxa_acquisition.r](https://github.com/DiegoFE94/BV_Microbio
 
 ### 03.Machine Learning
 
-[00_prepare_data.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/00_prepare_data.r)
-### 04.Treatment
+[00_prepare_data.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/00_prepare_data.r) This script prepare all cohorts to run machine learning analyses. From the phyloseq of each cohort it generates a dataframe with the 22 species and the labels of the cluster to which each sample belongs.
+
+[01_run_ml](https://github.com/DiegoFE94/BV_Microbiome/tree/main/03_machine_learning/code/01_run_ml) This folder holds all the scripts needed to run each dataframe + algorithm combination in parallel. Both direct counts and CLR transformed data were used. Returns the nested cross validation benchmark training.
+
+[02_train_cv_results.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/02_train_cv_results.r) This script details the performance measures of the training. The input is the various benchmarks from the previous section and returns an overall summary of the training according to the performance measures you specify.
+
+[03_benchmark_external_validation.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/03_benchmark_external_validation.r) This script runs the external validation on the validation cohorts. It returns a summary of performance measures across all cohorts.
+
+[04_prune_best_glmnet.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/04_prune_best_glmnet.r) This script refines the best model found in this analysis. This is done in order not to have dependencies when using that model. As it is a ```glmnet``` model we extract the betas of each species.
+
+[05_best_glmnet_external_validation.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/05_best_glmnet_external_validation.r) In this script we perform again a external validation in all cohorts but only with the best model.
+
+### 04.Treatment 
+
+[00_preprocess_PRJNA302078.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/00_preprocess_PRJNA302078.r)
+
+
+[01_run_mefisto.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/01_run_mefisto.r)
+
+[02_plot_mefisto.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/02_plot_mefisto.r)
+
+[03_prepare_D0.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/03_prepare_D0.r)
+
 
 ### extdata
 
