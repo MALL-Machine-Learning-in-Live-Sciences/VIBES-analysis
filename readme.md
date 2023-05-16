@@ -52,7 +52,7 @@ w2 - From [05_ravel_taxa_acquisition.r](https://github.com/DiegoFE94/BV_Microbio
 
 ### 01.Get Valencias CSTs
 
-[00_prepare_data.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/0_get_valencias/code/00_prepare_data.r) This script transforms the phyloseq objects of each cohort to compute the VALENCIA CSTs. It returns a CSV per cohort adapted for the VALENCIA computation script. 
+[00_prepare_data.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/01_get_valencias/code/00_prepare_data.r) This script transforms the phyloseq objects of each cohort to compute the VALENCIA CSTs. It returns a CSV per cohort adapted for the VALENCIA computation script. 
 
 [01_calculate_valencias.py](https://github.com/DiegoFE94/BV_Microbiome/blob/main/01_get_valencias/code/01_calculate_valencias.py) Computes the VALENCIA CSTs. Returning the scores and the membership of each CST.
 
