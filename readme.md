@@ -44,7 +44,7 @@ w1 - From [00_preprocess_metadata.r](https://github.com/DiegoFE94/BV_Microbiome/
 
 w2 - From [05_ravel_taxa_acquisition.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/05_ravel_taxa_acquisition.r) - [06_get_phyloseqs.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/06_get_phyloseqs.r) In this second workflow, the Discovery and Validation 1 cohorts are processed.
 
-[05_ravel_taxa_acquisition.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/05_ravel_taxa_acquisition.r)] - [05_sriniv_taxa_acquisition.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/05_sriniv_taxa_acquisition.r) In both scripts, from the OTU tables, the different taxonomic levels to which each species belongs are checked and the correct taxonomic table is returned.
+[05_ravel_taxa_acquisition.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/05_ravel_taxa_acquisition.r) - [05_sriniv_taxa_acquisition.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/05_sriniv_taxa_acquisition.r) In both scripts, from the OTU tables, the different taxonomic levels to which each species belongs are checked and the correct taxonomic table is returned.
  
 [06_get_phyloseqs.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/06_get_phyloseqs.r) In this script, the phyloseq object is built from the OTU table, the taxonomy table and the metadata.
 
