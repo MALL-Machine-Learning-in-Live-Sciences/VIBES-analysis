@@ -78,17 +78,35 @@ w2 - From [05_ravel_taxa_acquisition.r](https://github.com/DiegoFE94/BV_Microbio
 
 ### 04.Treatment 
 
-[00_preprocess_PRJNA302078.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/00_preprocess_PRJNA302078.r)
+[00_preprocess_PRJNA302078.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/00_preprocess_PRJNA302078.r) In this script, the Validation 4 cohort is prepared with all species for MEFISTO analysis.
 
+[01_run_mefisto.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/01_run_mefisto.r) In this script a MEFISTO analysis is executed. It returns a MOFA object with the model resulting from the analysis.
 
-[01_run_mefisto.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/01_run_mefisto.r)
+[02_plot_mefisto.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/02_plot_mefisto.r) This script is used to graphically display the results of the MEFISTO analysis.
 
-[02_plot_mefisto.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/02_plot_mefisto.r)
-
-[03_prepare_D0.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/03_prepare_D0.r)
-
-
-### extdata
+[03_prepare_D0.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/03_prepare_D0.r) In this script, three datasets are prepared from the D0 samples of Validation Cohort 4 (only information from our clusters, only information from the VALENCIA CSTs, and both). Subsequently, an identical ML methodology like [01_run_ml](https://github.com/DiegoFE94/BV_Microbiome/tree/main/03_machine_learning/code/01_run_ml) is applied.
 
 ### Figures
 [figures](https://github.com/DiegoFE94/BV_Microbiome/tree/main/figures/code) folder contains scripts to reproduce each figures of the paper. Note that for aesthetics reasons, the figures were edited using illustrator.
+
+## Review
+
+## Citation
+
+## Contact
+
+If you have any questions, comments, or suggestions, please feel free to
+contact us at:
+
+- Diego Fernández Edreira
+  - Email: <diego.fedreira@udc.es>
+  - Twitter: [@diego_edreira](https://twitter.com/diego_edreira)
+  - GitHub: [DiegoFE94](https://github.com/DiegoFE94/)
+- Jose Liñares Blanco
+  - Email: <j.linares@udc.es>
+  - Twitter: [@8JoseLinares](https://twitter.com/8JoseLinares)
+  - GitHub: [jlinaresb](https://github.com/jlinaresb)
+- Carlos Fernández Lozano
+  - Email: <carlos.fernandez@udc.es>
+  - Twitter: [@cafernandezlo](https://twitter.com/cafernandezlo)
+  - GitHub: [cafernandezlo](https://github.com/cafernandezlo)
