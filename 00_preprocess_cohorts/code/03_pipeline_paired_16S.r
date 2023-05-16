@@ -136,7 +136,7 @@ taxa <- assignTaxonomy(seqs = seqtab_nochim, refFasta = dada2_path_ref_fasta,
 taxa <- addSpecies(taxtab = taxa, refFasta = dada2_path_ref_fasta_species,
                       tryRC =  dada2_tryrc_species)
 
-# 11.Save OTU table and taxa table
+# 11.Save ASV table and taxa table
 print("Finished, saving taxa and ASVs table")
 tax_table <- taxa
 otu_table <- seqtab_nochim

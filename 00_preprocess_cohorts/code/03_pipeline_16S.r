@@ -83,7 +83,7 @@ taxa <- assignTaxonomy(seqs = seqtab_nochim, refFasta = dada2_path_ref_fasta,
 taxa <- addSpecies(taxtab = taxa, refFasta = dada2_path_ref_fasta_species,
                    tryRC =  dada2_tryrc_species)
 
-# 10.Save OTU table and taxa table
+# 10.Save ASV table and taxa table
 tax_table <- taxa
 otu_table <- seqtab_nochim
 saveRDS(object = tax_table, file = paste0(out_path,"/", experiment_name,
