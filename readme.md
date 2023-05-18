@@ -41,7 +41,7 @@ The 16S samples of the cohorts Validation 2, 3 and 4 have been downloaded from t
 
 [04_make_pseq.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/04_make_pseq.r) In this script, the ```phyloseq``` object is built from the ```ASV table```, the ```taxonomic table``` and the ```metadata```.
 
-[05_ravel_taxa_acquisition.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/05_ravel_taxa_acquisition.r) - [05_sriniv_taxa_acquisition.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/05_sriniv_taxa_acquisition.r) In both scripts, from the ```OTU tables```, the different taxonomic levels to which each species belongs are checked and the correct ```taxonomic table``` is returned. Both in ```.rds``` format.
+[05_ravel_taxa_acquisition.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/05_ravel_taxa_acquisition.r) - [05_sriniv_taxa_acquisition.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/05_sriniv_taxa_acquisition.r) In both scripts, from the ```OTU tables```, the different taxonomic levels to which each species belongs are checked and the correct ```taxonomic tables``` is returned. Both in ```.rds``` format.
  
 [06_get_phyloseqs.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/06_get_phyloseqs.r) In this script, the ```phyloseq``` object is built from the ```OTU table```, the ```taxonomy table``` and the ```metadata```.
 
@@ -51,7 +51,7 @@ The 16S samples of the cohorts Validation 2, 3 and 4 have been downloaded from t
 
 [00_prepare_data.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/01_get_valencias/code/00_prepare_data.r) This script transforms the phyloseq objects of each cohort to compute the VALENCIA CSTs. It returns a ```.csv``` per cohort adapted for the VALENCIA computation script. 
 
-[01_calculate_valencias.py](https://github.com/DiegoFE94/BV_Microbiome/blob/main/01_get_valencias/code/01_calculate_valencias.py) Computes the VALENCIA CSTs. Returning in a ```.csv``` the scores and the membership of each CST.
+[01_calculate_valencias.py](https://github.com/DiegoFE94/BV_Microbiome/blob/main/01_get_valencias/code/01_calculate_valencias.py) Computes the VALENCIA CSTs. Returning a ```.csv``` per cohort with the scores and the membership of each CST.
 
 ### 02.Clusterization
 
@@ -63,25 +63,25 @@ The 16S samples of the cohorts Validation 2, 3 and 4 have been downloaded from t
 
 [00_prepare_data.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/00_prepare_data.r) This script prepare all cohorts to run machine learning analyses. From the phyloseq of each cohort it generates a ```.rds``` dataframe with the 22 species and the labels of the cluster to which each sample belongs.
 
-[01_run_ml](https://github.com/DiegoFE94/BV_Microbiome/tree/main/03_machine_learning/code/01_run_ml) This folder holds all the scripts needed to run each dataframe + algorithm combination in parallel. Both direct counts and CLR transformed data were used. Returns the nested cross validation benchmark training.
+[01_run_ml](https://github.com/DiegoFE94/BV_Microbiome/tree/main/03_machine_learning/code/01_run_ml) This folder holds all the scripts needed to run each dataframe + algorithm combination in parallel. Both direct counts and CLR transformed data were used. Returns a ```.rds``` dataframe with the nested cross validation benchmark training.
 
-[02_train_cv_results.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/02_train_cv_results.r) This script details the performance measures of the training. The input is the various benchmarks from the previous section and returns an overall summary of the training according to the performance measures you specify.
+[02_train_cv_results.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/02_train_cv_results.r) This script details the performance measures of the training. The input is the various benchmarks from the previous section and returns a ```.rds``` dataframe with the summary of the training according to the performance measures you specify.
 
-[03_benchmark_external_validation.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/03_benchmark_external_validation.r) This script runs the external validation on the validation cohorts. It returns a summary of performance measures across all cohorts.
+[03_benchmark_external_validation.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/03_benchmark_external_validation.r) This script runs the external validation on the validation cohorts. It returns a summary ```.rds``` dataframe of performance measures across all cohorts.
 
-[04_prune_best_glmnet.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/04_prune_best_glmnet.r) This script refines the best model found in this analysis. This is done in order not to have dependencies when using that model. As it is a ```glmnet``` model we extract the betas of each species.
+[04_prune_best_glmnet.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/04_prune_best_glmnet.r) This script refines the best model found in this analysis. This is done in order not to have dependencies when using that model. As it is a ```glmnet``` model we extract the betas of each species. The output is a list in format  ```.rds``` with betas, nclasses and nlambdas.
 
-[05_best_glmnet_external_validation.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/05_best_glmnet_external_validation.r) In this script we perform again a external validation in all cohorts but only with the best model.
+[05_best_glmnet_external_validation.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/03_machine_learning/code/05_best_glmnet_external_validation.r) In this script we perform again a external validation in all cohorts but only with the best model. It returns a summary ```.rds``` dataframe of performance measures across all cohorts.
 
 ### 04.Treatment 
 
-[00_preprocess_PRJNA302078.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/00_preprocess_PRJNA302078.r) In this script, the Validation 4 cohort is prepared with all species for MEFISTO analysis.
+[00_preprocess_PRJNA302078.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/00_preprocess_PRJNA302078.r) In this script, the Validation 4 cohort is prepared with all species for MEFISTO analysis. It generates two ```.rds``` dataframes.
 
-[01_run_mefisto.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/01_run_mefisto.r) In this script a MEFISTO analysis is executed. It returns a MOFA object with the model resulting from the analysis.
+[01_run_mefisto.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/01_run_mefisto.r) In this script a MEFISTO analysis is executed. It returns a ```MOFA``` object with the model resulting from the analysis.
 
 [02_plot_mefisto.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/02_plot_mefisto.r) This script is used to graphically display the results of the MEFISTO analysis.
 
-[03_prepare_D0.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/03_prepare_D0.r) In this script, three datasets are prepared from the D0 samples of Validation Cohort 4 (only information from our clusters, only information from the VALENCIA CSTs, and both). Subsequently, an identical ML methodology like [01_run_ml](https://github.com/DiegoFE94/BV_Microbiome/tree/main/03_machine_learning/code/01_run_ml) is applied.
+[03_prepare_D0.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/04_treatment/code/03_prepare_D0.r) In this script, three datasets are prepared from the D0 samples of Validation Cohort 4 (only information from our clusters, only information from the VALENCIA CSTs, and both). It generates three ```.rds``` dataframes. Subsequently, an identical ML methodology like [01_run_ml](https://github.com/DiegoFE94/BV_Microbiome/tree/main/03_machine_learning/code/01_run_ml) is applied.
 
 ### Figures
 [figures](https://github.com/DiegoFE94/BV_Microbiome/tree/main/figures/code) folder contains scripts to reproduce each figures of the paper. Note that for aesthetics reasons, the figures were edited using illustrator.
