@@ -1,4 +1,4 @@
-# PAPER TITLE
+# Machine learning-based consensus subtyping of the vaginal microbiome to improve classification of bacterial vaginosis
 
 This repository includes code based on the following publication:
 
