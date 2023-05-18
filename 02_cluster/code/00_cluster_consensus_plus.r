@@ -67,4 +67,8 @@ ccp = ConsensusClusterPlus(d = ravel_mat, maxK = 6, reps = 1500, pItem = 0.8,
                            pFeature = 1, title = title, clusterAlg = cl,
                            distance = "euclidean", seed = 1580 ,
                            plot = "pdf")
+
 icl <- calcICL(res = ccp, title = title, plot = "pdf")
+ccp[[4]][["consensusMatrix"]][1:5,1:5] # Matrix Consensuns
+icl[["clusterConsensus"]] # Cluster consensus
+icl[["itemConsensus"]]  # item consensus
