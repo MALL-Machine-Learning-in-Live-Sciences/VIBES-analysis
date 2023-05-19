@@ -29,7 +29,8 @@ In addition, the [enaBrowserTools](https://github.com/enasequence/enaBrowserTool
 ## Cohorts
 
 [SRA022855](https://www.ebi.ac.uk/ena/browser/view/SRA022855) from [Ravel et al.](https://www.pnas.org/doi/10.1073/pnas.1002611107): Vaginal microbiome profiles from 394 women were used.
-[SRA051298](https://www.ebi.ac.uk/ena/browser/view/SRA051298) from [Sriniva](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0037818): Vaginal microbiome profiles from 220 women were used
+
+[SRA051298](https://www.ebi.ac.uk/ena/browser/view/SRA051298) from [Srinivasan et al.](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0037818): Vaginal microbiome profiles from 220 women were used
 
 [PRJNA208535](https://www.ebi.ac.uk/ena/browser/view/PRJNA208535) from [Ravel et al.](https://microbiomejournal.biomedcentral.com/articles/10.1186/2049-2618-1-29): Vaginal microbiome profiles from 25 women over 10 weeks (1657 raw samples) were used.
 
