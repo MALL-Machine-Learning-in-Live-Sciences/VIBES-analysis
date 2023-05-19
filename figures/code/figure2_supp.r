@@ -11,14 +11,17 @@ gp <- ggscatter(
     y = "data",
     color = "algorithm",
     shape = "algorithm",
-    size = 5
+    size = 2
     ) +
-  facet_grid(~ variable + transformation, scales = "free_x") + 
+  facet_grid(~ variable + transformation,
+             scales = "free_x") + 
   theme_bw() +
   theme(axis.title.x = element_blank(),
         axis.title.y = element_blank(),
         axis.text.x = element_text(color = "black",
-                                   size = 8),
+                                   size = 7),
+        axis.text.y = element_text(color = "black",
+                                   size = 7),
         strip.text.x = element_text(size = 8),
         axis.ticks.y = element_blank(),
         axis.ticks.x = element_line(),
@@ -38,6 +41,6 @@ ggsave(
   filename = "fig2_supp.svg",
   device = "svg",
   path = "figures/plots/Figure2/",
-  width = 250, 
-  height = 90, 
+  width = 220, 
+  height = 70, 
   units = "mm")

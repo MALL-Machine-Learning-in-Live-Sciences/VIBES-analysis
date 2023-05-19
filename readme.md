@@ -26,6 +26,17 @@ BiocManager::install(c('phyloseq','microbiome', 'ConsensusClusterPlus', 'MOFA2',
 
 In addition, the [enaBrowserTools](https://github.com/enasequence/enaBrowserTools) have been used to download data from the [European Nucleotide Archive](https://www.ebi.ac.uk/ena/browser/home),  [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) was used to make quality control checks on raw sequence data and adapted script from [VALENCIA](https://github.com/ravel-lab/VALENCIA) to compute CSTs.
 
+## Cohorts
+
+[SRA022855](https://www.ebi.ac.uk/ena/browser/view/SRA022855) from [Ravel et al.](https://www.pnas.org/doi/10.1073/pnas.1002611107): Vaginal microbiome profiles from 394 women were used.
+[SRA051298](https://www.ebi.ac.uk/ena/browser/view/SRA051298) from [Sriniva](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0037818): Vaginal microbiome profiles from 220 women were used
+
+[PRJNA208535](https://www.ebi.ac.uk/ena/browser/view/PRJNA208535) from [Ravel et al.](https://microbiomejournal.biomedcentral.com/articles/10.1186/2049-2618-1-29): Vaginal microbiome profiles from 25 women over 10 weeks (1657 raw samples) were used.
+
+[PRJNA797778](https://www.ebi.ac.uk/ena/browser/view/PRJNA797778) from [France et al.](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-022-02635-9): Vaginal microbiome profiles from 39 women over 10 weeks (220 raw samples) were used.
+
+[PRJNA302078](https://www.ebi.ac.uk/ena/browser/view/PRJNA302078) from [Xiao et al.](https://pubmed.ncbi.nlm.nih.gov/27253522/): Vaginal microbiome from 65 women over 3 time points were used.
+
 ## Project workflow
 The 16S samples of the cohorts Validation 2, 3 and 4 have been downloaded from the ENA and further processed. The corresponding scripts are [00_preprocess_metadata.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/00_preprocess_metadata.r) to [04_make_pseq.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/04_make_pseq.r). As explained in the article, the Discovery and Validation 1 cohorts have been processed differently, due to the impossibility of reliably downloading them from the ENA. The corresponding scripts are from [05_ravel_taxa_acquisition.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/05_ravel_taxa_acquisition.r) to [06_get_phyloseqs.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/06_get_phyloseqs.r). So, there are two workflows in [00_preprocess_cohorts](https://github.com/DiegoFE94/BV_Microbiome/tree/main/00_preprocess_cohorts/code) converging in the script [07_get_intersect.r](https://github.com/DiegoFE94/BV_Microbiome/blob/main/00_preprocess_cohorts/code/07_get_intersect.r).
 

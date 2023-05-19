@@ -40,9 +40,9 @@ base_data |>
 
 svg(
   filename = "figures/plots/Figure2/fig2.svg",
-  width = 7, 
-  height = 2.5,
-  pointsize = 8
+  width = 6, 
+  height = 2.1,
+  pointsize = 7
 )
 base_data |>
        forestplot(labeltext = c(cohort, n, brier, kappa, bacc),
@@ -120,7 +120,7 @@ plot_d_n = ggplot(data = d_n, aes(x=reorder(species, desc(species)), y = importa
         axis.title.y = element_blank(),
         axis.text.y = element_blank(),
         axis.text.x = element_text(color = "black",
-                                   size = 8),
+                                   size = 7),
         strip.text.x = element_text(size = 8),
         axis.ticks.y = element_blank(),
         axis.ticks.x = element_line(),
@@ -146,7 +146,7 @@ plot_d_idn = ggplot( data = d_idn,  aes(x=reorder(species, desc(species)), y = i
         axis.title.y = element_blank(),
         axis.text.y = element_blank(),
         axis.text.x = element_text(color = "black",
-                                   size = 8),
+                                   size = 7),
         strip.text.x = element_text(size = 8),
         axis.ticks.y = element_blank(),
         axis.ticks.x = element_line(),
@@ -170,7 +170,7 @@ plot_d_idd = ggplot( data = d_idd, aes(x=reorder(species, desc(species)), y = im
         axis.title.y = element_blank(),
         axis.text.y = element_blank(),
         axis.text.x = element_text(color = "black",
-                                   size = 8),
+                                   size = 7),
         strip.text.x = element_text(size = 8),
         axis.ticks.y = element_blank(),
         axis.ticks.x = element_line(),
@@ -194,7 +194,7 @@ plot_d_d = ggplot(data = d_d, aes(x=reorder(species, desc(species)), y = importa
         axis.title.y = element_blank(),
         axis.text.y = element_blank(),
         axis.text.x = element_text(color = "black",
-                                   size = 8),
+                                   size = 7),
         strip.text.x = element_text(size = 8),
         axis.ticks.y = element_blank(),
         axis.ticks.x = element_line(),
@@ -224,7 +224,7 @@ ggsave(
   device = "svg",
   path = "figures/plots/Figure2/",
   width = 148, 
-  height = 70, 
+  height = 85, 
   units = "mm")
 
 #Plot again for extract names
@@ -234,11 +234,11 @@ plot_d_n = ggplot(data = d_n, aes(x=reorder(species, desc(species)), y = importa
   theme_bw() +
   theme(axis.title.x = element_blank(),
         axis.title.y = element_blank(),
-        axis.text.y = element_text(size = 8,
+        axis.text.y = element_text(size = 7,
                                    hjust = 1,
                                    color = "black"),
         axis.text.x = element_text(color = "black",
-                                   size = 8),
+                                   size = 7),
         strip.text.x = element_text(size = 8),
         axis.ticks.y = element_blank(),
         axis.ticks.x = element_line(),
@@ -265,5 +265,5 @@ ggsave(
   device = "svg",
   path = "figures/plots/Figure2/",
   width = 180, 
-  height = 70, 
+  height = 85, 
   units = "mm")
