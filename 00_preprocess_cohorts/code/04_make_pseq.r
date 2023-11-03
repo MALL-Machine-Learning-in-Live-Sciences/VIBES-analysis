@@ -4,7 +4,7 @@ library(phyloseq)
 library(dplyr)
 
 # 1.Prepare paths and load required data
-project_name <- "PRJNA208535"
+project_name <- "PRJNA393472"
 path <- paste0("extdata/", project_name, "/")
 metadata <- readRDS(file = paste0(path, project_name,
                                   "_metadata.rds"))

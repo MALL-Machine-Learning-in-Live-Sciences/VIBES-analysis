@@ -4,12 +4,11 @@ require(data.table)
 
 # Measures
 measures <- list(
-	msr("classif.acc", id = "Accuracy"),
-	msr("classif.mbrier", id = "Brier Error"),
-	msr("classif.bacc", id = "Balanced Accuracy"))
+	msr("classif.auc", id = "AUC"),
+	msr("classif.mbrier", id = "Brier Error"))
 
 # Path to results
-res_dir <- "/mnt/netapp2/Store_uni/home/ulc/co/jlb/git/run_mlr3/results/BV_Microbiome_v2"
+res_dir <- "05_preterm/res/BV_Microbiome_preterm/"
 
 # See CV results
 models_files <- list.files(res_dir, pattern = "rsmp_")
@@ -27,9 +26,8 @@ cv <- lapply(models_files, function(x) {
   scores <- pred$score(measures = measures)
   
   res_cv <- data.frame(
-    Accuracy = scores[1],
+    AUC = scores[1],
     Brier = scores[2],
-    BAccuracy = scores[3],
     algorithm = sapply(strsplit(x, "_"), "[", 2),
     data = sapply(strsplit(gsub(".rds", "", x), "_"), "[", 3),
     transformation = sapply(strsplit(gsub(".rds", "", x), "_"), "[", 4))

@@ -227,9 +227,9 @@ gp_names = ggarrange(plotlist = list(plot_d_n,
 
 ggsave(
   gp_names,
-  filename = "supp_fig2_varimp.pdf",
+  filename = "FS2.pdf",
   device = "pdf",
-  path = "figures/plots/Figure2/",
+  path = "figures/plots/FigureSupp/Supplementary_Figure2",
   width = 180, 
   height = 70, 
   units = "mm")

@@ -1,11 +1,18 @@
+setwd("~/git/BV_Microbiome/")
+##### Bootstrap CCP investigation #####
+# 0.Load packages
 packgs <- c("phyloseq", "ConsensusClusterPlus")
 lapply(packgs, require, character.only = TRUE)
+
+# 1.Declare several variables to perform analysis on several configurations
 rank <-  "Species" # Genus or "Species"
 nfeat <- "22" # 24 and 14 for Species or 37 and 21 for Genus
 trans <- "clr" # "log2", "clr" or "alr"
 cl <- "km" # "km", "pam" or "hc"
+pctge <- 1 #Boostraping sampling 0.5,0.625,0.75, 0.90 and 1
 
-# Select Target
+# 2. Declare several functions for preprocess data
+# 2.1.Select Target
 select_target <- function(pseq, tget) {
   require(dplyr)
   require(phyloseq)
@@ -14,7 +21,7 @@ select_target <- function(pseq, tget) {
   sample_data(pseq) <- df
   return(pseq)
 }
-# Normalization
+# 2.2.Normalization
 if (trans == "log2") {
   norm_dataset <- function(pseq) {
     # Change columns by rows too, interested in maintain fts in columns
@@ -47,19 +54,43 @@ if (trans == "log2") {
   print("Introduce valid normalization (log2, clr or alr)")
 }
 
-#Load data
+# 3.Load data
 Ravel <- readRDS(paste0("00_preprocess_cohorts/data/", rank, "Intersect/Ravel_",
                         rank, "_pseq_", nfeat, ".rds"))
 Ravel <- select_target(pseq = Ravel, tget = "Nugent_score_category")
 Ravel <- norm_dataset(pseq = Ravel)
-ravel_mat <- t(otu_table(Ravel)@.Data) # samples on columns for CCP
+ravel_mat <- otu_table(Ravel)@.Data
 
-# CCP
-require(ConsensusClusterPlus)
-title <- paste0("CCP_Ravel_", rank, "_", nfeat, "_", trans, "_", cl)
-setwd("~/git/BV_Microbiome/figures/plots/FigureSupp/Supplementary_Figure1")
+set.seed(1580)
+if (pctge == 1) {
+  ravel_mat <- t(ravel_mat)
+}else{
+  n <- nrow(ravel_mat)
+  subsampling <- sample(1:n, n * pctge)
+  data_sub <- ravel_mat[subsampling, ]
+  ravel_mat <- t(data_sub)
+}
+
+title <- paste0("Bootstrap_", pctge, "_CCP_Ravel_",
+                rank, "_", nfeat, "_", trans, "_", cl)
+setwd("~/git/BV_Microbiome/02_cluster/res/")
 ccp = ConsensusClusterPlus(d = ravel_mat, maxK = 6, reps = 1500, pItem = 0.8,
                            pFeature = 1, title = title, clusterAlg = cl,
                            distance = "euclidean", seed = 1580 ,
                            plot = "pdf")
 icl <- calcICL(res = ccp, title = title, plot = "pdf")
+ccp[[4]][["consensusMatrix"]][1:5,1:5] # Matrix Consensuns
+icl[["clusterConsensus"]] # Cluster consensus
+icl[["itemConsensus"]]  # item consensus
+
+
+resultados <- aggregate(clusterConsensus ~ k, data = icl[["clusterConsensus"]],
+                        FUN = function(x) c(Mean = mean(x), Median = median(x)))
+print(resultados)
+res <- list(ccp,icl,resultados)
+names(res) <- c("ccp","icl","results")
+
+saveRDS(object = res, file = paste0(title,"/", title, ".rds"))
+setwd("~/git/BV_Microbiome/")
+
+

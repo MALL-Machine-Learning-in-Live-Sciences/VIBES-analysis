@@ -1,7 +1,8 @@
 ##### Prepare Metadata and IDs to download FASTQ from ENA #####
 # 0.Load packages
 library(openxlsx)
-
+library(dplyr)
+library(tibble)
 # 1.Ravel_2013: extract samples from 2013 (1657) and complete with metadata
 # from the paper.
 # Extract data from ENA
@@ -57,3 +58,25 @@ metadata <- merge(x = cd, y = PRJNA302078, by.x = "ID", by.y = "sample_ID")
 metadata <- data.frame(metadata[,-3], row.names=metadata[,3])
 # Save RDS
 saveRDS(object = metadata, file = "~/git/BV_Microbiome/extdata/PRJNA302078/PRJNA302078_metadata.rds")
+
+# Preterm Experiment
+# PRJNA393472 (This cohort already processed with DADA2 only update taxon assigment)
+# load metadata from paper
+load(file = "extdata/PRJNA393472/processed.rda")
+saveRDS(object = st,
+        file = "extdata/PRJNA393472/PRJNA393472_otu_table.rds")
+saveRDS(object = df,
+        file = "extdata/PRJNA393472/PRJNA393472_metadata.rds")
+require(dada2)
+otu <-  readRDS("extdata/PRJNA393472/PRJNA393472_otu_table.rds")
+# Taxonomical assignment
+# Original taxonomical assignment was on 2017, so we use the last version of silva on otu table
+dada2_path_ref_fasta <- "~/Programas/reference_databases/silva_nr99_v138.1_train_set.fa.gz"
+dada2_tryrc <- TRUE
+dada2_path_ref_fasta_species <- "~/Programas/reference_databases/silva_species_assignment_v138.1.fa.gz"
+dada2_tryrc_species <- TRUE
+taxa <- assignTaxonomy(seqs = otu, refFasta = dada2_path_ref_fasta,
+                       tryRC = dada2_tryrc, multithread = TRUE)
+taxa <- addSpecies(taxtab = taxa, refFasta = dada2_path_ref_fasta_species,
+                   tryRC =  dada2_tryrc_species)
+saveRDS(object = taxa, file = "extdata/PRJNA393472/PRJNA393472_tax_table.rds" )

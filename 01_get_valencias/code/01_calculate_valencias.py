@@ -20,9 +20,9 @@ except:
     exit()
 
 #setting up expected arguments and help messages
-reference = "/home/joselinares/git/VALENCIA/CST_centroids_012920.csv"
-input = "/home/joselinares/git/BV_Microbiome/00b_get_valencias/data/"
-outpath = "/home/joselinares/git/BV_Microbiome/00b_get_valencias/res/"
+reference = "/Users/diego/git/BV_Microbiome/01_get_valencias/utils/CST_centroids_012920.csv"
+input = "/Users/diego/git/BV_Microbiome/01_get_valencias/data/"
+outpath = "/Users/diego/git/BV_Microbiome/01_get_valencias/res/"
 
 files = os.listdir(input)
 input = os.path.join(input, files[1])

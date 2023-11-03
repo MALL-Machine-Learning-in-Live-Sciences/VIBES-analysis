@@ -19,7 +19,7 @@ feat$feature <- feat$Species
 features_metadata(sm) <- feat
 
 
-# Figure 3a
+# Figure 4a
 # ===============
 p2 <- plot_factors_vs_cov(
   factors = c(1, 2),
@@ -47,16 +47,16 @@ p2 <- plot_factors_vs_cov(
 
 ggsave(
   p2,
-  filename = "fig3a.svg",
+  filename = "fig4a.svg",
   device = "svg",
-  path = "figures/plots/Figure3/",
+  path = "figures/plots/Figure4/",
   width = 60, 
   height = 45, 
   units = "mm")
 
 
 
-# Figure 3b
+# Figure 4b
 # =========
 rownames(sm@expectations[["W"]][["microbiome"]]) <- feat$Species
 p3 <- plot_top_weights(
@@ -73,15 +73,15 @@ p3 <- plot_top_weights(
 
 ggsave(
   p3,
-  filename = "fig3b.svg",
+  filename = "fig4b.svg",
   device = "svg",
-  path = "figures/plots/Figure3/",
+  path = "figures/plots/Figure4/",
   width = 120, 
   height = 45, 
   units = "mm")
 
 
-# Figure 3c
+# Figure 4c
 # ==============
 # Annotation text size
 ans = 7
@@ -286,7 +286,7 @@ h30 <- Heatmap(mat3, name = "CLR Species Abundances",
 
 hlist <- h0 + h7 + h30
 
-svg(filename = "figures/plots/Figure3/fig3c.svg",
+svg(filename = "figures/plots/Figure4/fig4c.svg",
     width = 7.08661, 
     height = 3.93701)
 
@@ -295,25 +295,29 @@ draw(object = hlist, heatmap_legend_side = "right",
 dev.off()
 
 
-# Figure 3d
+# Figure 4d
 # ============
 
-rs = readRDS("04_treatment/res/summary_performances.rds")
-rs$transformation[rs$transformatio == "clusters"] <- "VIBES"
-rs$transformation[rs$transformation == "valencias"] <- "VALENCIA"
-rs$transformation[rs$transformation == "all"] <- "VALENCIA-VIBES"
-rs$transformation <- factor(rs$transformation, levels = c("VIBES", "VALENCIA", "VALENCIA-VIBES"))
+sp <- readRDS("04_treatment/res/BV_Microbiome_treatment/summary_performances.rds")
+sp$data[sp$data == "valencias"] <- "VALENCIA"
+sp$data[sp$data == "all"] <- "VALENCIA-VIBES"
+sp$data[sp$data== "clusters"] <- "VIBES"
+sp$data <- factor(sp$data, levels = c("VIBES", "VALENCIA", "VALENCIA-VIBES"))
 
-p4 <- ggscatter(
-  data = rs,
-  palette = c("#440154FF", "#31688EFF", "#35B779FF", "#EB8055FF"),
-  x = "value",
-  y = "transformation",
-  color = "algorithm",
-  shape = "algorithm",
-  size = 2
-) +
-  facet_wrap(~ variable, scales = "free_x") +
+p4 <- sp %>%
+  subset(algorithm == "rf") %>%
+  filter((data %in% c("VALENCIA-VIBES", "VALENCIA"))) %>%
+  group_by(data, variable) %>%
+  summarize(mean_value = mean(value)) %>%
+  ggscatter(
+    x = "mean_value",
+    y = "data",
+    color = "data",
+    shape = "data",
+    size = 2
+  ) + 
+  theme(legend.position = "none") +
+  facet_wrap("variable", scales = "free_x") +
   theme_bw() +
   theme(axis.title.x = element_blank(),
         axis.title.y = element_blank(),
@@ -324,7 +328,6 @@ p4 <- ggscatter(
         strip.text.x = element_text(size = 7),
         axis.ticks.y = element_blank(),
         axis.ticks.x = element_line(),
-        legend.position = "none",
         legend.title = element_blank(),
         legend.text = element_text(color = "black"),
         legend.key = element_rect(fill = "transparent"), 
@@ -332,15 +335,16 @@ p4 <- ggscatter(
         panel.background = element_blank(),
         panel.spacing = unit(1, "lines"),
         panel.grid.major.y = element_blank(),
-        strip.background=element_rect(fill="white")
-  )
-
+        strip.background=element_rect(fill="white"),
+        legend.position = "none"
+  )+ scale_color_manual(values = viridis(4)[2:3])
 ggsave(
   p4,
-  filename = "fig3e.svg",
+  filename = "fig4d.svg",
   device = "svg",
-  path = "figures/plots/Figure3/",
-  width = 180, 
+  path = "figures/plots/Figure4/",
+  width = 135, 
   height = 40, 
   units = "mm")
+
 

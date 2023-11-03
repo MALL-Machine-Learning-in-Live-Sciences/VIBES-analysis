@@ -1,11 +1,16 @@
-packgs <- c("phyloseq", "ConsensusClusterPlus")
+##### CCP investigation #####
+# 0.Load packages
+packgs <- c("phyloseq", "ConsensusClusterPlus", "NbClust")
 lapply(packgs, require, character.only = TRUE)
+
+# 1.Declare several variables to perform analysis on several configurations
 rank <-  "Species" # Genus or "Species"
-nfeat <- "22" # 24 and 14 for Species or 37 and 21 for Genus
+nfeat <- "22" # 
 trans <- "clr" # "log2", "clr" or "alr"
 cl <- "km" # "km", "pam" or "hc"
 
-# Select Target
+# 2. Declare several functions for preprocess data
+# 2.1.Select Target
 select_target <- function(pseq, tget) {
   require(dplyr)
   require(phyloseq)
@@ -14,7 +19,7 @@ select_target <- function(pseq, tget) {
   sample_data(pseq) <- df
   return(pseq)
 }
-# Normalization
+# 2.2.Normalization
 if (trans == "log2") {
   norm_dataset <- function(pseq) {
     # Change columns by rows too, interested in maintain fts in columns
@@ -47,19 +52,25 @@ if (trans == "log2") {
   print("Introduce valid normalization (log2, clr or alr)")
 }
 
-#Load data
+# 3.Load data
 Ravel <- readRDS(paste0("00_preprocess_cohorts/data/", rank, "Intersect/Ravel_",
                         rank, "_pseq_", nfeat, ".rds"))
 Ravel <- select_target(pseq = Ravel, tget = "Nugent_score_category")
 Ravel <- norm_dataset(pseq = Ravel)
-ravel_mat <- t(otu_table(Ravel)@.Data) # samples on columns for CCP
+ravel_mat <- as.data.frame(otu_table(Ravel)@.Data)
 
-# CCP
-require(ConsensusClusterPlus)
-title <- paste0("CCP_Ravel_", rank, "_", nfeat, "_", trans, "_", cl)
-setwd("~/git/BV_Microbiome/figures/plots/FigureSupp/Supplementary_Figure1")
-ccp = ConsensusClusterPlus(d = ravel_mat, maxK = 6, reps = 1500, pItem = 0.8,
-                           pFeature = 1, title = title, clusterAlg = cl,
-                           distance = "euclidean", seed = 1580 ,
-                           plot = "pdf")
-icl <- calcICL(res = ccp, title = title, plot = "pdf")
+NbClust(data = ravel_mat, method = "kmeans", diss=NULL, distance = "euclidean",
+        index = "silhouette", min.nc = 2, max.nc = 25
+          )
+
+set.seed(1111)
+res_25 <- NbClust(data = ravel_mat, diss = NULL, distance = "euclidean", min.nc = 3, max.nc = 25, 
+                  method = "kmeans", index = "alllong")
+res_20 <- NbClust(data = ravel_mat, diss = NULL, distance = "euclidean", min.nc = 3, max.nc = 20, 
+                  method = "kmeans", index = "alllong")
+res_15 <- NbClust(data = ravel_mat, diss = NULL, distance = "euclidean", min.nc = 3, max.nc = 15, 
+                  method = "kmeans", index = "alllong")
+res_10 <- NbClust(data = ravel_mat, diss = NULL, distance = "euclidean", min.nc = 3, max.nc = 10, 
+                  method = "kmeans", index = "alllong")
+res_5 <- NbClust(data = ravel_mat, diss = NULL, distance = "euclidean", min.nc = 3, max.nc = 5, 
+                 method = "kmeans", index = "alllong")

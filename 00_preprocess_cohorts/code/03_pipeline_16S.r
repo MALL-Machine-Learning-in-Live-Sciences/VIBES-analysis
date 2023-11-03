@@ -3,9 +3,9 @@
 library(dada2)
 
 # 1.Set paths and load scripts
-#setwd(dirname(rstudioapi::getSourceEditorContext()$path))
-setwd(dir = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome")
-source(file = "config_file.r")
+setwd(dir = "/mnt/netapp2/Store_uni/home/ulc/co/dfe/git/BV_Microbiome/")
+setwd("~/git/BV_Microbiome/")
+source(file = "00_preprocess_cohorts/code/config_file.r")
 
 # 2.Declare path to fastq and retain samples names
 l <- list.files(path = input_dir_path, pattern = pattern)

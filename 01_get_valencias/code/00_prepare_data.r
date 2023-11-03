@@ -6,13 +6,13 @@ require(phyloseq)
 require(reshape2)
 
 valencias <- read.delim2(
-  "~/git/VALENCIA/CST_centroids_012920.csv",
+  "~/git/BV_Microbiome/01_get_valencias/utils/CST_centroids_012920.csv",
   header = TRUE,
   sep = ',')
 
 # 1.Load data
-setwd("~/git/BV_Microbiome/00_preprocess_cohorts/data/")
-cohort <- "Sriniv" #PRJNA2085 PRJNA3020 PRJNA7977 Ravel Sriniv
+setwd("~/git/BV_Microbiome/00_preprocess_cohorts/data/pseqs/")
+cohort <- "PRJNA3934_filtered" #PRJNA2085 PRJNA3020 PRJNA7977 Ravel Sriniv PRJNA3934_filtered
 file <- list.files(pattern = cohort)
 pseq <- readRDS(file)
 
@@ -228,6 +228,6 @@ data <-
 write.csv(
   data, 
   file = file.path(
-    "~/git/vaginosis-jlb/00b_get_valencias/data/",
+    "~/git/BV_Microbiome/01_get_valencias/data/",
     paste0(cohort, ".csv")),
   row.names = FALSE)

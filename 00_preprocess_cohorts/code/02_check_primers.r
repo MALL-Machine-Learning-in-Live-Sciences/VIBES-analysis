@@ -5,14 +5,14 @@ library(ShortRead)
 library(Biostrings)
 
 # 1.Set paths
-setwd("extdata/")
+setwd("~/git/BV_Microbiome/extdata/")
 experiment_name <- "PRJNA208535"
 pattern <- "SRR"
 input_dir_path <- paste0(experiment_name)
 
 # 2.Determining the primers and get all orients
-FWD <- "AGAGTTTGATCCTGGCTCAG"
-REV <- "TTACCGCGGCTGCTGGC"
+FWD <- "CCTACGGGAGGCAGCAG"
+REV <- "CCGTCAATTCMTTTRAGT"
 # 2.1.Function for get all orients of primers 
 allOrients <- function(primer) {
   # Create all orientations of the input sequence
@@ -61,7 +61,6 @@ primerHits <- function(primer, fn) {
   nhits <- vcountPattern(primer, sread(readFastq(fn)), fixed = FALSE)
   return(sum(nhits > 0))
 }
-rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[1]]), 
-      FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.filtN[[1]]), 
-      REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.filtN[[1]]), 
-      REV.ReverseReads = sapply(REV.orients, primerHits, fn = fnRs.filtN[[1]]))
+rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[11]]), 
+      
+      REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.filtN[[11]]))
