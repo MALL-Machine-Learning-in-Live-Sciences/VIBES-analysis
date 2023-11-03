@@ -9,7 +9,7 @@ rank <-  "Species" # Genus or "Species"
 nfeat <- "22" # 24 and 14 for Species or 37 and 21 for Genus
 trans <- "clr" # "log2", "clr" or "alr"
 cl <- "km" # "km", "pam" or "hc"
-pctge <- 1 #Boostraping sampling 0.5,0.625,0.75, 0.90 and 1
+pctge <- 0.5 #Boostraping sampling 0.5,0.625,0.75, 0.90 and 1 (original clusters)
 
 # 2. Declare several functions for preprocess data
 # 2.1.Select Target
